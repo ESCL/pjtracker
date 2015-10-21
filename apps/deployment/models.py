@@ -70,13 +70,3 @@ class WorkLog(models.Model):
     company = models.ForeignKey('resources.Company')
     position = models.ForeignKey('resources.Position')
     location = models.ForeignKey('resources.Location')
-
-
-class TeamAssignment(models.Model):
-
-    team = models.ForeignKey(
-        'resources.Team'
-    )
-    activity = models.ForeignKey(
-        'work.Activity'
-    )

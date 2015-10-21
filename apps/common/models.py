@@ -31,3 +31,16 @@ class OwnedEntity(models.Model):
         'profiles.Account',
         null=True
     )
+
+
+class History(models.Model):
+    """
+    Base class for all entities that store transitions, optimized to fetch
+    values at specific date-times.
+    """
+    class Meta:
+        abstract = True
+
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+

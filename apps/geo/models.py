@@ -1,5 +1,7 @@
 from django.db import models
 
+from ..common.models import OwnedEntity
+
 
 class Nation(models.Model):
 
@@ -27,13 +29,26 @@ class Region(models.Model):
     )
 
 
-class Location(models.Model):
+class Locality(models.Model):
 
     name = models.CharField(
         max_length=256
     )
     region = models.ForeignKey(
         'Region'
+    )
+
+
+class Location(models.Model):
+
+    name = models.CharField(
+        max_length=256
+    )
+    address = models.CharField(
+        max_length=256
+    )
+    locality = models.ForeignKey(
+        'Locality'
     )
     latitude = models.DecimalField(
         max_digits=8
@@ -43,18 +58,15 @@ class Location(models.Model):
     )
 
 
-class Accomodation(models.Model):
+class Space(OwnedEntity):
 
-    name = models.CharField(
-        max_length=256
-    )
     location = models.ForeignKey(
         'Location'
     )
     section = models.CharField(
         max_length=24
     )
-    room = models.CharField(
+    identifier = models.CharField(
         max_length=24
     )
 

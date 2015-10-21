@@ -1,16 +1,6 @@
 from django.db import models
 
-from ..common.models import OwnedEntity
-
-
-class Company(OwnedEntity):
-
-    name = models.CharField(
-        max_length=128
-    )
-    code = models.CharField(
-        max_length=8
-    )
+from ..common.models import OwnedEntity, History
 
 
 class Position(OwnedEntity):
@@ -20,35 +10,42 @@ class Position(OwnedEntity):
     )
 
 
-class Status(OwnedEntity):
+class EquipmentType(OwnedEntity):
 
-    owner = models.ForeignKey(
-        'profiles.Account'
-    )
-    type = models.CharField(
+    name = models.CharField(
         max_length=128
     )
-    name = models.CharField(
-        max_length=32
-    )
-    code = models.CharField(
-        max_length=8
-    )
 
 
-class Employee(OwnedEntity):
+class Resource(OwnedEntity):
 
     identifier = models.CharField(
         max_length=16,
     )
+    company = models.ForeignKey(
+        'organizations.Company'
+    )
+    project = models.ForeignKey(
+        'work.Project'
+    )
+    location = models.ForeignKey(
+        'geo.Location',
+        null=True
+    )
+    space = models.ForeignKey(
+        'geo.Space',
+        null=True
+    )
+
+
+class Employee(Resource):
+
     first_name = models.CharField(
         max_length=64
     )
     last_name = models.CharField(
         max_length=64
     )
-
-    # Personal data
     nationality = models.ForeignKey(
         'locations.Nation'
     )
@@ -63,35 +60,78 @@ class Employee(OwnedEntity):
     )
 
     # Organizational data (required)
-    company = models.ForeignKey(
-        'Company'
+    position = models.ForeignKey(
+        'Position'
+    )
+
+    @property
+    def lodging(self):
+        return self.space
+
+
+class Equipment(Resource):
+
+    type = models.ForeignKey(
+        'EquipmentType'
+    )
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        related_name='subtypes'
+    )
+
+    @property
+    def storage(self):
+        return self.space
+
+
+class ResourceHistory(History):
+
+    class Meta:
+        abstract = True
+
+
+class LocationHistory(ResourceHistory):
+
+    space = models.ForeignKey(
+        'geo.Location'
+    )
+
+
+class SpaceHistory(ResourceHistory):
+
+    space = models.ForeignKey(
+        'geo.Space'
+    )
+
+
+class CompanyHistory(ResourceHistory):
+
+    team = models.ForeignKey(
+        'organizations.Company'
+    )
+
+
+class TeamHistory(ResourceHistory):
+
+    team = models.ForeignKey(
+        'organizations.Team'
+    )
+
+
+class ProjectHistory(ResourceHistory):
+
+    team = models.ForeignKey(
+        'work.Project'
+    )
+
+
+class PositionHistory(History):
+
+    employee = models.ForeignKey(
+        'Employee'
     )
     position = models.ForeignKey(
         'Position'
     )
-    location = models.ForeignKey(
-        'geo.Location'
-    )
-    status = models.ForeignKey(
-        'Status'
-    )
 
-
-class Team(OwnedEntity):
-
-    name = models.CharField(
-        max_length=128
-    )
-    code = models.CharField(
-        max_length=16,
-        unique=True
-    )
-    company = models.ForeignKey(
-        'Company'
-    )
-    leader = models.ForeignKey(
-        'Employee',
-        null=True,
-        blank=True,
-        related_name='teams_led'
-    )

@@ -11,31 +11,30 @@ class Project(OwnedEntity):
         max_length=128
     )
     code = models.CharField(
-        max_length=126
+        max_length=32
+    )
+    location = models.ForeignKey(
+        'geo.Location'
     )
 
 
-class Phase(OwnedEntity):
-    """
-    Main activity classification group.
-    """
+class ActivityGroupType(OwnedEntity):
+
+    name = models.CharField(
+        max_length=128
+    )
+
+
+class ActivityGroup(OwnedEntity):
+
     name = models.CharField(
         max_length=128
     )
     code = models.CharField(
         max_length=16
     )
-
-
-class Discipline(OwnedEntity):
-    """
-    Second activity classification group.
-    """
-    name = models.CharField(
-        max_length=128
-    )
-    code = models.CharField(
-        max_length=16
+    type = models.ForeignKey(
+        'ActivityGroupType'
     )
 
 
@@ -47,21 +46,20 @@ class Activity(OwnedEntity):
         max_length=128
     )
     code = models.CharField(
-        max_length=16
+        max_length=32
+    )
+    project = models.ForeignKey(
+        'Project'
     )
     parent = models.ForeignKey(
         'self',
         null=True,
         related_name='sub_activities'
     )
-    project = models.ForeignKey(
-        'Project'
+    groups = models.ManyToManyField(
+        'ActivityGroup'
     )
-    phase = models.ForeignKey(
-        'Phase',
-        null=True
-    )
-    discipline = models.ForeignKey(
-        'Discipline',
+    location = models.ForeignKey(
+        'geo.Location',
         null=True
     )
