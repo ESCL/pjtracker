@@ -1,0 +1,5 @@
+# JetBrians IDEs files
+.idea
+
+# Compiled bytecode
+*.pyc
