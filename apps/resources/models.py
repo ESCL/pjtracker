@@ -18,6 +18,11 @@ class EquipmentType(OwnedEntity):
     name = models.CharField(
         max_length=128
     )
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        related_name='subtypes'
+    )
 
     def __str__(self):
         return self.name
@@ -52,7 +57,7 @@ class Employee(Resource):
     last_name = models.CharField(
         max_length=64
     )
-    nationality = models.ForeignKey(
+    nation = models.ForeignKey(
         'geo.Nation'
     )
     birth_date = models.DateField(
@@ -78,6 +83,10 @@ class Employee(Resource):
     def lodging(self):
         return self.space
 
+    @property
+    def nationality(self):
+        return self.nation.demonym
+
     def __str__(self):
         return '{} ({})'.format(self.full_name, self.identifier)
 
@@ -86,11 +95,6 @@ class Equipment(Resource):
 
     type = models.ForeignKey(
         'EquipmentType'
-    )
-    parent = models.ForeignKey(
-        'self',
-        null=True,
-        related_name='subtypes'
     )
 
     @property

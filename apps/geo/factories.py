@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, SubFactory, Faker, LazyAttribute
 
-from ..models import Nation, Region, Locality, Location, Space
+from .models import Nation, Region, Locality, Location, Space
 
 
 class NationFactory(DjangoModelFactory):

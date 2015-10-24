@@ -32,10 +32,13 @@ class Region(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return '{}, {}'.format(self.name, self.nation.code)
 
 
 class Locality(models.Model):
+
+    class Meta:
+        verbose_name_plural = 'localities'
 
     name = models.CharField(
         max_length=256
@@ -71,7 +74,7 @@ class Location(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name or self.address
+        return '{}, {}'.format(self.name or self.address, self.locality)
 
 
 class Space(OwnedEntity):
@@ -89,7 +92,7 @@ class Space(OwnedEntity):
     )
 
     def __str__(self):
-        return '{}, {}'.format(
-            self.location,
-            '-'.join(filter(lambda x: bool(x), [self.section, self.identifier]))
+        return '{} ({})'.format(
+            '-'.join(filter(lambda x: bool(x), [self.section, self.identifier])),
+            self.location
         )

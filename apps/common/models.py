@@ -32,7 +32,8 @@ class OwnedEntity(models.Model):
 
     owner = models.ForeignKey(
         'accounts.Account',
-        null=True
+        null=True,
+        blank=True
     )
 
 

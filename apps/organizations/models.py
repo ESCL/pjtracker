@@ -5,6 +5,9 @@ from ..common.models import OwnedEntity
 
 class Company(OwnedEntity):
 
+    class Meta:
+        verbose_name_plural = 'companies'
+
     name = models.CharField(
         max_length=128
     )

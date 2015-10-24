@@ -48,9 +48,10 @@ class ActivityGroup(OwnedEntity):
 
 
 class Activity(OwnedEntity):
-    """
 
-    """
+    class Meta:
+        verbose_name_plural = 'activities'
+
     name = models.CharField(
         max_length=128
     )
@@ -63,14 +64,11 @@ class Activity(OwnedEntity):
     parent = models.ForeignKey(
         'self',
         null=True,
+        blank=True,
         related_name='sub_activities'
     )
     groups = models.ManyToManyField(
         'ActivityGroup'
-    )
-    location = models.ForeignKey(
-        'geo.Location',
-        null=True
     )
 
     @property
