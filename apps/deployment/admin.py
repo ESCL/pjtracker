@@ -1,3 +1,14 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import TimeSheet, WorkLog
+
+
+class WorkLogInline(admin.TabularInline):
+    model = WorkLog
+
+
+class TimeSheetAdmin(admin.ModelAdmin):
+    inlines = (WorkLogInline,)
+
+
+admin.site.register(TimeSheet, TimeSheetAdmin)

@@ -15,6 +15,9 @@ class Nation(models.Model):
         max_length=128
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Region(models.Model):
 
@@ -28,6 +31,9 @@ class Region(models.Model):
         max_length=4
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Locality(models.Model):
 
@@ -38,11 +44,16 @@ class Locality(models.Model):
         'Region'
     )
 
+    def __str__(self):
+        return '{}, {}'.format(self.name, self.region.code)
 
-class Location(models.Model):
+
+class Location(OwnedEntity):
 
     name = models.CharField(
-        max_length=256
+        max_length=256,
+        null=True,
+        blank=True
     )
     address = models.CharField(
         max_length=256
@@ -51,11 +62,16 @@ class Location(models.Model):
         'Locality'
     )
     latitude = models.DecimalField(
-        max_digits=8
+        max_digits=12,
+        decimal_places=9,
     )
     longitude = models.DecimalField(
-        max_digits=8
+        max_digits=12,
+        decimal_places=9,
     )
+
+    def __str__(self):
+        return self.name or self.address
 
 
 class Space(OwnedEntity):
@@ -64,9 +80,16 @@ class Space(OwnedEntity):
         'Location'
     )
     section = models.CharField(
-        max_length=24
+        max_length=24,
+        null=True,
+        blank=True
     )
     identifier = models.CharField(
         max_length=24
     )
 
+    def __str__(self):
+        return '{}, {}'.format(
+            self.location,
+            '-'.join(filter(lambda x: bool(x), [self.section, self.identifier]))
+        )

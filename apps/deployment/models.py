@@ -5,7 +5,7 @@ from django.db import models
 from ..common.models import OwnedEntity
 
 
-class Timesheet(OwnedEntity):
+class TimeSheet(OwnedEntity):
 
     STATUS_PREPARING = 'P'
     STATUS_ISSUED = 'I'
@@ -13,7 +13,7 @@ class Timesheet(OwnedEntity):
     STATUS_APPROVED = 'A'
 
     team = models.ForeignKey(
-        'resources.Team'
+        'organizations.Team'
     )
     date = models.DateField(
     )
@@ -36,6 +36,9 @@ class Timesheet(OwnedEntity):
         blank=True
     )
 
+    def __str__(self):
+        return '{} - {}'.format(self.team, self.date.isoformat())
+
 
 class WorkLog(models.Model):
 
@@ -44,7 +47,7 @@ class WorkLog(models.Model):
     LABOUR_MANAGERIAL = 'M'
 
     timesheet = models.ForeignKey(
-        'Timesheet',
+        'TimeSheet',
         related_name='work_logs'
     )
     employee = models.ForeignKey(
@@ -67,6 +70,18 @@ class WorkLog(models.Model):
     )
 
     # De-normalization, keep attrs that can change in an employee
-    company = models.ForeignKey('resources.Company')
+    company = models.ForeignKey('organizations.Company')
     position = models.ForeignKey('resources.Position')
-    location = models.ForeignKey('resources.Location')
+    location = models.ForeignKey('geo.Location')
+
+    def save_base(self, *args, **kwargs):
+        # Update de-normalized attributes
+        self.company = self.employee.company
+        self.position = self.employee.position
+        self.location = self.employee.location
+
+        # Save and return
+        return super(WorkLog, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '{} - {}'.format(self.employee, self.activity)

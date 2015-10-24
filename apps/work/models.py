@@ -17,12 +17,18 @@ class Project(OwnedEntity):
         'geo.Location'
     )
 
+    def __str__(self):
+        return self.name
+
 
 class ActivityGroupType(OwnedEntity):
 
     name = models.CharField(
         max_length=128
     )
+
+    def __str__(self):
+        return self.name
 
 
 class ActivityGroup(OwnedEntity):
@@ -36,6 +42,9 @@ class ActivityGroup(OwnedEntity):
     type = models.ForeignKey(
         'ActivityGroupType'
     )
+
+    def __str__(self):
+        return '{} ({})'.format(self.name, self.code)
 
 
 class Activity(OwnedEntity):
@@ -63,3 +72,13 @@ class Activity(OwnedEntity):
         'geo.Location',
         null=True
     )
+
+    @property
+    def wbs_code(self):
+        if not self.parent:
+            return '{}.{}'.format(self.project.code, self.code)
+        return '{}.{}'.format(self.parent.wbs_code, self.code)
+
+    def __str__(self):
+        return '{} {}'.format(self.wbs_code, self.name)
+

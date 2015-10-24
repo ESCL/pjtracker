@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+    <h1>Employees</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Nationality</th>
+                <th>Company</th>
+                <th>Project</th>
+                <th>Position</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in objects %}
+                <tr>
+                    <td>{{ employee.identifier }}</td>
+                    <td>{{ employee.full_name }}</td>
+                    <td>{{ employee.nationality.demonym }}</td>
+                    <td>{{ employee.company }}</td>
+                    <td>{{ employee.project }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.location }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

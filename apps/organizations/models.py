@@ -12,6 +12,9 @@ class Company(OwnedEntity):
         max_length=8
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Team(OwnedEntity):
 
@@ -25,9 +28,7 @@ class Team(OwnedEntity):
     company = models.ForeignKey(
         'organizations.Company'
     )
-    leader = models.ForeignKey(
-        'Employee',
-        null=True,
-        blank=True,
-        related_name='teams_led'
-    )
+
+    def __str__(self):
+        return '{} ({})'.format(self.name, self.code)
+

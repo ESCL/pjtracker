@@ -18,7 +18,7 @@ The project is split in six (6) packages:
 ## common
 
 This package is not a django app, but a group of common functionality shared
-among different apps, such as base classes, helper functions, etc.
+among different apps, such as base classes and helper functions.
 
 ### Models
 

@@ -15,7 +15,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -39,9 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Apps
-    'apps.activities',
+    'apps.accounts',
     'apps.geo',
+    'apps.organizations',
     'apps.resources',
+    'apps.work',
     'apps.deployment',
 )
 
@@ -84,6 +85,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'data', 'db.sqlite3'),
+        'TEST': {
+            'NAME': ':memory:',
+            'SERIALIZE': False
+        }
     }
 }
 

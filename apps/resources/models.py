@@ -9,12 +9,18 @@ class Position(OwnedEntity):
         max_length=128
     )
 
+    def __str__(self):
+        return self.name
+
 
 class EquipmentType(OwnedEntity):
 
     name = models.CharField(
         max_length=128
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Resource(OwnedEntity):
@@ -47,7 +53,7 @@ class Employee(Resource):
         max_length=64
     )
     nationality = models.ForeignKey(
-        'locations.Nation'
+        'geo.Nation'
     )
     birth_date = models.DateField(
         null=True, blank=True
@@ -65,8 +71,15 @@ class Employee(Resource):
     )
 
     @property
+    def full_name(self):
+        return '{}, {}'.format(self.last_name, self.first_name)
+
+    @property
     def lodging(self):
         return self.space
+
+    def __str__(self):
+        return '{} ({})'.format(self.full_name, self.identifier)
 
 
 class Equipment(Resource):
@@ -83,6 +96,9 @@ class Equipment(Resource):
     @property
     def storage(self):
         return self.space
+
+    def __str__(self):
+        return '{} ({})'.format(self.type, self.identifier)
 
 
 class ResourceHistory(History):

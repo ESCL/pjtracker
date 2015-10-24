@@ -7,6 +7,9 @@ class Account(models.Model):
         max_length=128
     )
 
+    def __str__(self):
+        return self.name
+
 
 class UserProfile(models.Model):
 
@@ -14,7 +17,8 @@ class UserProfile(models.Model):
     TYPE_USER = 'U'
 
     user = models.OneToOneField(
-        'auth.User'
+        'auth.User',
+        related_name='profile'
     )
     account = models.ForeignKey(
         'Account'
@@ -24,3 +28,6 @@ class UserProfile(models.Model):
         choices=((TYPE_ADMIN, 'Administrator'),
                  (TYPE_USER, 'Common'))
     )
+
+    def __str__(self):
+        return self.account.name

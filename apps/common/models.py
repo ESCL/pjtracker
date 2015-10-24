@@ -21,6 +21,9 @@ class OwnedEntityMeta(type):
 class OwnedEntity(models.Model):
     """
     Base class for all entities that are "owned" by an account.
+
+    The field "owner" is nullable because we probably want "global" objects
+    even for some ownable types (ie, locations).
     """
     __metaclass__ = OwnedEntityMeta
 
@@ -28,7 +31,7 @@ class OwnedEntity(models.Model):
         abstract = True
 
     owner = models.ForeignKey(
-        'profiles.Account',
+        'accounts.Account',
         null=True
     )
 
