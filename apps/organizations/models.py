@@ -35,3 +35,13 @@ class Team(OwnedEntity):
     def __str__(self):
         return '{} ({})'.format(self.name, self.code)
 
+
+class Position(OwnedEntity):
+
+    name = models.CharField(
+        max_length=128
+    )
+
+    def __str__(self):
+        return self.name
+

@@ -3,9 +3,9 @@ __author__ = 'kako'
 from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker
 
 from ..geo.factories import NationFactory, SpaceFactory
-from ..organizations.factories import CompanyFactory
+from ..organizations.factories import CompanyFactory, PositionFactory, TeamFactory
 from ..work.factories import ProjectFactory
-from .models import Employee, Position, Equipment, EquipmentType
+from .models import Employee, Equipment, EquipmentType
 
 
 class EquipmentTypeFactory(DjangoModelFactory):
@@ -13,7 +13,7 @@ class EquipmentTypeFactory(DjangoModelFactory):
     class Meta:
         model = EquipmentType
 
-    name = 'excavator'
+    name = 'Excavator'
 
 
 class EquipmentSubTypeFactory(DjangoModelFactory):
@@ -21,7 +21,7 @@ class EquipmentSubTypeFactory(DjangoModelFactory):
     class Meta:
         model = EquipmentType
 
-    name = 'excavator'
+    name = 'Backhoe'
     parent = SubFactory(EquipmentTypeFactory)
 
 
@@ -38,14 +38,6 @@ class EquipmentFactory(DjangoModelFactory):
     location = LazyAttribute(lambda obj: obj.space.location)
 
 
-class PositionFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Position
-
-    name = Faker('job')
-
-
 class EmployeeFactory(DjangoModelFactory):
 
     class Meta:
@@ -55,10 +47,9 @@ class EmployeeFactory(DjangoModelFactory):
     first_name = Faker('first_name')
     last_name = Faker('last_name')
     nation = SubFactory(NationFactory)
-    company = SubFactory(CompanyFactory)
+    company = LazyAttribute(lambda obj: obj.team.company)
     project = SubFactory(ProjectFactory)
     position = SubFactory(PositionFactory)
     space = SubFactory(SpaceFactory)
     location = LazyAttribute(lambda obj: obj.space.location)
-
-
+    team = SubFactory(TeamFactory)

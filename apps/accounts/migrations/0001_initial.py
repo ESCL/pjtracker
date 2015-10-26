@@ -15,15 +15,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Account',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=128)),
             ],
         ),
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
-                ('account_role', models.CharField(choices=[('A', 'Administrator'), ('U', 'Common')], max_length=1)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('account_role', models.CharField(max_length=1, choices=[('A', 'Administrator'), ('U', 'Common')])),
                 ('account', models.ForeignKey(to='accounts.Account')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, related_name='profile')),
             ],

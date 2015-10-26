@@ -14,23 +14,34 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Company',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=8)),
-                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'verbose_name_plural': 'companies',
             },
         ),
         migrations.CreateModel(
+            name='Position',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('name', models.CharField(max_length=128)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='Team',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(max_length=128)),
-                ('code', models.CharField(unique=True, max_length=16)),
+                ('code', models.CharField(max_length=16, unique=True)),
                 ('company', models.ForeignKey(to='organizations.Company')),
-                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Locality',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=256)),
             ],
             options={
@@ -24,11 +24,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Location',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('name', models.CharField(null=True, max_length=256, blank=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('name', models.CharField(null=True, blank=True, max_length=256)),
                 ('address', models.CharField(max_length=256)),
-                ('latitude', models.DecimalField(decimal_places=9, max_digits=12)),
-                ('longitude', models.DecimalField(decimal_places=9, max_digits=12)),
+                ('latitude', models.DecimalField(max_digits=12, decimal_places=9)),
+                ('longitude', models.DecimalField(max_digits=12, decimal_places=9)),
                 ('locality', models.ForeignKey(to='geo.Locality')),
                 ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),
             ],
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Nation',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=2)),
                 ('demonym', models.CharField(max_length=128)),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Region',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=4)),
                 ('nation', models.ForeignKey(to='geo.Nation')),
@@ -57,8 +57,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Space',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('section', models.CharField(null=True, max_length=24, blank=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('section', models.CharField(null=True, blank=True, max_length=24)),
                 ('identifier', models.CharField(max_length=24)),
                 ('location', models.ForeignKey(to='geo.Location')),
                 ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),

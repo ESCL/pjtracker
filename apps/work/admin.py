@@ -8,7 +8,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class ActivityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'project', 'parent',)
+    list_display = ('name', 'wbs_code', 'project',)
 
 
 class ActivityGroupAdmin(admin.ModelAdmin):

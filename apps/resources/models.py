@@ -3,16 +3,6 @@ from django.db import models
 from ..common.models import OwnedEntity, History
 
 
-class Position(OwnedEntity):
-
-    name = models.CharField(
-        max_length=128
-    )
-
-    def __str__(self):
-        return self.name
-
-
 class EquipmentType(OwnedEntity):
 
     name = models.CharField(
@@ -36,6 +26,9 @@ class Resource(OwnedEntity):
     company = models.ForeignKey(
         'organizations.Company'
     )
+    team = models.ForeignKey(
+        'organizations.Team'
+    )
     project = models.ForeignKey(
         'work.Project'
     )
@@ -47,6 +40,20 @@ class Resource(OwnedEntity):
         'geo.Space',
         null=True
     )
+    resource_type = models.CharField(
+        max_length=32,
+    )
+
+    @property
+    def instance(self):
+        return getattr(self, self.resource_type)
+
+    def save(self, *args, **kwargs):
+        self.resource_type = self.__class__._meta.model_name
+        return super(Resource, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.instance.__str__()
 
 
 class Employee(Resource):
@@ -72,7 +79,7 @@ class Employee(Resource):
 
     # Organizational data (required)
     position = models.ForeignKey(
-        'Position'
+        'organizations.Position'
     )
 
     @property
@@ -152,6 +159,6 @@ class PositionHistory(History):
         'Employee'
     )
     position = models.ForeignKey(
-        'Position'
+        'organizations.Position'
     )
 
