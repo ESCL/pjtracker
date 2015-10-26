@@ -4,7 +4,7 @@ from .models import Project, Activity, ActivityGroup, ActivityGroupType
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'location')
+    list_display = ('name', 'code', 'location',)
 
 
 class ActivityAdmin(admin.ModelAdmin):
@@ -12,11 +12,11 @@ class ActivityAdmin(admin.ModelAdmin):
 
 
 class ActivityGroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code')
+    list_display = ('name', 'code',)
 
 
 class ActivityGroupTypeAdmin(admin.ModelAdmin):
-    list_display = ('name')
+    list_display = ('name',)
 
 
 admin.site.register(Project, ProjectAdmin)

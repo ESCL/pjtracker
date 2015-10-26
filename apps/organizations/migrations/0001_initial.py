@@ -14,23 +14,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Company',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=8)),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
-                'abstract': False,
+                'verbose_name_plural': 'companies',
             },
         ),
         migrations.CreateModel(
             name='Team',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
                 ('name', models.CharField(max_length=128)),
-                ('code', models.CharField(max_length=16, unique=True)),
+                ('code', models.CharField(unique=True, max_length=16)),
                 ('company', models.ForeignKey(to='organizations.Company')),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'abstract': False,

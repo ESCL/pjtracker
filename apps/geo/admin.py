@@ -16,7 +16,7 @@ class LocalityAdmin(admin.ModelAdmin):
 
 
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'locality', 'latitude', 'longitude')
+    list_display = ('name', 'address', 'locality', 'latitude', 'longitude',)
 
 
 class SpaceAdmin(admin.ModelAdmin):

@@ -1,3 +1,5 @@
+import itertools
+
 from django.db import models
 
 from ..common.models import OwnedEntity
@@ -64,19 +66,25 @@ class Activity(OwnedEntity):
     parent = models.ForeignKey(
         'self',
         null=True,
-        blank=True,
-        related_name='sub_activities'
+        blank=True
     )
     groups = models.ManyToManyField(
         'ActivityGroup'
     )
 
     @property
+    def wbs_code_prefix(self):
+        if not hasattr(self, '_wbs_code_prefix'):
+            self._wbs_code_prefix = self.parent and self.parent.wbs_code or self.project.code
+        return self._wbs_code_prefix
+
+    @wbs_code_prefix.setter
+    def wbs_code_prefix(self, value):
+        self._wbs_code_prefix = value
+
+    @property
     def wbs_code(self):
-        if not self.parent:
-            return '{}.{}'.format(self.project.code, self.code)
-        return '{}.{}'.format(self.parent.wbs_code, self.code)
+        return '{}.{}'.format(self.wbs_code_prefix, self.code)
 
     def __str__(self):
         return '{} {}'.format(self.wbs_code, self.name)
-

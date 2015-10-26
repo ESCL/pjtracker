@@ -74,7 +74,7 @@ class WorkLog(models.Model):
     position = models.ForeignKey('resources.Position')
     location = models.ForeignKey('geo.Location')
 
-    def save_base(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # Update de-normalized attributes
         self.company = self.employee.company
         self.position = self.employee.position

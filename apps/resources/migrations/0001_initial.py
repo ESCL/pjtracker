@@ -8,16 +8,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('organizations', '0001_initial'),
-        ('accounts', '0001_initial'),
         ('geo', '0001_initial'),
         ('work', '__first__'),
+        ('accounts', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='CompanyHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='organizations.Company')),
@@ -29,9 +29,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EquipmentType',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('name', models.CharField(max_length=128)),
-                ('owner', models.ForeignKey(null=True, to='accounts.Account')),
+                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('parent', models.ForeignKey(to='resources.EquipmentType', related_name='subtypes', null=True)),
             ],
             options={
                 'abstract': False,
@@ -40,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LocationHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('space', models.ForeignKey(to='geo.Location')),
@@ -52,9 +53,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Position',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('name', models.CharField(max_length=128)),
-                ('owner', models.ForeignKey(null=True, to='accounts.Account')),
+                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
             ],
             options={
                 'abstract': False,
@@ -63,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PositionHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('position', models.ForeignKey(to='resources.Position')),
@@ -75,7 +76,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProjectHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='work.Project')),
@@ -87,7 +88,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Resource',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('identifier', models.CharField(max_length=16)),
             ],
             options={
@@ -97,7 +98,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SpaceHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('space', models.ForeignKey(to='geo.Space')),
@@ -109,7 +110,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TeamHistory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='organizations.Team')),
@@ -121,13 +122,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Employee',
             fields=[
-                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, parent_link=True, primary_key=True, to='resources.Resource')),
+                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, to='resources.Resource', primary_key=True, parent_link=True)),
                 ('first_name', models.CharField(max_length=64)),
                 ('last_name', models.CharField(max_length=64)),
                 ('birth_date', models.DateField(null=True, blank=True)),
                 ('photo', models.FileField(upload_to='', max_length=256, blank=True)),
-                ('home_address', models.CharField(null=True, max_length=256, blank=True)),
-                ('nationality', models.ForeignKey(to='geo.Nation')),
+                ('home_address', models.CharField(max_length=256, blank=True, null=True)),
+                ('nation', models.ForeignKey(to='geo.Nation')),
                 ('position', models.ForeignKey(to='resources.Position')),
             ],
             options={
@@ -138,8 +139,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Equipment',
             fields=[
-                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, parent_link=True, primary_key=True, to='resources.Resource')),
-                ('parent', models.ForeignKey(null=True, related_name='subtypes', to='resources.Equipment')),
+                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, to='resources.Resource', primary_key=True, parent_link=True)),
                 ('type', models.ForeignKey(to='resources.EquipmentType')),
             ],
             options={
@@ -155,12 +155,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='location',
-            field=models.ForeignKey(null=True, to='geo.Location'),
+            field=models.ForeignKey(to='geo.Location', null=True),
         ),
         migrations.AddField(
             model_name='resource',
             name='owner',
-            field=models.ForeignKey(null=True, to='accounts.Account'),
+            field=models.ForeignKey(to='accounts.Account', null=True, blank=True),
         ),
         migrations.AddField(
             model_name='resource',
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='space',
-            field=models.ForeignKey(null=True, to='geo.Space'),
+            field=models.ForeignKey(to='geo.Space', null=True),
         ),
         migrations.AddField(
             model_name='positionhistory',
