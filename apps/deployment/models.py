@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
-from ..common.models import OwnedEntity
+from ..common.db.models import OwnedEntity
 
 
 class TimeSheet(OwnedEntity):

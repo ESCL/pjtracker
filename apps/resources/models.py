@@ -1,6 +1,7 @@
 from django.db import models
 
-from ..common.models import OwnedEntity, History
+from ..common.db.models import OwnedEntity, History
+from ..common.db.query import OwnedEntityQuerySet
 
 
 class EquipmentType(OwnedEntity):
@@ -58,6 +59,8 @@ class Resource(OwnedEntity):
 
 class Employee(Resource):
 
+    objects = OwnedEntityQuerySet.as_manager()
+
     first_name = models.CharField(
         max_length=64
     )
@@ -99,6 +102,9 @@ class Employee(Resource):
 
 
 class Equipment(Resource):
+
+    class Meta:
+        verbose_name_plural = 'equipment'
 
     type = models.ForeignKey(
         'EquipmentType'

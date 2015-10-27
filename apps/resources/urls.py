@@ -1,14 +1,11 @@
 __author__ = 'kako'
 
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url
 
-from .views import EmployeeView
+from .views import EmployeeView, EquipmentView
 
 
 urlpatterns = [
-    # Examples:
-    # url(r'^$', 'tracker.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    url(r'^employees/', EmployeeView.as_view()),
+    url(r'^equipment/', EquipmentView.as_view(), name='equipment'),
+    url(r'^employees/', EmployeeView.as_view(), name='employees'),
 ]

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <!-- Skeleton frames -->
+    <link href="{% static 'libs/skeleton-2.0.4/css/normalize.css' %}" rel="stylesheet">
+    <link href="{% static 'libs/skeleton-2.0.4/css/skeleton.css' %}" rel="stylesheet">
+
+    <!-- Main style -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+    <!-- Custom styles -->
+    {% block styles %}
+    {% endblock %}
+
+    <!-- Title -->
+    <title>
+        Tracker - {% block title %}Home{% endblock %}
+    </title>
+
+</head>
+<body>
+
+    <nav>
+        {% block nav %}{% endblock %}
+    </nav>
+
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+
+    <footer>
+        {% block footer %}{% endblock %}
+    </footer>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

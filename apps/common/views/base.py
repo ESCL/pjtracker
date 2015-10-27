@@ -4,23 +4,47 @@ from django.shortcuts import render
 from django.views.generic import View
 
 
+def handle_exception(func):
+    def wrapper_func(*args, **kwargs):
+        try:
+            res = func(*args, **kwargs)
+
+        except Exception as e:
+            view = args[0]
+            h_args = args[1:] + (e,)
+            return view.process_exception(*h_args)
+
+        else:
+            return res
+    return wrapper_func
+
+
 class StandardResourceView(View):
     list_template = None
     detail_template = None
     edit_template = None
+    error_template = 'apps/error.html'
     edit_form = None
     model = None
 
-    def get_object(self, id):
-        return self.model.objects.get(id)
+    def get_object(self, user, id):
+        return self.model.objects.get(user=user, id=id)
 
-    def filter_objects(self, qs):
-        return self.model.objects.all(**qs)
+    def filter_objects(self, user, qs):
+        return self.model.objects.filter(user=user, **qs)
 
-    def get(self, request, id=None, action=None):
-        if id:
+    def process_exception(self, request, exception):
+        context = {'error': exception.__class__.__name__,
+                   'message': str(exception)}
+        status_code = getattr(exception, 'status_code', 500)
+        return render(request, self.error_template,
+                      context, status=status_code)
+
+    @handle_exception
+    def get(self, request, pk=None, action=None):
+        if pk:
             # Get object and build context
-            obj = self.get_object(id)
+            obj = self.get_object(request.user, pk)
 
             # Determine template and add form if required
             if action == 'edit':
@@ -38,10 +62,11 @@ class StandardResourceView(View):
             if action == 'edit':
                 context= {'form': self.edit_form()}
             else:
-                context = {'objects': self.filter_objects(request.GET)}
+                context = {'objects': self.filter_objects(request.user, request.GET)}
 
         return render(request, template, context, status=200)
 
+    @handle_exception
     def post(self, request):
         form = self.edit_form(request.POST)
 
@@ -58,8 +83,9 @@ class StandardResourceView(View):
 
         return render(request, template, context, status=status)
 
+    @handle_exception
     def put(self, request, id):
-        obj = self.get_object(id)
+        obj = self.get_object(request.user, id)
         form = self.edit_form(request.POST, instance=obj)
 
         if form.is_valid():
@@ -75,9 +101,11 @@ class StandardResourceView(View):
 
         return render(request, template, context, status=status)
 
+    @handle_exception
     def delete(self, request, id):
-        obj = self.get_object(id)
+        obj = self.get_object(request.user, id)
         obj.delete()
 
         return render(request, self.list_template,
                       {'objects': self.filter_objects(request.GET)}, status=204)
+
