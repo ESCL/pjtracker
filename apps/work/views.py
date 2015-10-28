@@ -6,3 +6,5 @@ from .models import Project
 
 class ProjectView(StandardResourceView):
     model = Project
+    list_template = 'projects.html'
+    detail_template = 'project.html'

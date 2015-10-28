@@ -1,0 +1,37 @@
+{% extends 'apps/base.html' %}
+
+{% block body %}
+
+{% with object as employee %}
+
+    <h1>Employee</h1>
+
+    <div class="row">
+        <div class="six columns">
+            <h4>Personal</h4>
+            <dl>
+                <dt>Identifier</dt><dd>{{ employee.identifier }}</dd>
+                <dt>Name</dt><dd>{{ employee.full_name }}</dd>
+                <dt>Nationality</dt><dd>{{ employee.nationality }}</dd>
+                <dt>Passport</dt><dd>{{ employee.passport|default:'N/A' }}</dd>
+                <dt>Birth Date</dt><dd>{{ employee.birth_date|default:'N/A' }}</dd>
+                <dt>Home Address</dt><dd>{{ employee.home_address|default:'N/A' }}</dd>
+            </dl>
+        </div>
+
+        <div class="six columns">
+            <h4>Assignment</h4>
+            <dl>
+                <dt>Company</dt><dd>{{ employee.company }}</dd>
+                <dt>Team</dt><dd>{{ employee.team }}</dd>
+                <dt>Position</dt><dd>{{ employee.position }}</dd>
+                <dt>Project</dt><dd>{{ employee.project }}</dd>
+                <dt>Location</dt><dd>{{ employee.location }}</dd>
+                <dt>Lodging</dt><dd>{{ employee.lodging }}</dd>
+            </dl>
+        </div>
+    </div>
+
+{% endwith %}
+
+{% endblock %}

@@ -13,7 +13,7 @@ class EmployeeView(StandardResourceView):
 
 
 class EquipmentView(StandardResourceView):
-    list_template = 'equipment.html'
+    list_template = 'equipments.html'
     detail_template = 'equipment.html'
     edit_template = 'form.html'
     edit_form = EmployeeForm

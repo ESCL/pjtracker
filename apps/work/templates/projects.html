@@ -1,0 +1,26 @@
+{% extends 'apps/base.html' %}
+
+{% block body %}
+
+    <h1>Projects</h1>
+
+    <table class="u-full-width">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in objects %}
+                <tr>
+                    <td><a href="{% url 'project' pk=project.id %}">{{ project.code }}</a></td>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.location }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

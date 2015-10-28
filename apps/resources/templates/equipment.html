@@ -1,10 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends 'apps/base.html' %}
 
-</body>
-</html>
+{% block body %}
+
+{% with object as equipment %}
+
+    <h1>Equipment</h1>
+
+    <div class="row">
+        <div class="six columns">
+            <h4>Details</h4>
+            <dl>
+                <dt>Identifier</dt><dd>{{ equipment.identifier }}</dd>
+                {% if equipment.type.parent %}
+                    <dt>Type</dt><dd>{{ equipment.type.parent}} > {{ equipment.type }}</dd>
+                {% else %}
+                    <dt>Type</dt><dd>{{ equipment.type }}</dd>
+                {% endif %}
+            </dl>
+        </div>
+
+        <div class="six columns">
+            <h4>Assignment</h4>
+            <dl>
+                <dt>Company</dt><dd>{{ equipment.company }}</dd>
+                <dt>Team</dt><dd>{{ equipment.team }}</dd>
+                <dt>Project</dt><dd>{{ equipment.project }}</dd>
+                <dt>Location</dt><dd>{{ equipment.location }}</dd>
+                <dt>Storage</dt><dd>{{ equipment.storage }}</dd>
+            </dl>
+        </div>
+    </div>
+
+{% endwith %}
+
+{% endblock %}

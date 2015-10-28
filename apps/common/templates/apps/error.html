@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <h1>{{ error|split_camelcase }}</h1>
+    <h1>{{ error|split_camelcase }} ({{ status }})</h1>
     <p>{{ message }}</p>
 
 {% endblock %}

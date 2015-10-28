@@ -11,20 +11,22 @@
                 <th>Name</th>
                 <th>Nationality</th>
                 <th>Company</th>
-                <th>Project</th>
+                <th>Team</th>
                 <th>Position</th>
+                <th>Project</th>
                 <th>Location</th>
             </tr>
         </thead>
         <tbody>
             {% for employee in objects %}
                 <tr>
-                    <td>{{ employee.identifier }}</td>
+                    <td><a href="{% url 'employee' pk=employee.id %}">{{ employee.identifier }}</a></td>
                     <td>{{ employee.full_name }}</td>
-                    <td>{{ employee.nationality.demonym }}</td>
+                    <td>{{ employee.nationality }}</td>
                     <td>{{ employee.company }}</td>
-                    <td>{{ employee.project }}</td>
+                    <td>{{ employee.team }}</td>
                     <td>{{ employee.position }}</td>
+                    <td>{{ employee.project }}</td>
                     <td>{{ employee.location }}</td>
                 </tr>
             {% endfor %}

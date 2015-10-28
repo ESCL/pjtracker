@@ -42,20 +42,26 @@ class StandardResourceView(View):
 
     @classmethod
     def process_exception(cls, request, exception):
-        context = {'error': exception.__class__.__name__,
-                   'message': str(exception)}
+        # Build the context from the error data
         status_code = getattr(exception, 'status_code', 500)
+        context = {'error': exception.__class__.__name__,
+                   'status': status_code,
+                   'message': str(exception)}
+
+        # Render the error template with the data
         return render(request, cls.error_template,
                       context, status=status_code)
 
     @handle_exception
     def get(self, request, pk=None, action=None):
         if pk:
+            print('single object')
             # Get object and build context
             obj = self.get_object(request.user, pk)
 
             # Determine template and add form if required
             if action == 'edit':
+                print('edit')
                 template = self.edit_template
                 context = {'form': self.edit_form(instance=obj)}
             else:
@@ -63,11 +69,13 @@ class StandardResourceView(View):
                 template = self.detail_template
 
         else:
+            print('list')
             # Template is alwatys the same
             template = self.list_template
 
             # Determine context based on action
             if action == 'edit':
+                print('edit')
                 context= {'form': self.edit_form()}
             else:
                 context = {'objects': self.filter_objects(request.user, request.GET)}

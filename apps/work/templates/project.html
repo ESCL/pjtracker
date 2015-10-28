@@ -1,0 +1,28 @@
+{% extends 'apps/base.html' %}
+
+{% block body %}
+
+{% with object as project %}
+
+    <h1>Project</h1>
+
+    <div class="row">
+        <h4>Main</h4>
+        <dl>
+            <dt>Code</dt><dd>{{ project.code }}</dd>
+            <dt>Name</dt><dd>{{ project.name}}</dd>
+            <dt>Location</dt><dd>{{ project.location }}</dd>
+        </dl>
+    </div>
+    <div class="row">
+        <h4>Activities</h4>
+        <dl>
+            {% for activity in project.activity_set.all %}
+                <dt>{{ activity.wbs_code }}</dt><dd>{{ activity.name }}</dd>
+            {% endfor %}
+        </dl>
+    </div>
+
+{% endwith %}
+
+{% endblock %}

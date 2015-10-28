@@ -1,0 +1,30 @@
+{% extends 'apps/base.html' %}
+
+{% block body %}
+
+    <h1>TimeSheets</h1>
+
+    <table class="u-full-width">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Issued By</th>
+                <th>Issued On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for timesheet in objects %}
+                <tr>
+                    <td>{{ timesheet.team }}</td>
+                    <td>{{ timesheet.date }}</td>
+                    <td>{{ timesheet.get_status_display }}</td>
+                    <td>{{ timesheet.issuer }}</td>
+                    <td>{{ timesheet.timestamp }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
