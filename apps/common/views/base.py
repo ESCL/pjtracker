@@ -27,17 +27,25 @@ class StandardResourceView(View):
     edit_form = None
     model = None
 
-    def get_object(self, user, id):
-        return self.model.objects.get(user=user, id=id)
+    @classmethod
+    def build_filters(cls, qs):
+        return qs
 
-    def filter_objects(self, user, qs):
-        return self.model.objects.filter(user=user, **qs)
+    @classmethod
+    def filter_objects(cls, user, qs):
+        filters = cls.build_filters(qs)
+        return cls.model.objects.filter(**filters).for_user(user)
 
-    def process_exception(self, request, exception):
+    @classmethod
+    def get_object(cls, user, id):
+        return cls.model.objects.filter(id=id).for_user(user).get()
+
+    @classmethod
+    def process_exception(cls, request, exception):
         context = {'error': exception.__class__.__name__,
                    'message': str(exception)}
         status_code = getattr(exception, 'status_code', 500)
-        return render(request, self.error_template,
+        return render(request, cls.error_template,
                       context, status=status_code)
 
     @handle_exception

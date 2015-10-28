@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+from ..common.views.base import StandardResourceView
+from .models import Project
+
+
+class ProjectView(StandardResourceView):
+    model = Project

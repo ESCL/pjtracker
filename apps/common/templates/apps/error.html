@@ -1,10 +1,10 @@
 {% extends 'apps/base.html' %}
 
-{% load template_filters %}
+{% load filters %}
 
 {% block body %}
 
-    <h1>{{ error }}</h1>
+    <h1>{{ error|split_camelcase }}</h1>
     <p>{{ message }}</p>
 
 {% endblock %}

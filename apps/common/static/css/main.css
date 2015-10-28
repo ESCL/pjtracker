@@ -1,0 +1,10 @@
+nav .row {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 4px 4px 0 4px;
+    background: #eee;
+}
+
+.nav-menu {
+    float: right;
+}

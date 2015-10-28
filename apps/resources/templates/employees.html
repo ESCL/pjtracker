@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends 'apps/base.html' %}
+
+{% block body %}
 
     <h1>Employees</h1>
 
-    <table>
+    <table class="u-full-width">
         <thead>
             <tr>
                 <th>ID</th>
@@ -35,5 +31,4 @@
         </tbody>
     </table>
 
-</body>
-</html>
+{% endblock %}

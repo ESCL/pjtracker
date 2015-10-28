@@ -16,4 +16,4 @@ def split_camelcase(value):
     :param value: word to split
     :return: sentence
     """
-    re.sub('([a-z])([A-Z])', '\g<1> g\<2>', value)
+    return re.sub('([a-z])([A-Z])', '\g<1> \g<2>', value)

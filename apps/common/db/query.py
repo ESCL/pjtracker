@@ -7,24 +7,25 @@ from ..exceptions import AuthenticationError
 
 class OwnedEntityQuerySet(QuerySet):
     """
-    Restrict the queryset to objects that belong to the user account's domain,
-    which means that they either belong to the account or are global (have no
-    owner).
+    Restrict the queryset to objects that belong to the user account's domain
+    for users that are not staff, so they can only see objects that are owned by
+    their account.
 
-    This override also covers get(), since it calls this method first.
+    Note: since this is a queryset method, managers must use it after filter,
+    so for using it with get(), we need to pass the params to filter and then
+    use get() without parameters, like:
+        obj = model.objects.filter(pk=pk).for_user(user).get()
     """
-    def filter(self, *args, **kwargs):
-        try:
-            user = kwargs.pop('user')
-            account = user.profile.account
+    def for_user(self, user):
+        if user.is_staff or user.is_superuser:
+            return self
 
-        except KeyError:
-            raise AuthenticationError('OwnedEntity filters require an authenticated user.')
+        try:
+            account = user.profile.account
 
         except AttributeError:
             raise AuthenticationError('OwnedEntity filters require a user with an account.')
 
         else:
-            kwargs['owner__in'] = (account, None)
-            return super(OwnedEntityQuerySet, self).filter(*args, **kwargs)
+            return self.filter(owner__in=(None, account))
 
