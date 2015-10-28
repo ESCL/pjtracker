@@ -7,6 +7,7 @@
     <table class="u-full-width">
         <thead>
             <tr>
+                <th>Code</th>
                 <th>Team</th>
                 <th>Date</th>
                 <th>Status</th>
@@ -17,6 +18,7 @@
         <tbody>
             {% for timesheet in objects %}
                 <tr>
+                    <td><a href="{% url 'timesheet' pk=timesheet.id %}">{{ timesheet.code }}</a></td>
                     <td>{{ timesheet.team }}</td>
                     <td>{{ timesheet.date }}</td>
                     <td>{{ timesheet.get_status_display }}</td>

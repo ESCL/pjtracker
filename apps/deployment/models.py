@@ -36,6 +36,10 @@ class TimeSheet(OwnedEntity):
         blank=True
     )
 
+    @property
+    def code(self):
+        return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
+
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
 

@@ -1,0 +1,41 @@
+{% extends 'apps/base.html' %}
+
+{% block body %}
+
+{% with object as timesheet %}
+
+    <h1>TimeSheet</h1>
+
+    <div class="row">
+        <h4>Main</h4>
+        <dl>
+            <dt>Team</dt><dd>{{ timesheet.team }}</dd>
+            <dt>Date</dt><dd>{{ timesheet.date }}</dd>
+            <dt>Status</dt><dd>{{ timesheet.get_status_display }}</dd>
+        </dl>
+    </div>
+    <div class="row">
+        <h4>Work Logs</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Activity</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for work_log in timesheet.worklog_set.all %}
+                    <tr>
+                        <td>{{ work_log.employee }}</td>
+                        <td>{{ work_log.activity }}</td>
+                        <td>{{ work_log.hours }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endwith %}
+
+{% endblock %}
