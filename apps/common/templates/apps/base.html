@@ -10,7 +10,9 @@
             <a href="{% url 'equipments' %}" title="Equipment"><img src="{% static 'img/menu/equipment.png' %}"></a>
             <a href="{% url 'projects' %}" title="Projects"><img src="{% static 'img/menu/activities.png' %}"></a>
             <a href="{% url 'timesheets' %}" title="Timesheets"><img src="{% static 'img/menu/timesheets.png' %}"></a>
-            <a href="/admin" title="Administration"><img src="{% static 'img/menu/admin.png' %}"></a>
+            {% if user.is_staff %}
+                <a href="/admin" title="Administration"><img src="{% static 'img/menu/admin.png' %}"></a>
+            {% endif %}
         </div>
         <div class="nav-brand">
         </div>
