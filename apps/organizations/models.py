@@ -31,6 +31,10 @@ class Team(OwnedEntity):
     company = models.ForeignKey(
         'organizations.Company'
     )
+    supervisor = models.ForeignKey(
+        'auth.User',
+        null=True
+    )
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.code)

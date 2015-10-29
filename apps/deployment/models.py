@@ -3,9 +3,10 @@ from datetime import datetime
 from django.db import models
 
 from ..common.db.models import OwnedEntity
+from ..common.events import SignalerMixin
 
 
-class TimeSheet(OwnedEntity):
+class TimeSheet(OwnedEntity, SignalerMixin):
 
     STATUS_PREPARING = 'P'
     STATUS_ISSUED = 'I'
@@ -16,16 +17,25 @@ class TimeSheet(OwnedEntity):
         'organizations.Team'
     )
     date = models.DateField(
+        default=datetime.today
     )
     status = models.CharField(
         max_length=1,
         choices=((STATUS_PREPARING, 'Preparing'),
                  (STATUS_ISSUED, 'Issued'),
                  (STATUS_REJECTED, 'Rejected'),
-                 (STATUS_APPROVED, 'Approved'))
+                 (STATUS_APPROVED, 'Approved')),
+        default=STATUS_PREPARING
     )
     issuer = models.ForeignKey(
-        'auth.User'
+        'auth.User',
+        related_name='timesheets_issued',
+        null=True
+    )
+    reviewer = models.ForeignKey(
+        'auth.User',
+        related_name='timesheets_reviewed',
+        null=True
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
@@ -42,6 +52,24 @@ class TimeSheet(OwnedEntity):
 
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
+
+    def issue(self, user):
+        self.status = self.STATUS_ISSUED
+        self.issuer = user
+        self.save()
+        self.signal('issued')
+
+    def reject(self, user):
+        self.status = self.STATUS_REJECTED
+        self.reviewer = user
+        self.save()
+        self.signal('rejected')
+
+    def approve(self, user):
+        self.status = self.STATUS_APPROVED
+        self.reviewer = user
+        self.save()
+        self.signal('approved')
 
 
 class WorkLog(models.Model):
