@@ -43,7 +43,8 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     reviewer = models.ForeignKey(
         'auth.User',
         related_name='timesheets_reviewed',
-        null=True
+        null=True,
+        blank=True
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow

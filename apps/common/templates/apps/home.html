@@ -4,16 +4,26 @@
 
 {% block body %}
 
-<h1>Notifications</h1>
+<div class="row">
 
-<ul>
-    {% for notification in notifications %}
-        <li>
-            <b>{{ notification.title }}</b><br>
-            {{ notification.message }}<br>
-            {{ notification.timestamp }}
-        </li>
-    {% endfor %}
-</ul>
+    <div class="six columns">
+        <p>Lalala</p>
+    </div>
+
+    <div class="six columns">
+        <h4>Notifications</h4>
+
+        {% for notification in notifications %}
+            <div class="row notification">
+                <span class="timestamp">{{ notification.timestamp }}</span>
+                <span class="title">{{ notification.title }}</span><br>
+                {{ notification.message }}
+            </div>
+        {% empty %}
+            <p>No notifications available.</p>
+        {% endfor %}
+    </div>
+
+</div>
 
 {% endblock %}

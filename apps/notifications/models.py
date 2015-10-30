@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.dispatch import Signal
+from django.template import Template, Context
 
 from .query import NotificationQuerySet
 from ..common.signals import SignalsMixin
@@ -36,8 +37,15 @@ class Notification(models.Model, SignalsMixin):
     title = models.CharField(
         max_length=128
     )
-    message = models.TextField(
+    message_template = models.TextField(
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
     )
+
+    @property
+    def message(self):
+        return Template(self.message_template).render(Context(
+            {'target': self.event_target, 'event': self.event_type}
+        ))
+
