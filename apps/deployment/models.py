@@ -1,12 +1,20 @@
 from datetime import datetime
 
 from django.db import models
+from django.dispatch import Signal
 
 from ..common.db.models import OwnedEntity
-from ..common.events import SignalerMixin
+from ..common.signals import SignalsMixin
 
 
-class TimeSheet(OwnedEntity, SignalerMixin):
+class TimeSheet(OwnedEntity, SignalsMixin):
+
+    SIGNALS = {
+        'issued': Signal(providing_args=['target']),
+        'approved': Signal(providing_args=['target']),
+        'rejected': Signal(providing_args=['target']),
+        'read': Signal(providing_args=['target'])
+    }
 
     STATUS_PREPARING = 'P'
     STATUS_ISSUED = 'I'
@@ -60,12 +68,18 @@ class TimeSheet(OwnedEntity, SignalerMixin):
         self.signal('issued')
 
     def reject(self, user):
+        if user != self.team.supervisor:
+            raise TypeError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
+
         self.status = self.STATUS_REJECTED
         self.reviewer = user
         self.save()
         self.signal('rejected')
 
     def approve(self, user):
+        if user != self.team.supervisor:
+            raise TypeError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
+
         self.status = self.STATUS_APPROVED
         self.reviewer = user
         self.save()

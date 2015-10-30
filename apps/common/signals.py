@@ -1,28 +1,21 @@
 __author__ = 'kako'
 
-from django.dispatch import Signal
 
-
-SIGNALS = {
-    'issued': Signal(providing_args=['target']),
-    'approved': Signal(providing_args=['target']),
-    'rejected': Signal(providing_args=['target']),
-    'read': Signal(providing_args=['target'])
-}
-
-
-class SignalerMixin(object):
+class SignalsMixin(object):
     """
     Provide generic, simplified signal connection and sending mechanisms,
     similar to JavaScript.
+    By default uses the generic signals provided for all
     """
+    SIGNALS = {}
+
     @classmethod
     def on_signal(cls, type, receiver):
         """
         Connect the given receiver to the signal of the given type, raising
         an error if the type doesn't exist.
         """
-        signal = SIGNALS.get(type.lower())
+        signal = cls.SIGNALS.get(type.lower())
         if not signal:
             raise TypeError("No signal found for event type '{}'.".format(type))
 
@@ -34,7 +27,7 @@ class SignalerMixin(object):
         Send the signal of the given type if, raising an error if the type
         doesn't exist.
         """
-        signal = SIGNALS.get(type.lower())
+        signal = self.SIGNALS.get(type.lower())
         if not signal:
             raise TypeError("No signal found for event type '{}'.".format(type))
 

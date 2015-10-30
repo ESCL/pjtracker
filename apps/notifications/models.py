@@ -1,12 +1,22 @@
 
 from datetime import datetime
 
-from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.db import models
+from django.dispatch import Signal
+
+from .query import NotificationQuerySet
+from ..common.signals import SignalsMixin
 
 
-class Notification(models.Model):
+class Notification(models.Model, SignalsMixin):
+
+    SIGNALS = {
+        'read': Signal(providing_args=['target'])
+    }
+
+    objects = NotificationQuerySet.as_manager()
 
     recipient = models.ForeignKey(
         'auth.User'

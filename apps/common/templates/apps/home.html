@@ -2,6 +2,18 @@
 
 {% block title %}Application Home{% endblock %}
 
-{% block content %}
+{% block body %}
+
+<h1>Notifications</h1>
+
+<ul>
+    {% for notification in notifications %}
+        <li>
+            <b>{{ notification.title }}</b><br>
+            {{ notification.message }}<br>
+            {{ notification.timestamp }}
+        </li>
+    {% endfor %}
+</ul>
 
 {% endblock %}
