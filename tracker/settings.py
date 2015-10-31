@@ -39,6 +39,7 @@ INSTALLED_APPS = (
 
     # Apps
     'apps.common',
+    'apps.notifications',
     'apps.accounts',
     'apps.geo',
     'apps.organizations',

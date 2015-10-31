@@ -1,11 +1,19 @@
 from datetime import datetime
 
 from django.db import models
+from django.dispatch import Signal
 
 from ..common.db.models import OwnedEntity
+from ..common.signals import SignalsMixin
 
 
-class TimeSheet(OwnedEntity):
+class TimeSheet(OwnedEntity, SignalsMixin):
+
+    CUSTOM_SIGNALS = {
+        'issued': Signal(),
+        'approved': Signal(),
+        'rejected': Signal(),
+    }
 
     STATUS_PREPARING = 'P'
     STATUS_ISSUED = 'I'
@@ -16,16 +24,26 @@ class TimeSheet(OwnedEntity):
         'organizations.Team'
     )
     date = models.DateField(
+        default=datetime.today
     )
     status = models.CharField(
         max_length=1,
         choices=((STATUS_PREPARING, 'Preparing'),
                  (STATUS_ISSUED, 'Issued'),
                  (STATUS_REJECTED, 'Rejected'),
-                 (STATUS_APPROVED, 'Approved'))
+                 (STATUS_APPROVED, 'Approved')),
+        default=STATUS_PREPARING
     )
     issuer = models.ForeignKey(
-        'auth.User'
+        'auth.User',
+        related_name='timesheets_issued',
+        null=True
+    )
+    reviewer = models.ForeignKey(
+        'auth.User',
+        related_name='timesheets_reviewed',
+        null=True,
+        blank=True
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
@@ -42,6 +60,30 @@ class TimeSheet(OwnedEntity):
 
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
+
+    def issue(self, user):
+        self.status = self.STATUS_ISSUED
+        self.issuer = user
+        self.save()
+        self.signal('issued')
+
+    def reject(self, user):
+        if user != self.team.supervisor:
+            raise TypeError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
+
+        self.status = self.STATUS_REJECTED
+        self.reviewer = user
+        self.save()
+        self.signal('rejected')
+
+    def approve(self, user):
+        if user != self.team.supervisor:
+            raise TypeError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
+
+        self.status = self.STATUS_APPROVED
+        self.reviewer = user
+        self.save()
+        self.signal('approved')
 
 
 class WorkLog(models.Model):
