@@ -2,31 +2,31 @@
 
 {% block body %}
 
-    <h1>Equipment</h1>
+<h1>Equipment</h1>
 
-    <table class="u-full-width">
-        <thead>
+<table class="u-full-width">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Company</th>
+            <th>Team</th>
+            <th>Project</th>
+            <th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in equipment %}
             <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Company</th>
-                <th>Team</th>
-                <th>Project</th>
-                <th>Location</th>
+                <td><a href="{% url 'equipment' pk=e.id %}">{{ e.identifier }}</a></td>
+                <td>{{ e.type }} ({{e.type.parent}})</td>
+                <td>{{ e.company }}</td>
+                <td>{{ e.team }}</td>
+                <td>{{ e.project }}</td>
+                <td>{{ e.location }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for equipment in objects %}
-                <tr>
-                    <td><a href="{% url 'equipment' pk=equipment.id %}">{{ equipment.identifier }}</a></td>
-                    <td>{{ equipment.type }} ({{equipment.type.parent}})</td>
-                    <td>{{ equipment.company }}</td>
-                    <td>{{ equipment.team }}</td>
-                    <td>{{ equipment.project }}</td>
-                    <td>{{ equipment.location }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

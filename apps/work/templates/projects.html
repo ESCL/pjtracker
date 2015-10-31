@@ -13,11 +13,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for project in objects %}
+            {% for p in projects %}
                 <tr>
-                    <td><a href="{% url 'project' pk=project.id %}">{{ project.code }}</a></td>
-                    <td>{{ project.name }}</td>
-                    <td>{{ project.location }}</td>
+                    <td><a href="{% url 'project' pk=p.id %}">{{ p.code }}</a></td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.location }}</td>
                 </tr>
             {% endfor %}
         </tbody>
