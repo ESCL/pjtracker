@@ -11,21 +11,28 @@ def handle_exception(func):
 
         except Exception as e:
             view = args[0]
-            h_args = args[1:] + (e,)
-            return view.process_exception(*h_args)
+            request = args[1]
+            return view.process_exception(request, e)
 
         else:
             return res
     return wrapper_func
 
 
-class StandardResourceView(View):
+class ReadOnlyResourceView(View):
+    """
+    Standard resource view that provides read-only operations for a model's
+    collection (list) and instance (detail).
+
+    In most cases, you won't need to modify any methods, only assign the model
+    and the templates.
+    """
+    model = None
     list_template = None
     detail_template = None
-    edit_template = None
     error_template = 'apps/error.html'
-    edit_form = None
-    model = None
+
+    # Helper class methods
 
     @classmethod
     def build_filters(cls, qs):
@@ -37,8 +44,8 @@ class StandardResourceView(View):
         return cls.model.objects.filter(**filters).for_user(user)
 
     @classmethod
-    def get_object(cls, user, id):
-        return cls.model.objects.filter(id=id).for_user(user).get()
+    def get_object(cls, user, pk):
+        return cls.model.objects.filter(id=pk).for_user(user).get()
 
     @classmethod
     def process_exception(cls, request, exception):
@@ -52,76 +59,79 @@ class StandardResourceView(View):
         return render(request, cls.error_template,
                       context, status=status_code)
 
+    # Main http methods (proxy to worker methods)
+
     @handle_exception
-    def get(self, request, pk=None, action=None):
+    def get(self, request, pk=None, action=None, **kwargs):
         if pk:
-            print('single object')
-            # Get object and build context
-            obj = self.get_object(request.user, pk)
-
-            # Determine template and add form if required
-            if action == 'edit':
-                print('edit')
-                template = self.edit_template
-                context = {'form': self.edit_form(instance=obj)}
-            else:
-                context = {'object': obj}
-                template = self.detail_template
-
+            return self.show_instance(request, pk)
         else:
-            print('list')
-            # Template is alwatys the same
-            template = self.list_template
+            return self.show_list(request)
 
-            # Determine context based on action
-            if action == 'edit':
-                print('edit')
-                context= {'form': self.edit_form()}
-            else:
-                context = {'objects': self.filter_objects(request.user, request.GET)}
+    # Worker methods
 
-        return render(request, template, context, status=200)
+    def show_list(self, request, status=200):
+        context = {'objects': self.filter_objects(request.user, request.GET)}
+        return render(request, self.list_template, context, status=status)
+
+    def show_instance(self, request, pk):
+        context = {'object': self.get_object(request.user, pk)}
+        return render(request, self.detail_template, context)
+
+
+class StandardResourceView(ReadOnlyResourceView):
+    """
+    Standard resource view that provides CRUD operations for a model's
+    collection (list) and instance (detail).
+
+    In most cases, you won't need to modify any methods, only assign the model,
+    the templates and the edit form.
+    """
+    edit_template = None
+    edit_form = None
+
+    # Main http methods (proxy to worker methods)
+    # Usually you won't need to override, unless you're doing something weird
 
     @handle_exception
-    def post(self, request):
-        form = self.edit_form(request.POST)
+    def get(self, request, pk=None, action=None, **kwargs):
+        if action == 'edit':
+            return self.show_form(request, pk)
 
+        return super(StandardResourceView, self).get(request, pk, action, **kwargs)
+
+    @handle_exception
+    def post(self, request, pk=None):
+        return self.upsert_instance(request, pk)
+
+    @handle_exception
+    def put(self, request, pk=None):
+        return self.upsert_instance(request, pk)
+
+    @handle_exception
+    def delete(self, request, pk):
+        return self.delete_instance(request, pk)
+
+    # Worker methods
+    # Override to modify standard behaviour
+
+    def show_form(self, request, pk):
+        obj = pk and self.get_object(request.user, pk) or None
+        form = self.edit_form(instance=obj)
+        context = {'object': obj, 'form': form}
+        return render(request, self.edit_template, context)
+
+    def upsert_instance(self, request, pk):
+        obj = pk and self.get_object(request.user, pk) or None
+        form = self.edit_form(instance=obj)
         if form.is_valid():
             form.save()
-            template = self.list_template
-            context = {'objects': self.filter_objects(request.GET)}
-            status = 201
-
+            return self.show_list(request, status=201)
         else:
-            template = self.edit_template
-            context = {'form': form}
-            status = 400
+            context = {'object': obj, 'form': form}
+            return render(request, self.edit_template, context, status=400)
 
-        return render(request, template, context, status=status)
-
-    @handle_exception
-    def put(self, request, id):
-        obj = self.get_object(request.user, id)
-        form = self.edit_form(request.POST, instance=obj)
-
-        if form.is_valid():
-            form.save()
-            template = self.list_template
-            context = {'objects': self.filter_objects(request.GET)}
-            status = 200
-
-        else:
-            template = self.edit_template
-            context = {'form': form}
-            status = 400
-
-        return render(request, template, context, status=status)
-
-    @handle_exception
-    def delete(self, request, id):
-        obj = self.get_object(request.user, id)
+    def delete_instance(self, request, pk):
+        obj = self.get_object(request.user, pk)
         obj.delete()
-
-        return render(request, self.list_template,
-                      {'objects': self.filter_objects(request.GET)}, status=204)
-
+        return self.show_list(request, status=204)
