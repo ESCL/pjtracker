@@ -10,8 +10,7 @@ def handle_exception(func):
             res = func(*args, **kwargs)
 
         except Exception as e:
-            view = args[0]
-            request = args[1]
+            view, request = args[0:2]
             return view.process_exception(request, e)
 
         else:
@@ -71,11 +70,11 @@ class ReadOnlyResourceView(View):
     # Worker methods
 
     def show_list(self, request, status=200):
-        context = {'objects': self.filter_objects(request.user, request.GET)}
+        context = {self.model._meta.verbose_name_plural.replace(' ', ''): self.filter_objects(request.user, request.GET)}
         return render(request, self.list_template, context, status=status)
 
     def show_instance(self, request, pk):
-        context = {'object': self.get_object(request.user, pk)}
+        context = {self.model._meta.verbose_name.replace(' ', ''): self.get_object(request.user, pk)}
         return render(request, self.detail_template, context)
 
 
@@ -118,7 +117,7 @@ class StandardResourceView(ReadOnlyResourceView):
     def show_form(self, request, pk):
         obj = pk and self.get_object(request.user, pk) or None
         form = self.edit_form(instance=obj)
-        context = {'object': obj, 'form': form}
+        context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'form': form}
         return render(request, self.edit_template, context)
 
     def upsert_instance(self, request, pk):
@@ -128,7 +127,7 @@ class StandardResourceView(ReadOnlyResourceView):
             form.save()
             return self.show_list(request, status=201)
         else:
-            context = {'object': obj, 'form': form}
+            context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'form': form}
             return render(request, self.edit_template, context, status=400)
 
     def delete_instance(self, request, pk):
