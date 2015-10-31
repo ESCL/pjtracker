@@ -2,31 +2,31 @@
 
 {% block body %}
 
-    <h1>TimeSheets</h1>
+<h1>TimeSheets</h1>
 
-    <table class="u-full-width">
-        <thead>
+<table class="u-full-width">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Team</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Issued By</th>
+            <th>Issued On</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in timesheets %}
             <tr>
-                <th>Code</th>
-                <th>Team</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Issued By</th>
-                <th>Issued On</th>
+                <td><a href="{% url 'timesheet' pk=t.id %}">{{ t.code }}</a></td>
+                <td>{{ t.team }}</td>
+                <td>{{ t.date }}</td>
+                <td>{{ t.get_status_display }}</td>
+                <td>{{ t.issuer }}</td>
+                <td>{{ t.timestamp }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for timesheet in objects %}
-                <tr>
-                    <td><a href="{% url 'timesheet' pk=timesheet.id %}">{{ timesheet.code }}</a></td>
-                    <td>{{ timesheet.team }}</td>
-                    <td>{{ timesheet.date }}</td>
-                    <td>{{ timesheet.get_status_display }}</td>
-                    <td>{{ timesheet.issuer }}</td>
-                    <td>{{ timesheet.timestamp }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}
