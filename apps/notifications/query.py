@@ -8,4 +8,5 @@ class NotificationQuerySet(QuerySet):
     def for_user(self, user):
         if user.is_authenticated:
             return self.filter(recipient=user.id)
-        return self
+        return self.none()
+

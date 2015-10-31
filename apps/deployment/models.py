@@ -9,11 +9,10 @@ from ..common.signals import SignalsMixin
 
 class TimeSheet(OwnedEntity, SignalsMixin):
 
-    SIGNALS = {
-        'issued': Signal(providing_args=['target']),
-        'approved': Signal(providing_args=['target']),
-        'rejected': Signal(providing_args=['target']),
-        'read': Signal(providing_args=['target'])
+    CUSTOM_SIGNALS = {
+        'issued': Signal(),
+        'approved': Signal(),
+        'rejected': Signal(),
     }
 
     STATUS_PREPARING = 'P'
