@@ -35,6 +35,9 @@ class Team(OwnedEntity):
         'auth.User',
         null=True
     )
+    activities = models.ManyToManyField(
+        'work.Activity'
+    )
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.code)
@@ -44,6 +47,15 @@ class Position(OwnedEntity):
 
     name = models.CharField(
         max_length=128
+    )
+    managerial_labour = models.BooleanField(
+        default=False
+    )
+    indirect_labour = models.BooleanField(
+        default=False
+    )
+    direct_labour = models.BooleanField(
+        default=False
     )
 
     def __str__(self):

@@ -55,13 +55,11 @@ class StandardResourceView(View):
     @handle_exception
     def get(self, request, pk=None, action=None):
         if pk:
-            print('single object')
             # Get object and build context
             obj = self.get_object(request.user, pk)
 
             # Determine template and add form if required
             if action == 'edit':
-                print('edit')
                 template = self.edit_template
                 context = {'form': self.edit_form(instance=obj)}
             else:
@@ -69,13 +67,11 @@ class StandardResourceView(View):
                 template = self.detail_template
 
         else:
-            print('list')
             # Template is alwatys the same
             template = self.list_template
 
             # Determine context based on action
             if action == 'edit':
-                print('edit')
                 context= {'form': self.edit_form()}
             else:
                 context = {'objects': self.filter_objects(request.user, request.GET)}

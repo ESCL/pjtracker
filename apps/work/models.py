@@ -71,6 +71,15 @@ class Activity(OwnedEntity):
     groups = models.ManyToManyField(
         'ActivityGroup'
     )
+    managerial_labour = models.BooleanField(
+        default=False
+    )
+    indirect_labour = models.BooleanField(
+        default=False
+    )
+    direct_labour = models.BooleanField(
+        default=False
+    )
 
     @property
     def wbs_code_prefix(self):
