@@ -1,18 +1,29 @@
-/* Nav */
+/* Top bar, with header and menu */
 
-.container  {
-    padding: 10px 0;
-}
-
-nav .row {
+.topbar {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     padding: 4px 4px 0 4px;
     background: #eee;
+    position: relative;
+    height: 54px;
 }
 
-.nav-menu {
-    float: right;
+header {
+    position: absolute;
+    left: 4px;
+    top: 3px;
+}
+
+nav {
+    position: absolute;
+    right: 4px;
+    top: 3px;
+    text-align: right;
+}
+
+.container  {
+    padding: 10px 0;
 }
 
 /* Notifications */
@@ -42,3 +53,50 @@ nav .row {
 .notification .timestamp  {
     float: right;
 }
+
+
+/* Generic form elements */
+
+form .buttons {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 20px 0;
+    padding: 12px;
+    text-align: right;
+    width: 100%;
+}
+
+form .buttons button {
+    margin: 5px;
+}
+
+
+/* Timesheets */
+
+.grid-column {
+    width: 60px;
+    display: inline-table;
+}
+
+.timesheet-header .activity {
+    text-align: center;
+    line-height: 1em;
+}
+
+.timesheet-header .activities-title {
+    float: right;
+}
+
+.timesheet-form .employee-name {
+    font-weight: bold;
+}
+
+.timesheet-form .log {
+    padding: 0;
+}
+
+.timesheet-form .log input {
+    width: 100%;
+    text-align: center;
+}
+

@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.db import models
 from django.dispatch import Signal
+from django.utils.functional import cached_property
+from orderedset import OrderedSet
 
 from ..common.db.models import OwnedEntity
 from ..common.signals import SignalsMixin
@@ -58,6 +60,28 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     def code(self):
         return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
 
+    @cached_property
+    def activities(self):
+        s = OrderedSet(self.team.activities.all())
+        for acts in self.work_logs_data.values():
+            s.update(acts.keys())
+        return s
+
+    @cached_property
+    def employees(self):
+        s = OrderedSet(self.team.employees)
+        s.update(self.work_logs_data.keys())
+        return s
+
+    @cached_property
+    def work_logs_data(self):
+        d = {}
+        for wl in self.work_logs.order_by('employee', 'activity'):
+            if wl.employee not in d:
+                d[wl.employee] = {}
+            d[wl.employee][wl.activity] = wl
+        return d
+
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
 
@@ -108,7 +132,7 @@ class WorkLog(models.Model):
         max_length=1,
         choices=((LABOUR_INDIRECT, 'Indirect'),
                  (LABOUR_DIRECT, 'Direct'),
-                 (LABOUR_MANAGERIAL, 'Managerial'))
+                 (LABOUR_MANAGERIAL, 'Managerial')),
     )
     hours = models.DecimalField(
         decimal_places=2,

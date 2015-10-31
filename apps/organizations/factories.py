@@ -11,7 +11,7 @@ class CompanyFactory(DjangoModelFactory):
         model = Company
 
     name = Faker('company')
-    code = 'CPY'
+    code = Faker('word')
 
 
 class TeamFactory(DjangoModelFactory):
@@ -19,8 +19,8 @@ class TeamFactory(DjangoModelFactory):
     class Meta:
         model = Team
 
-    name = 'Engineering'
-    code = 'ENG'
+    name = Faker('sentence', nb_words=2)
+    code = Faker('word')
     company = SubFactory(CompanyFactory)
 
 

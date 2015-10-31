@@ -27,13 +27,11 @@
 </head>
 <body>
 
-    <nav>
-        {% block nav %}{% endblock %}
-    </nav>
-
-    <header>
-        {% block header %}{% endblock %}
-    </header>
+    <div class="topbar">
+        <header>{% block header %}{% endblock %}</header>
+        <span class="spacer"></span>
+        <nav>{% block nav %}{% endblock %}</nav>
+    </div>
 
     <div class="container">
         {% block body %}{% endblock %}

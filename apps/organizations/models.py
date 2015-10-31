@@ -39,6 +39,18 @@ class Team(OwnedEntity):
         'work.Activity'
     )
 
+    @property
+    def employees(self):
+        return self._get_res_iter('employee')
+
+    @property
+    def equipment(self):
+        return self._get_res_iter('equipment')
+
+    def _get_res_iter(self, resource_type):
+        for res in self.resource_set.filter(resource_type=resource_type):
+            yield res.instance
+
     def __str__(self):
         return '{} ({})'.format(self.name, self.code)
 

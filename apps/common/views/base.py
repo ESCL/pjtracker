@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 
 
@@ -88,27 +88,30 @@ class StandardResourceView(ReadOnlyResourceView):
     """
     edit_template = None
     edit_form = None
+    redirect_view_name = None
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
 
     @handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
-        if action == 'edit':
+        if action in ('add', 'edit'):
             return self.show_form(request, pk)
 
         return super(StandardResourceView, self).get(request, pk, action, **kwargs)
 
     @handle_exception
-    def post(self, request, pk=None):
+    def post(self, request, pk=None, **kwargs):
+        if pk:
+            return self.put(request, pk)
         return self.upsert_instance(request, pk)
 
     @handle_exception
-    def put(self, request, pk=None):
+    def put(self, request, pk, **kwargs):
         return self.upsert_instance(request, pk)
 
     @handle_exception
-    def delete(self, request, pk):
+    def delete(self, request, pk, **kwargs):
         return self.delete_instance(request, pk)
 
     # Worker methods
@@ -122,10 +125,10 @@ class StandardResourceView(ReadOnlyResourceView):
 
     def upsert_instance(self, request, pk):
         obj = pk and self.get_object(request.user, pk) or None
-        form = self.edit_form(instance=obj)
+        form = self.edit_form(request.POST, instance=obj)
         if form.is_valid():
             form.save()
-            return self.show_list(request, status=201)
+            return redirect(self.redirect_view_name)
         else:
             context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'form': form}
             return render(request, self.edit_template, context, status=400)

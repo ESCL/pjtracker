@@ -1,0 +1,53 @@
+{% extends 'apps/base.html' %}
+
+{% block header %}
+
+Edit TimeSheet
+
+{% endblock %}
+
+{% block body %}
+
+<div class="row timesheet-header">
+    <div class="three columns">
+        <h4><span class="activities-title">Activities</span><br>Employees</h4>
+    </div>
+    <div class="nine columns">
+        {% for activity in timesheet.activities %}
+            <div class="grid-column activity" title="{{ activity.name }}">
+                {{ activity.wbs_code_path|join:'<br>' }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<form method="POST" class="timesheet-form">
+    {% csrf_token %}
+
+    {% for row in form.rows %}
+        <div class="row">
+
+            <div class="three columns">
+                <span class="employee-name">{{ row.employee.full_name }}</span><br>
+                <span class="employee-identifier">{{ row.employee.identifier }}</span>
+            </div>
+
+            <div class="nine columns">
+                {% for log in row.logs %}
+                    <div class="grid-column log">
+                        {{ log.field }}
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    {% endfor %}
+
+    <div class="row buttons">
+        <button type="submit" value="save">Save</button>
+        <button type="submit" value="issue" class="button-primary">Issue</button>
+    </div>
+
+</form>
+
+{% endblock %}
