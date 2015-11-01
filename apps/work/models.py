@@ -1,8 +1,7 @@
-import itertools
 
 from django.db import models
 
-from ..common.db.models import OwnedEntity
+from ..common.db.models import OwnedEntity, AllowedLabourMixin
 
 
 class Project(OwnedEntity):
@@ -20,7 +19,7 @@ class Project(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class ActivityGroupType(OwnedEntity):
@@ -46,10 +45,10 @@ class ActivityGroup(OwnedEntity):
     )
 
     def __str__(self):
-        return '{} ({})'.format(self.name, self.code)
+        return self.code
 
 
-class Activity(OwnedEntity):
+class Activity(OwnedEntity, AllowedLabourMixin):
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -73,18 +72,16 @@ class Activity(OwnedEntity):
     )
 
     @property
-    def wbs_code_prefix(self):
-        if not hasattr(self, '_wbs_code_prefix'):
-            self._wbs_code_prefix = self.parent and self.parent.wbs_code or self.project.code
-        return self._wbs_code_prefix
+    def wbs_code_parent_path(self):
+        return self.parent and self.parent.wbs_code_path or [self.project.code]
 
-    @wbs_code_prefix.setter
-    def wbs_code_prefix(self, value):
-        self._wbs_code_prefix = value
+    @property
+    def wbs_code_path(self):
+        return self.wbs_code_parent_path + [self.code]
 
     @property
     def wbs_code(self):
-        return '{}.{}'.format(self.wbs_code_prefix, self.code)
+        return '.'.join(self.wbs_code_path)
 
     def __str__(self):
-        return '{} {}'.format(self.wbs_code, self.name)
+        return self.wbs_code

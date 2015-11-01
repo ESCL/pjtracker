@@ -2,8 +2,9 @@ from datetime import datetime
 
 from django.db import models
 from django.dispatch import Signal
+from django.utils.functional import cached_property
 
-from ..common.db.models import OwnedEntity
+from ..common.db.models import OwnedEntity, LabourType
 from ..common.signals import SignalsMixin
 
 
@@ -58,6 +59,28 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     def code(self):
         return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
 
+    @cached_property
+    def activities(self):
+        d = {a.id: a for a in self.team.activities.all()}
+        for acts in self.work_logs_data.values():
+            d.update({a.id: a for a in acts.keys()})
+        return d
+
+    @cached_property
+    def employees(self):
+        d = {e.id: e for e in self.team.employees}
+        d.update({e.id: e for e in self.work_logs_data.keys()})
+        return d
+
+    @cached_property
+    def work_logs_data(self):
+        d = {}
+        for wl in self.work_logs.order_by('employee', 'activity'):
+            if wl.employee not in d:
+                d[wl.employee] = {}
+            d[wl.employee][wl.activity] = wl
+        return d
+
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
 
@@ -88,10 +111,6 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
 class WorkLog(models.Model):
 
-    LABOUR_INDIRECT = 'I'
-    LABOUR_DIRECT = 'D'
-    LABOUR_MANAGERIAL = 'M'
-
     timesheet = models.ForeignKey(
         'TimeSheet',
         related_name='work_logs'
@@ -106,9 +125,7 @@ class WorkLog(models.Model):
     )
     labour_type = models.CharField(
         max_length=1,
-        choices=((LABOUR_INDIRECT, 'Indirect'),
-                 (LABOUR_DIRECT, 'Direct'),
-                 (LABOUR_MANAGERIAL, 'Managerial'))
+        choices=LabourType.CHOICES
     )
     hours = models.DecimalField(
         decimal_places=2,

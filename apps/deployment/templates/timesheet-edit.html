@@ -1,0 +1,37 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'timesheets' %}">time-sheets</a></li>
+{% if timesheet %}
+    <li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet }}</a></li>
+    <li>edit</li>
+{% else %}
+    <li>new</li>
+{% endif %}
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ main_form }}
+
+    <hr>
+
+    {% include 'worklogs-form.html' %}
+
+    <div class="buttons">
+        <button type="submit">{% if timesheet %}Save{% else %}Add{% endif %}</button>
+    </div>
+
+</form>
+
+
+{% endblock %}

@@ -16,7 +16,7 @@ class Nation(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class Region(models.Model):
@@ -32,7 +32,7 @@ class Region(models.Model):
     )
 
     def __str__(self):
-        return '{}, {}'.format(self.name, self.nation.code)
+        return self.code
 
 
 class Locality(models.Model):

@@ -1,10 +1,18 @@
 {% extends 'apps/base.html' %}
 
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li>equipment</li>
+<li><a href="{% url 'equipment' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
 {% block body %}
 
-<h1>Equipment</h1>
-
-<table class="u-full-width">
+<table>
     <thead>
         <tr>
             <th>ID</th>
@@ -13,17 +21,22 @@
             <th>Team</th>
             <th>Project</th>
             <th>Location</th>
+            <th class="actions">Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for e in equipment %}
             <tr>
-                <td><a href="{% url 'equipment' pk=e.id %}">{{ e.identifier }}</a></td>
+                <td>{{ e.identifier }}</td>
                 <td>{{ e.type }} ({{e.type.parent}})</td>
                 <td>{{ e.company }}</td>
                 <td>{{ e.team }}</td>
                 <td>{{ e.project }}</td>
                 <td>{{ e.location }}</td>
+                <td class="actions">
+                    <a href="{% url 'equipment' pk=e.id %}" class="action">view</a>
+                    <a href="{% url 'equipment' pk=e.id action='edit' %}" class="action">edit</a>
+                </td>
             </tr>
         {% endfor %}
     </tbody>

@@ -1,8 +1,17 @@
 {% extends 'apps/base.html' %}
 
-{% block body %}
 
-<h1>Project</h1>
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'projects' %}">projects</a></li>
+<li>{{ project }}</li>
+<li><a href="{% url 'project' pk=project.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
 
 <div class="row">
     <h4>Main</h4>
@@ -10,14 +19,6 @@
         <dt>Code</dt><dd>{{ project.code }}</dd>
         <dt>Name</dt><dd>{{ project.name}}</dd>
         <dt>Location</dt><dd>{{ project.location }}</dd>
-    </dl>
-</div>
-<div class="row">
-    <h4>Activities</h4>
-    <dl>
-        {% for activity in project.activity_set.all %}
-            <dt>{{ activity.wbs_code }}</dt><dd>{{ activity.name }}</dd>
-        {% endfor %}
     </dl>
 </div>
 

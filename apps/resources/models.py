@@ -92,10 +92,10 @@ class Employee(Resource):
 
     @property
     def nationality(self):
-        return self.nation.demonym
+        return self.nation.__str__()
 
     def __str__(self):
-        return '{} ({})'.format(self.full_name, self.identifier)
+        return self.identifier
 
 
 class Equipment(Resource):
