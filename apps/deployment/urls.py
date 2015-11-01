@@ -7,5 +7,7 @@ from .views import TimeSheetView
 
 urlpatterns = [
     url(r'^timesheets/$', TimeSheetView.as_view(), name='timesheets'),
-    url(r'^timesheets/(?P<pk>\d+)/$', TimeSheetView.as_view(), name='timesheet')
+    url(r'^timesheets/(?P<action>add)/$', TimeSheetView.as_view(), name='timesheet'),
+    url(r'^timesheets/(?P<pk>\d+)/$', TimeSheetView.as_view(), name='timesheet'),
+    url(r'^timesheets/(?P<pk>\d+)/(?P<action>edit)/$', TimeSheetView.as_view(), name='timesheet'),
 ]

@@ -1,0 +1,11 @@
+<h4>Notifications</h4>
+
+{% for notification in notifications %}
+    <div class="row notification">
+        <span class="timestamp">{{ notification.timestamp }}</span>
+        <span class="title">{{ notification.title }}</span><br>
+        {{ notification.message }}
+    </div>
+{% empty %}
+    <p>No notifications available.</p>
+{% endfor %}

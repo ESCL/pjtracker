@@ -100,11 +100,13 @@ class StandardResourceView(ReadOnlyResourceView):
         return super(StandardResourceView, self).get(request, pk, action, **kwargs)
 
     @handle_exception
-    def post(self, request, pk=None):
+    def post(self, request, pk=None, **kwargs):
+        if pk:
+            return self.put(request, pk)
         return self.upsert_instance(request, pk)
 
     @handle_exception
-    def put(self, request, pk=None):
+    def put(self, request, pk, **kwargs):
         return self.upsert_instance(request, pk)
 
     @handle_exception

@@ -4,23 +4,26 @@
 
 {% block nav %}
 
-    <div class="row">
-        <div class="nav-menu">
-            <a href="{% url 'employees' %}" title="Employees"><img src="{% static 'img/menu/employees.png' %}"></a>
-            <a href="{% url 'equipments' %}" title="Equipment"><img src="{% static 'img/menu/equipment.png' %}"></a>
-            <a href="{% url 'projects' %}" title="Projects"><img src="{% static 'img/menu/activities.png' %}"></a>
-            <a href="{% url 'timesheets' %}" title="Timesheets"><img src="{% static 'img/menu/timesheets.png' %}"></a>
-            {% if user.is_staff %}
-                <a href="/admin" title="Administration"><img src="{% static 'img/menu/admin.png' %}"></a>
-            {% endif %}
-        </div>
-        <div class="nav-brand">
-        </div>
+<div class="section">
+    <a href="{% url 'companies' %}" title="Companies"><img src="{% static 'img/menu/companies.png' %}"></a>
+    <a href="{% url 'teams' %}" title="Teams"><img src="{% static 'img/menu/teams.png' %}"></a>
+</div>
+
+<div class="section">
+    <a href="{% url 'employees' %}" title="Employees"><img src="{% static 'img/menu/employees.png' %}"></a>
+    <a href="{% url 'equipments' %}" title="Equipment"><img src="{% static 'img/menu/equipment.png' %}"></a>
+</div>
+
+<div class="section">
+    <a href="{% url 'projects' %}" title="Projects"><img src="{% static 'img/menu/projects.png' %}"></a>
+    <a href="{% url 'timesheets' %}" title="Time-Sheets"><img src="{% static 'img/menu/timesheets.png' %}"></a>
+</div>
+
+{% if user.is_staff %}
+    <div class="section">
+        <a href="/admin" title="Administration"><img src="{% static 'img/menu/admin.png' %}"></a>
     </div>
-
-{% endblock %}
-
-{% block header %}
+{% endif %}
 
 {% endblock %}
 

@@ -1,0 +1,32 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'projects' %}">projects</a></li>
+{% if project %}
+<li><a href="{% url 'project' pk=project.id %}">{{ project }}</a></li>
+<li>edit</li>
+{% else %}
+<li>add</li>
+{% endif %}
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="POST">
+
+    {% csrf_token %}
+    {{ main_form }}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}
