@@ -1,8 +1,17 @@
 {% extends 'apps/base.html' %}
 
-{% block body %}
 
-<h1>TimeSheet</h1>
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'timesheets' %}">time-sheets</a></li>
+<li>{{ timesheet }}</li>
+<li><a href="{% url 'timesheet' pk=timesheet.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
 
 <div class="row">
     <h4>Main</h4>
@@ -18,17 +27,32 @@
         <thead>
             <tr>
                 <th>Employee</th>
-                <th>Activity</th>
+                <th colspan="2">Activity</th>
+                <th>Labour</th>
                 <th>Hours</th>
             </tr>
         </thead>
         <tbody>
-            {% for work_log in timesheet.worklog_set.all %}
+            {% for employee, activities in timesheet.work_logs_data.items %}
                 <tr>
-                    <td>{{ work_log.employee }}</td>
-                    <td>{{ work_log.activity }}</td>
-                    <td>{{ work_log.hours }}</td>
+                    <td rowspan="{{ activities|length }}">
+                        <b>{{ employee.identifier }}</b><br>
+                        {{ employee.full_name }}<br>
+                        {{ employee.position }}
+                    </td>
+                    <td colspan="3" class="subtotal">Overall</td>
+                    <td class="subtotal">{{ activities.total }}</td>
                 </tr>
+                {% for activity, log in activities.items %}
+                    {% if activity.id %}
+                    <tr>
+                        <td>{{ activity.wbs_code }}</td>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ activity.get_labour_type_display }}</td>
+                        <td>{{ log.hours }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>

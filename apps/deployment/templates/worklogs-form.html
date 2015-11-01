@@ -1,0 +1,44 @@
+{% if sub_form.errors %}
+<div class="error-list">
+    <ul>
+    {% for error in sub_form.non_field_errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="row timesheet-header">
+    <div class="three columns">
+        <h4><span class="activities-title">Activities</span><br>Employees</h4>
+    </div>
+    <div class="nine columns">
+        {% for activity in timesheet.activities.values %}
+            <div class="grid-column activity" title="{{ activity.name }}">
+                {{ activity.wbs_code_path|join:'<br>' }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="row timesheet-body">
+    {% for row in sub_form.rows %}
+        <div class="row">
+
+            <div class="three columns">
+                <span class="employee-name">{{ row.employee.full_name }}</span><br>
+                <span class="employee-identifier">{{ row.employee.identifier }}</span><br>
+                <span class="employee-position">{{ row.employee.position }}</span>
+            </div>
+
+            <div class="nine columns">
+                {% for log in row.logs %}
+                    <div class="grid-column log {% if log.field.errors %}invalid{% endif %}">
+                        {{ log.field }}
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    {% endfor %}
+</div>

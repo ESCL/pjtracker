@@ -1,8 +1,16 @@
 {% extends 'apps/base.html' %}
 
-{% block body %}
+{% block breadcrumbs %}
 
-<h1>Equipment</h1>
+<li><a href="/">home</a></li>
+<li><a href="{% url 'equipments' %}">equipment</a></li>
+<li>{{ equipment }}</li>
+<li><a href="{% url 'equipment' pk=equipment.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
 
 <div class="row">
     <div class="six columns">

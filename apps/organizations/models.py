@@ -1,6 +1,6 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity
+from ..common.db.models import OwnedEntity, AllowedLabourMixin
 
 
 class Company(OwnedEntity):
@@ -16,7 +16,7 @@ class Company(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class Team(OwnedEntity):
@@ -35,12 +35,27 @@ class Team(OwnedEntity):
         'auth.User',
         null=True
     )
+    activities = models.ManyToManyField(
+        'work.Activity'
+    )
+
+    @property
+    def employees(self):
+        return self._get_res_iter('employee')
+
+    @property
+    def equipment(self):
+        return self._get_res_iter('equipment')
+
+    def _get_res_iter(self, resource_type):
+        for res in self.resource_set.filter(resource_type=resource_type):
+            yield res.instance
 
     def __str__(self):
-        return '{} ({})'.format(self.name, self.code)
+        return self.code
 
 
-class Position(OwnedEntity):
+class Position(OwnedEntity, AllowedLabourMixin):
 
     name = models.CharField(
         max_length=128
