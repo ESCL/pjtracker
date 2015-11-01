@@ -1,5 +1,7 @@
 __author__ = 'kako'
 
+import copy
+
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
@@ -34,12 +36,12 @@ class ReadOnlyResourceView(View):
     # Helper class methods
 
     @classmethod
-    def build_filters(cls, qs):
-        return qs
+    def build_filters(cls, qs, *args, **kwargs):
+        return {k: qs.get(k) for k in qs.keys()}
 
     @classmethod
-    def filter_objects(cls, user, qs):
-        filters = cls.build_filters(qs)
+    def filter_objects(cls, user, qs, **kwargs):
+        filters = cls.build_filters(qs, **kwargs)
         return cls.model.objects.filter(**filters).for_user(user)
 
     @classmethod
@@ -60,17 +62,17 @@ class ReadOnlyResourceView(View):
 
     # Main http methods (proxy to worker methods)
 
-    @handle_exception
+    #@handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
         if pk:
             return self.show_instance(request, pk)
         else:
-            return self.show_list(request)
+            return self.show_list(request, **kwargs)
 
     # Worker methods
 
-    def show_list(self, request, status=200):
-        context = {self.model._meta.verbose_name_plural.replace(' ', ''): self.filter_objects(request.user, request.GET)}
+    def show_list(self, request, status=200, **kwargs):
+        context = {self.model._meta.verbose_name_plural.replace(' ', ''): self.filter_objects(request.user, request.GET, **kwargs)}
         return render(request, self.list_template, context, status=status)
 
     def show_instance(self, request, pk):
@@ -87,26 +89,27 @@ class StandardResourceView(ReadOnlyResourceView):
     the templates and the edit form.
     """
     edit_template = None
-    edit_form = None
-    redirect_view_name = None
+    main_form = None
+    sub_form = None
+    collection_view_name = None
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
 
-    @handle_exception
+    #@handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
         if action in ('add', 'edit'):
-            return self.show_form(request, pk)
+            return self.show_forms(request, pk)
 
         return super(StandardResourceView, self).get(request, pk, action, **kwargs)
 
-    @handle_exception
+    #@handle_exception
     def post(self, request, pk=None, **kwargs):
         if pk:
             return self.put(request, pk)
         return self.upsert_instance(request, pk)
 
-    @handle_exception
+    #@handle_exception
     def put(self, request, pk, **kwargs):
         return self.upsert_instance(request, pk)
 
@@ -117,20 +120,28 @@ class StandardResourceView(ReadOnlyResourceView):
     # Worker methods
     # Override to modify standard behaviour
 
-    def show_form(self, request, pk):
+    def show_forms(self, request, pk):
         obj = pk and self.get_object(request.user, pk) or None
-        form = self.edit_form(instance=obj)
-        context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'form': form}
+        main_form = self.main_form(instance=obj, prefix='main')
+        context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
+        if self.sub_form:
+            context['sub_form'] = self.sub_form(instance=obj, prefix='sub')
         return render(request, self.edit_template, context)
 
     def upsert_instance(self, request, pk):
         obj = pk and self.get_object(request.user, pk) or None
-        form = self.edit_form(request.POST, instance=obj)
-        if form.is_valid():
-            form.save()
-            return redirect(self.redirect_view_name)
+        main_form = self.main_form(request.POST, instance=obj, prefix='main')
+        context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
+        if self.sub_form:
+            sub_form = self.sub_form(request.POST, instance=obj, prefix='sub')
+            context['sub_form'] = sub_form
+
+        if main_form.is_valid() and (not self.sub_form or sub_form.is_valid()):
+            main_form.save()
+            sub_form.save()
+            return redirect(self.collection_view_name)
         else:
-            context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'form': form}
+
             return render(request, self.edit_template, context, status=400)
 
     def delete_instance(self, request, pk):

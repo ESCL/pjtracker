@@ -1,6 +1,5 @@
 
 from django.test import TestCase
-from orderedset import OrderedSet
 
 from ...accounts.factories import AccountFactory, UserFactory
 from ...notifications.models import Notification
@@ -86,8 +85,8 @@ class TimeSheetTest(TestCase):
     def test_work_logs_properties(self):
         # All properties are empty first
         self.assertEqual(self.ts.work_logs_data, {})
-        self.assertEqual(self.ts.employees, OrderedSet())
-        self.assertEqual(self.ts.activities, OrderedSet())
+        self.assertEqual(self.ts.employees, {})
+        self.assertEqual(self.ts.activities, {})
 
         # Add two employees, one belonging to the team
         e1 = EmployeeFactory.create(team=self.team)
@@ -100,13 +99,13 @@ class TimeSheetTest(TestCase):
         self.team.activities.add(a1)
 
         # Sets still show nothing added because they're cached
-        self.assertEqual(self.ts.employees, OrderedSet())
-        self.assertEqual(self.ts.activities, OrderedSet())
+        self.assertEqual(self.ts.employees, {})
+        self.assertEqual(self.ts.activities, {})
 
         # Fetch again, employees and acts are updated
         self.ts = TimeSheet.objects.get(id=self.ts.id)
-        self.assertEqual(self.ts.employees, OrderedSet([e1]))
-        self.assertEqual(self.ts.activities, OrderedSet([a1]))
+        self.assertEqual(self.ts.employees, {e1.id: e1})
+        self.assertEqual(self.ts.activities, {a1.id: a1})
 
         # Add a few logs with employees and activities not belonging to team
         log1 = WorkLog.objects.create(timesheet=self.ts,
@@ -126,5 +125,5 @@ class TimeSheetTest(TestCase):
         # Fetch again, everything updated (and what belongs to team is first)
         self.ts = TimeSheet.objects.get(id=self.ts.id)
         self.assertEqual(self.ts.work_logs_data, {e2: {a2: log1, a3: log2}})
-        self.assertEqual(self.ts.employees, OrderedSet([e1, e2]))
-        self.assertEqual(self.ts.activities, OrderedSet([a1, a2, a3]))
+        self.assertEqual(self.ts.employees, {e1.id: e1, e2.id: e2})
+        self.assertEqual(self.ts.activities, {a1.id: a1, a2.id: a2, a3.id: a3})

@@ -1,6 +1,6 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity
+from ..common.db.models import OwnedEntity, AllowedLabourMixin
 
 
 class Company(OwnedEntity):
@@ -16,7 +16,7 @@ class Company(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class Team(OwnedEntity):
@@ -52,22 +52,13 @@ class Team(OwnedEntity):
             yield res.instance
 
     def __str__(self):
-        return '{} ({})'.format(self.name, self.code)
+        return self.code
 
 
-class Position(OwnedEntity):
+class Position(OwnedEntity, AllowedLabourMixin):
 
     name = models.CharField(
         max_length=128
-    )
-    managerial_labour = models.BooleanField(
-        default=False
-    )
-    indirect_labour = models.BooleanField(
-        default=False
-    )
-    direct_labour = models.BooleanField(
-        default=False
     )
 
     def __str__(self):

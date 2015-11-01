@@ -1,0 +1,30 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'projects' %}">projects</a></li>
+<li><a href="{% url 'project' pk=activity.project_id %}">{{ activity.project }}</a></li>
+<li><a href="{% url 'activities' pj_pk=activity.project_id %}">wbs</a></li>
+<li><a href="{% url 'activity' pj_pk=activity.project_id pk=activity.id %}">{{ activity }}</a></li>
+<li>edit</li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="POST">
+
+    {% csrf_token %}
+    {{ form }}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}

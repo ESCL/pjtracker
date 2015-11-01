@@ -1,8 +1,7 @@
-import itertools
 
 from django.db import models
 
-from ..common.db.models import OwnedEntity
+from ..common.db.models import OwnedEntity, AllowedLabourMixin
 
 
 class Project(OwnedEntity):
@@ -20,7 +19,7 @@ class Project(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class ActivityGroupType(OwnedEntity):
@@ -46,10 +45,10 @@ class ActivityGroup(OwnedEntity):
     )
 
     def __str__(self):
-        return '{} ({})'.format(self.name, self.code)
+        return self.code
 
 
-class Activity(OwnedEntity):
+class Activity(OwnedEntity, AllowedLabourMixin):
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -71,15 +70,6 @@ class Activity(OwnedEntity):
     groups = models.ManyToManyField(
         'ActivityGroup'
     )
-    managerial_labour = models.BooleanField(
-        default=False
-    )
-    indirect_labour = models.BooleanField(
-        default=False
-    )
-    direct_labour = models.BooleanField(
-        default=False
-    )
 
     @property
     def wbs_code_parent_path(self):
@@ -94,4 +84,4 @@ class Activity(OwnedEntity):
         return '.'.join(self.wbs_code_path)
 
     def __str__(self):
-        return '{} {}'.format(self.wbs_code, self.name)
+        return self.wbs_code

@@ -1,0 +1,28 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'projects' %}">projects</a></li>
+<li><a href="{% url 'project' pk=activity.project_id %}">{{ activity.project }}</a></li>
+<li><a href="{% url 'activities' pj_pk=activity.project_id %}">wbs</a></li>
+<li>{{ activity }}</li>
+<li><a href="{% url 'activity' pj_pk=activity.project_id pk=activity.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main</h4>
+
+    <dl>
+        <dt>WBS Code</dt><dd>{{ activity.wbs_code }}</dd>
+        <dt>Name</dt><dd>{{ activity.name }}</dd>
+    </dl>
+
+</div>
+
+{% endblock %}
