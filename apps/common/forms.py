@@ -1,9 +1,6 @@
 __author__ = 'kako'
 
-
 from django import forms
-
-from .db.models import OwnedEntity
 
 
 class OwnedEntityForm(forms.ModelForm):
@@ -13,7 +10,9 @@ class OwnedEntityForm(forms.ModelForm):
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        if isinstance(self.instance, OwnedEntity):
+        # Make user account owner it object is new
+        if self.instance.id is None:
             self.instance.owner = self._user.profile.account
+
         return super(OwnedEntityForm, self).save(*args, **kwargs)
 
