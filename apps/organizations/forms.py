@@ -1,18 +1,19 @@
 __author__ = 'kako'
 
 from ..common.forms import OwnedEntityForm
-from .models import Project, Activity
+from .models import Company, Team
 
 
-class ProjectForm(OwnedEntityForm):
+class CompanyForm(OwnedEntityForm):
 
     class Meta:
-        model = Project
+        model = Company
         exclude = ('owner',)
 
 
-class ActivityForm(OwnedEntityForm):
+class TeamForm(OwnedEntityForm):
 
     class Meta:
-        model = Activity
+        model = Team
         exclude = ('owner',)
+

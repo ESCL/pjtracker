@@ -1,0 +1,24 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'companies' %}">companies</a></li>
+<li>{{ company }}</li>
+<li><a href="{% url 'company' pk=company.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main</h4>
+    <dl>
+        <dt>Code</dt><dd>{{ company.code }}</dd>
+        <dt>Name</dt><dd>{{ company.name}}</dd>
+    </dl>
+</div>
+
+{% endblock %}

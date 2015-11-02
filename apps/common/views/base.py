@@ -2,6 +2,7 @@ __author__ = 'kako'
 
 from django.shortcuts import render, redirect
 from django.views.generic import View
+from django.template.defaultfilters import slugify
 
 
 def handle_exception(func):
@@ -128,18 +129,22 @@ class StandardResourceView(ReadOnlyResourceView):
 
     def upsert_instance(self, request, pk):
         obj = pk and self.get_object(request.user, pk) or None
-        main_form = self.main_form(request.POST, instance=obj, prefix='main')
+        main_form = self.main_form(request.POST, instance=obj, user=request.user, prefix='main')
         context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
+
         if self.sub_form:
-            sub_form = self.sub_form(request.POST, instance=obj, prefix='sub')
+            sub_form = self.sub_form(request.POST, instance=obj, user=request.user, prefix='sub')
             context['sub_form'] = sub_form
-
-        if main_form.is_valid() and (not self.sub_form or sub_form.is_valid()):
-            main_form.save()
-            sub_form.save()
-            return redirect(self.collection_view_name)
         else:
+            sub_form = None
 
+        if main_form.is_valid() and (not sub_form or sub_form.is_valid()):
+            main_form.save()
+            if sub_form:
+                sub_form.save()
+            return redirect(self.collection_view_name or slugify(self.model._meta.verbose_name_plural))
+
+        else:
             return render(request, self.edit_template, context, status=400)
 
     def delete_instance(self, request, pk):

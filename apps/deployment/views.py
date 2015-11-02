@@ -1,5 +1,5 @@
 
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.views.generic import View
 
 from ..common.views.base import StandardResourceView
@@ -15,7 +15,6 @@ class TimeSheetView(StandardResourceView):
     edit_template = 'timesheet-edit.html'
     main_form = TimeSheetForm
     sub_form = WorkLogsForm
-    collection_view_name = 'timesheets'
 
 
 class TeamActivityView(View):

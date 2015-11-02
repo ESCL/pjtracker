@@ -1,7 +1,7 @@
 
 from ..common.views.base import StandardResourceView
 from .models import Employee, Equipment
-from .forms import EmployeeForm
+from .forms import EmployeeForm, EquipmentForm
 
 
 class EmployeeView(StandardResourceView):
@@ -16,5 +16,5 @@ class EquipmentView(StandardResourceView):
     list_template = 'equipments.html'
     detail_template = 'equipment.html'
     edit_template = 'equipment-edit.html'
-    main_form = EmployeeForm
+    main_form = EquipmentForm
     model = Equipment

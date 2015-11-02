@@ -4,11 +4,11 @@ from .models import Company, Team
 
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code',)
+    list_display = ('name', 'code', 'owner',)
 
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'company',)
+    list_display = ('name', 'code', 'company', 'owner',)
     filter_horizontal = ('activities',)
 
 

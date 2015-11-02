@@ -1,12 +1,20 @@
 __author__ = 'kako'
 
-from django.forms import ModelForm
+from ..common.forms import OwnedEntityForm
+from .models import Employee, Equipment
 
-from .models import Employee
 
-
-class EmployeeForm(ModelForm):
+class EmployeeForm(OwnedEntityForm):
 
     class Meta:
         model = Employee
-        exclude = ()
+        exclude = ('owner',)
+
+
+
+class EquipmentForm(OwnedEntityForm):
+
+    class Meta:
+        model = Equipment
+        exclude = ('owner',)
+

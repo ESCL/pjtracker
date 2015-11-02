@@ -2,11 +2,12 @@ __author__ = 'kako'
 
 from django import forms
 
+from ..common.forms import OwnedEntityForm
 from ..work.models import Activity
 from .models import TimeSheet, WorkLog
 
 
-class TimeSheetForm(forms.ModelForm):
+class TimeSheetForm(OwnedEntityForm):
 
     class Meta:
         model = TimeSheet
@@ -20,7 +21,7 @@ class TimeSheetForm(forms.ModelForm):
             self.fields.pop('team')
 
 
-class TeamActivityForm(forms.Form):
+class TeamActivityForm(OwnedEntityForm):
 
     def __init__(self, user, team, post_data=None):
         super(TeamActivityForm, self).__init__(post_data)
@@ -32,7 +33,7 @@ class TeamActivityForm(forms.Form):
         )
 
 
-class WorkLogsForm(forms.Form):
+class WorkLogsForm(OwnedEntityForm):
 
     def __init__(self, post_data=None, instance=None, **kwargs):
         super(WorkLogsForm, self).__init__(post_data)
