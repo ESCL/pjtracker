@@ -1,12 +1,11 @@
 /* Top bar, with header and menu */
 
 .topbar {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding: 4px 4px 0 4px;
-    background: #eee;
+    border-bottom: 1px solid #bbb;
+    padding: 0;
+    background: #ddd;
     position: relative;
-    height: 52px;
+    height: 43px;
 }
 
 
@@ -14,71 +13,24 @@
 
 .breadcrumbs {
     position: absolute;
-    left: 12px;
-    top: 16px;
+    left: 6px;
+    top: 9px;
     vertical-align: middle;
-    height: 48px;
-    font-size: 1em;
-}
-
-.breadcrumbs li {
-    display: inline;
-    text-decoration: none;
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 6px 8px;
-}
-
-.breadcrumbs li:last-of-type {
-    border-bottom-right-radius: 8px;
-    border-top-right-radius: 8px;
-}
-
-nav {
-    position: absolute;
-    right: 8px;
-    top: 3px;
-    text-align: right;
-}
-
-nav .section {
-    display: inline;
-    margin: 0 4px;
-}
-
-/* Labels */
-
-.label {
-    background: #aaa;
-    border-radius: 10px;
-    color: #fff;
+    height: 32px;
+    font-size: 0.9em;
     font-weight: bold;
-    padding: 4px;
-}
-
-
-.label.disabled {
-    color: #ddd;
-}
-
-
-/* Breadcrumbs style */
-
-.breadcrumbs {
-    position: absolute;
-    left: 12px;
-    top: 16px;
-    vertical-align: middle;
-    height: 48px;
-    font-size: 1em;
 }
 
 .breadcrumbs li {
     display: inline;
     text-decoration: none;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: linear-gradient(#fff, #eee);
+    border: 1px solid #ccc;
     padding: 6px 8px;
+}
+
+.breadcrumbs li:hover {
+    background: #fff;
 }
 
 .breadcrumbs li:last-of-type {
@@ -89,10 +41,16 @@ nav .section {
 nav {
     position: absolute;
     right: 8px;
-    top: 3px;
-    text-align: right;
+    top: 2px;
 }
 
+nav .button {
+    padding: 3px 6px;
+}
+
+nav .button img {
+    height: 30px;
+}
 
 /* Labels */
 
@@ -124,6 +82,25 @@ a {
 
 .container {
     font-size: 0.85em;
+}
+
+
+/* Buttons */
+
+button {
+    background: linear-gradient(#fff, #eee);
+}
+
+.button {
+    background: linear-gradient(#fff, #eee);
+}
+
+.button-primary {
+    background: linear-gradient(#5df, #4be);
+}
+
+.button:hover {
+    background: #fff;
 }
 
 /* Notifications */
@@ -203,7 +180,7 @@ table .actions {
 td.actions a {
     border: 1px solid #ddd;
     padding: 4px 8px;
-    background: #fff;
+    background: linear-gradient(#fff, #eee);
 }
 
 td.actions a:first-of-type {
