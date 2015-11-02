@@ -10,9 +10,9 @@ urlpatterns = [
     url(r'^accounts/', include('apps.accounts.urls')),
     url(r'^geo/', include('apps.geo.urls')),
     url(r'^organizations/', include('apps.organizations.urls')),
-    url(r'^resources', include('apps.resources.urls')),
-    url(r'^work', include('apps.work.urls')),
-    url(r'^deployment', include('apps.deployment.urls')),
+    url(r'^resources/', include('apps.resources.urls')),
+    url(r'^work/', include('apps.work.urls')),
+    url(r'^deployment/', include('apps.deployment.urls')),
 
     # Admin dashboard
     url(r'^admin/', include(admin.site.urls)),
