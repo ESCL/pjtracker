@@ -1,8 +1,15 @@
 __author__ = 'kako'
 
-from django.conf.urls import url
+from django.conf.urls import url, include
+from tastypie.api import Api
 
+from .api.resources import EmployeesResource, EquipmentResource
 from .views import EmployeeView, EquipmentView
+
+
+api_v0 = Api(api_name='v0')
+api_v0.register(EmployeesResource())
+api_v0.register(EquipmentResource())
 
 
 urlpatterns = [
@@ -17,4 +24,7 @@ urlpatterns = [
     url(r'^equipment/(?P<action>add)/$', EquipmentView.as_view(), name='equipment'),
     url(r'^equipment/(?P<pk>\d+)/$', EquipmentView.as_view(), name='equipment'),
     url(r'^equipment/(?P<pk>\d+)/(?P<action>edit)/$', EquipmentView.as_view(), name='equipment'),
+
+    # APIs
+    url('^api/', include(api_v0.urls))
 ]
