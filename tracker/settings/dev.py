@@ -1,3 +1,4 @@
 __author__ = 'kako'
 
-DEBUG = True
+from .base import *
+
