@@ -1,0 +1,65 @@
+/** Styles required by widgets contained in the top bar. **/
+
+.topbar {
+    border-bottom: 1px solid #bbb;
+    padding: 0;
+    background: #ddd;
+    position: relative;
+    height: 43px;
+}
+
+
+/** Breadcrumbs (left part of top bar) **/
+
+.breadcrumbs {
+    position: absolute;
+    left: 6px;
+    top: 9px;
+    vertical-align: middle;
+    height: 32px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.breadcrumbs li {
+    display: inline;
+    text-decoration: none;
+    background: linear-gradient(#fff, #eee);
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+}
+
+.breadcrumbs li:hover {
+    background: #fff;
+}
+
+.breadcrumbs li:last-of-type {
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+
+/** Navigation bar (right part of top bar) **/
+
+nav {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+}
+
+nav a.button {
+    padding: 3px 6px;
+}
+
+nav a.button img {
+    height: 30px;
+}
+
+nav a.button .icon-text {
+    display: none;
+}
+
+nav a.button:hover .icon-text {
+    display: inline-block;
+}
+

@@ -1,0 +1,27 @@
+/*** Styles used by notifications widgets. ***/
+
+.notification {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 15px;
+}
+
+.notification:first-of-type {
+    border-top: 1px solid #ddd;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.notification:last-of-type {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.notification .title {
+    font-weight: bold;
+}
+
+.notification .timestamp  {
+    float: right;
+}

@@ -5,7 +5,7 @@
 *.pyc
 
 # SQLite Database
-data/db.sqlite
+^data/db.sqlite
 
 # Collected static media (prod)
-static/
+^static/
