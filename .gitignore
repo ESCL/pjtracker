@@ -6,3 +6,6 @@
 
 # SQLite Database
 data/db.sqlite
+
+# Local settings file link
+tracker/settings/local.py
