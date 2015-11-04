@@ -1,11 +1,17 @@
 __author__ = 'kako'
 
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.template.defaultfilters import slugify
 
 
 def handle_exception(func):
+    if settings.DEBUG:
+        # For debug, don't handle so devs get stacktrace
+        return func
+
+    # Non debug, catch and process exception
     def wrapper_func(*args, **kwargs):
         try:
             res = func(*args, **kwargs)
