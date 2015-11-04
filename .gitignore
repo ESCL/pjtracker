@@ -9,3 +9,4 @@
 
 # Collected static media (prod)
 ^static/
+data
