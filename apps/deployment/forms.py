@@ -33,7 +33,7 @@ class TeamActivityForm(OwnedEntityForm):
         )
 
 
-class WorkLogsForm(OwnedEntityForm):
+class WorkLogsForm(forms.Form):
 
     def __init__(self, post_data=None, instance=None, **kwargs):
         super(WorkLogsForm, self).__init__(post_data)

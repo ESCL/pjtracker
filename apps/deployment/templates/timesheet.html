@@ -1,5 +1,11 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/timesheets.css' %}">
+{% endblock %}
+
 
 {% block breadcrumbs %}
 

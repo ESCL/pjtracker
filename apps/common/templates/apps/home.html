@@ -1,5 +1,11 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
 
 {% block title %}Application Home{% endblock %}
 
