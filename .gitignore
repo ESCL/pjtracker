@@ -1,11 +1,11 @@
-# JetBrians IDEs files
-.idea
-
-# Compiled bytecode
+# Compiled python binaries
 *.pyc
 
-# SQLite Database
-^data/db.sqlite
+# SQLite database file
+data/db.sqlite
 
-# Collected static media (prod)
-^static/
+# JetBrains IDE config files
+.idea/
+
+# KDE cache files
+.directory
