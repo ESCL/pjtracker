@@ -84,4 +84,4 @@ class Activity(OwnedEntity, AllowedLabourMixin):
         return '.'.join(self.wbs_code_path)
 
     def __str__(self):
-        return self.wbs_code
+        return '{}. {}'.format(self.wbs_code, self.name)

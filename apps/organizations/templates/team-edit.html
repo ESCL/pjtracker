@@ -24,8 +24,6 @@
     {% csrf_token %}
     {{ main_form }}
 
-    {% include 'team-activities.html' %}
-
     <div class="buttons">
         <button type="reset">Reset</button>
         <button type="submit" class="button-primary">Save</button>
@@ -40,6 +38,7 @@
 
     <script src="{% static 'js/filter-multi-select.js' %}"></script>
     <script>
+        // Use FilterMultiSelect to turn the activities multiselect into the filter-horizontal-like widget
         var field = document.querySelector('#id_main-activities');
         var multiSelect = FilterMultiSelect(field);
         multiSelect.start();
