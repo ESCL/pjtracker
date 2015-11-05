@@ -2,8 +2,12 @@
 
 {% load staticfiles %}
 
+
 {% block styles %}
+
+    {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/timesheets.css' %}">
+
 {% endblock %}
 
 

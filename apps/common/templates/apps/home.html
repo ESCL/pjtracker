@@ -3,11 +3,11 @@
 {% load staticfiles %}
 
 {% block styles %}
+
+    {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+
 {% endblock %}
-
-
-{% block title %}Application Home{% endblock %}
 
 
 {% block breadcrumbs %}

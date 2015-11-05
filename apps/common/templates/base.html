@@ -12,29 +12,20 @@
     <link href="{% static 'libs/skeleton-2.0.4/css/normalize.css' %}" rel="stylesheet">
     <link href="{% static 'libs/skeleton-2.0.4/css/skeleton.css' %}" rel="stylesheet">
 
-    <!-- Main style -->
-    <link href="{% static 'css/main.css' %}" rel="stylesheet">
-
-    <!-- Custom styles -->
-    {% block styles %}
-    {% endblock %}
+    <!-- Styles -->
+    {% block styles %}{% endblock %}
 
     <!-- Title -->
     <title>
-        Tracker - {% block title %}Home{% endblock %}
+        pjtracker - {% block title %}home{% endblock %}
     </title>
 
 </head>
 <body>
 
-    <div class="topbar">
-        <div class="breadcrumbs">
-            <ul>{% block breadcrumbs %}{% endblock %}</ul>
-        </div>
-        <nav>
-            {% block nav %}{% endblock %}
-        </nav>
-    </div>
+    <header>
+        {% block header %}{% endblock %}
+    </header>
 
     <div class="container">
         {% block body %}{% endblock %}
