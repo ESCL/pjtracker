@@ -6,7 +6,7 @@
 {% block styles %}
 
     {{ block.super }}
-    <link href="{% static 'css/app.css' %}" rel="stylesheet">
+    <link href="{% static 'css/topbar.css' %}" rel="stylesheet">
 
 {% endblock %}
 
@@ -56,6 +56,12 @@
                 <img src="{% static 'img/menu/admin.png' %}">
             </a>
         {% endif %}
+
+        <a href="{% url 'logout' %}" class="button">
+            <span class="icon-text">Log out</span>
+            <img src="{% static 'img/menu/logout.png' %}">
+        </a>
+
     </nav>
 </div>
 

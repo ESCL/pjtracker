@@ -13,7 +13,9 @@
     <link href="{% static 'libs/skeleton-2.0.4/css/skeleton.css' %}" rel="stylesheet">
 
     <!-- Styles -->
-    {% block styles %}{% endblock %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% endblock %}
 
     <!-- Title -->
     <title>

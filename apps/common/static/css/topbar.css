@@ -23,7 +23,7 @@
 
 .breadcrumbs li {
     display: inline;
-    text-decoration: none;
+    list-style: none;
     background: linear-gradient(#fff, #eee);
     border: 1px solid #ccc;
     padding: 6px 8px;

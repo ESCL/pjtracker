@@ -1,11 +1,32 @@
 /*** Generic styles required by many pages. ***/
 
+/** Fonts **/
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+
+/** Body and container **/
+
+body {
+    font-family: 'Roboto', 'Segoe UI', 'Lucida Grande', 'Ubuntu', sans-serif;
+    min-width: 720px;
+}
+
+.container {
+    font-size: 0.9em;
+    padding: 20px 0;
+}
+
 /** Links **/
 
 a {
     text-decoration: none;
     color: #488;
 }
+
 
 /** Buttons **/
 
@@ -92,17 +113,21 @@ td.subtotal {
 }
 
 
-/** Form buttons container and buttons **/
+/** Forms **/
 
 form .buttons {
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin: 20px 0;
-    padding: 12px;
+    margin-top: 20px;
+    padding: 12px 12px 8px 12px;
     text-align: right;
-    width: 100%;
 }
 
 form .buttons button {
     margin: 5px;
+}
+
+form ul.errorlist {
+    list-style: none;
+    color: #f55;
 }
