@@ -14,4 +14,7 @@ urlpatterns = [
 
     # Teams view
     url(r'^teams/$', TeamView.as_view(), name='teams'),
+    url(r'^teams/(?P<action>add)/$', TeamView.as_view(), name='team'),
+    url(r'^teams/(?P<pk>\d+)/$', TeamView.as_view(), name='team'),
+    url(r'^teams/(?P<pk>\d+)/(?P<action>edit)/$', TeamView.as_view(), name='team'),
 ]

@@ -1,0 +1,47 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li>teams</li>
+<li><a href="{% url 'team' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Supervisor</th>
+            <th>Employees</th>
+            <th>Equipment</th>
+            <th>Activities</th>
+            <th class="actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in teams %}
+            <tr>
+                <td>{{ t.code }}</td>
+                <td>{{ t.name }}</td>
+                <td>{{ t.company }}</td>
+                <td>{{ t.supervisor }}</td>
+                <td>{{ t.employees.count }}</td>
+                <td>{{ t.equipment.count }}</td>
+                <td>{{ t.activities.count }}</td>
+                <td class="actions">
+                    <a href="{% url 'team' pk=t.id %}">view</a>
+                    <a href="{% url 'team' pk=t.id action='edit' %}">edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

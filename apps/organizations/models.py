@@ -36,20 +36,17 @@ class Team(OwnedEntity):
         null=True
     )
     activities = models.ManyToManyField(
-        'work.Activity'
+        'work.Activity',
+        blank=True
     )
 
     @property
     def employees(self):
-        return self._get_res_iter('employee')
+        return self.resource_set.filter(resource_type='employee')
 
     @property
     def equipment(self):
-        return self._get_res_iter('equipment')
-
-    def _get_res_iter(self, resource_type):
-        for res in self.resource_set.filter(resource_type=resource_type):
-            yield res.instance
+        return self.resource_set.filter(resource_type='equipment')
 
     def __str__(self):
         return self.code

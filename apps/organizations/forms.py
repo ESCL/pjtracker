@@ -16,4 +16,3 @@ class TeamForm(OwnedEntityForm):
     class Meta:
         model = Team
         exclude = ('owner',)
-

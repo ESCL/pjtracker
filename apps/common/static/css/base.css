@@ -131,3 +131,11 @@ form ul.errorlist {
     list-style: none;
     color: #f55;
 }
+
+select[multiple] {
+    height: 20em;
+}
+
+.multiselect-button {
+    margin-top: 10em;
+}

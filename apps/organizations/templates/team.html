@@ -1,0 +1,89 @@
+{% extends 'apps/base.html' %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'teams' %}">teams</a></li>
+<li>{{ team }}</li>
+<li><a href="{% url 'team' pk=team.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main</h4>
+    <dl>
+        <dt>Code</dt><dd>{{ team.code }}</dd>
+        <dt>Name</dt><dd>{{ team.name }}</dd>
+        <dt>Name</dt><dd>{{ team.company }}</dd>
+        <dt>Name</dt><dd>{{ team.supervisor }}</dd>
+    </dl>
+</div>
+
+<div class="row">
+    <div class="seven columns">
+        <h5>Employees</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th>Identifier</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in team.employees %}
+                    <tr>
+                        <td>{{ e.identifier }}</td>
+                        <td>{{ e.employee.full_name }}</td>
+                        <td>{{ e.employee.position }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="five columns">
+        <h5>Equipment</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th>Identifier</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in team.equipment %}
+                    <tr>
+                        <td>{{ e.identifier }}</td>
+                        <td>{{ e.equipment.type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <h5>Activities</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>WBS Code</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in team.activities.all %}
+                <tr>
+                    <td>{{ a.wbs_code }}</td>
+                    <td>{{ a.name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

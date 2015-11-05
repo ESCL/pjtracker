@@ -1,0 +1,48 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'teams' %}">teams</a></li>
+{% if team %}
+<li><a href="{% url 'team' pk=team.id %}">{{ team }}</a></li>
+<li>edit</li>
+{% else %}
+<li>add</li>
+{% endif %}
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="POST">
+
+    {% csrf_token %}
+    {{ main_form }}
+
+    {% include 'team-activities.html' %}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="{% static 'js/filter-multi-select.js' %}"></script>
+    <script>
+        var field = document.querySelector('#id_main-activities');
+        var multiSelect = FilterMultiSelect(field);
+        multiSelect.start();
+    </script>
+
+{% endblock %}
