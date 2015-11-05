@@ -1,11 +1,20 @@
+## Generic targeting (files in any subdirectories)
+
 # Compiled python binaries
 *.pyc
 
-# SQLite database file
-data/db.sqlite
-
-# JetBrains IDE config files
-.idea/
-
 # KDE cache files
 .directory
+
+
+## Specific targeting
+
+# JetBrains IDE config files
+/.idea/
+
+# SQLite database file
+/data/db.*
+
+# STATIC_ROOT directory used in production
+/static/
+
