@@ -24,7 +24,7 @@ class OwnedEntityForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         # Make user account owner if object is new
-        if self.instance.id is None:
+        if self.instance.id is None and hasattr(self._user, 'profile'):
             self.instance.owner = self._user.profile.account
 
         return super(OwnedEntityForm, self).save(*args, **kwargs)

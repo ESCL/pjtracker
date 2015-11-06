@@ -23,4 +23,3 @@ class TeamForm(OwnedEntityForm):
         # Restrict activities to workable only
         f = self.fields['activities']
         f.queryset = f.queryset.workable()
-    

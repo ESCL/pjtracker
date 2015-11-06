@@ -129,7 +129,7 @@ class StandardResourceView(ReadOnlyResourceView):
         obj = pk and self.get_object(request.user, pk) or None
         main_form = self.main_form(instance=obj, user=request.user, prefix='main')
         context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
-        if self.sub_form:
+        if pk and self.sub_form:
             context['sub_form'] = self.sub_form(instance=obj, user=request.user, prefix='sub')
         return render(request, self.edit_template, context)
 
@@ -138,7 +138,7 @@ class StandardResourceView(ReadOnlyResourceView):
         main_form = self.main_form(request.POST, instance=obj, user=request.user, prefix='main')
         context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
 
-        if self.sub_form:
+        if pk and self.sub_form:
             sub_form = self.sub_form(request.POST, instance=obj, user=request.user, prefix='sub')
             context['sub_form'] = sub_form
         else:
@@ -148,7 +148,8 @@ class StandardResourceView(ReadOnlyResourceView):
             main_form.save()
             if sub_form:
                 sub_form.save()
-            return redirect(self.collection_view_name or slugify(self.model._meta.verbose_name_plural))
+            return redirect(self.collection_view_name or
+                            self.model._meta.verbose_name_plural.lower().replace(' ', ''))
 
         else:
             return render(request, self.edit_template, context, status=400)

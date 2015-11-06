@@ -1,9 +1,9 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity, History
+from ..common.db.models import OwnedEntity, History, AllowedLabourMixin
 
 
-class EquipmentType(OwnedEntity):
+class EquipmentType(OwnedEntity, AllowedLabourMixin):
 
     name = models.CharField(
         max_length=128
@@ -45,8 +45,16 @@ class Resource(OwnedEntity):
     )
 
     @property
+    def allowed_labour_types(self):
+        return self.instance.allowed_labour_types
+
+    @property
     def instance(self):
         return getattr(self, self.resource_type)
+
+    def complete_work_log(self, work_log):
+        work_log.company = self.company
+        work_log.location = self.location
 
     def save(self, *args, **kwargs):
         self.resource_type = self.__class__._meta.model_name
@@ -83,6 +91,10 @@ class Employee(Resource):
     )
 
     @property
+    def allowed_labour_types(self):
+        return self.position.allowed_labour_types
+
+    @property
     def full_name(self):
         return '{}, {}'.format(self.last_name, self.first_name)
 
@@ -94,8 +106,12 @@ class Employee(Resource):
     def nationality(self):
         return self.nation.__str__()
 
+    def complete_work_log(self, work_log):
+        super(Employee, self).complete_work_log(work_log)
+        work_log.position = self.position
+
     def __str__(self):
-        return self.identifier
+        return '{} ({})'.format(self.full_name, self.identifier)
 
 
 class Equipment(Resource):
@@ -108,8 +124,16 @@ class Equipment(Resource):
     )
 
     @property
+    def allowed_labour_types(self):
+        return self.type.allowed_labour_types
+
+    @property
     def storage(self):
         return self.space
+
+    def complete_work_log(self, work_log):
+        super(Equipment, self).complete_work_log(work_log)
+        work_log.equipment_type = self.type
 
     def __str__(self):
         return '{} ({})'.format(self.type, self.identifier)

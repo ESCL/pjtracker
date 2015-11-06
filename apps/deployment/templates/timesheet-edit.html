@@ -35,10 +35,17 @@
 
     <hr>
 
-    {% include 'worklogs-form.html' %}
+    {% if sub_form %}
+        {% include 'worklogs-form.html' %}
+    {% endif %}
 
     <div class="buttons">
-        <button type="submit">{% if timesheet %}Save{% else %}Add{% endif %}</button>
+        {% if timesheet %}
+            <button type="submit" class="button">Save</button>
+            <button type="submit" class="button-primary">Issue</button>
+        {% else %}
+            <button type="submit">Add</button>
+        {% endif %}
     </div>
 
 </form>

@@ -41,12 +41,22 @@ class Team(OwnedEntity):
     )
 
     @property
-    def employees(self):
+    def employees_resources(self):
         return self.resource_set.filter(resource_type='employee')
 
     @property
-    def equipment(self):
+    def employees(self):
+        for r in self.employees_resources:
+            yield r.employee
+
+    @property
+    def equipment_resources(self):
         return self.resource_set.filter(resource_type='equipment')
+
+    @property
+    def equipment(self):
+        for r in self.equipment_resources:
+            yield r.equipment
 
     def __str__(self):
         return self.code
