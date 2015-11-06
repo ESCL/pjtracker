@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, Q
 
 from ..exceptions import AuthenticationError
 
@@ -29,5 +29,5 @@ class OwnedEntityQuerySet(QuerySet):
         else:
             # Note: it seems like the __in lookup does not work in SQLite
             # return self.filter(owner__in=(account, None))
-            return self.filter(owner=account) | self.filter(owner=None)
+            return self.filter(Q(owner=account)| Q(owner=None))
 

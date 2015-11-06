@@ -2,6 +2,7 @@
 from django.db import models
 
 from ..common.db.models import OwnedEntity, AllowedLabourMixin
+from .query import ActivityQuerySet
 
 
 class Project(OwnedEntity):
@@ -52,6 +53,8 @@ class Activity(OwnedEntity, AllowedLabourMixin):
 
     class Meta:
         verbose_name_plural = 'activities'
+
+    objects = ActivityQuerySet.as_manager()
 
     name = models.CharField(
         max_length=128
