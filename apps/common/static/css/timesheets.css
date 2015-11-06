@@ -22,13 +22,8 @@
     font-weight: bold;
 }
 
-.timesheet-body .log {
-
-}
-
 .timesheet-body .log input {
     width: 100%;
-    text-align: center;
 }
 
 .timesheet-body .log.invalid input {

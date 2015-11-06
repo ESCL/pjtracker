@@ -3,7 +3,15 @@ __author__ = 'kako'
 from django import forms
 
 
-class OwnedEntityForm(forms.ModelForm):
+class ModernizeFieldsMixin(object):
+
+    def modernize_fields(self):
+        for field in self.fields.values():
+            if isinstance(field, forms.DateField):
+                field.widget.input_type = 'date'
+
+
+class OwnedEntityForm(forms.ModelForm, ModernizeFieldsMixin):
 
     def __init__(self, *args, **kwargs):
         self._user = kwargs.pop('user', None)
@@ -11,6 +19,7 @@ class OwnedEntityForm(forms.ModelForm):
 
         if self._user:
             self._restrict_querysets()
+        self.modernize_fields()
 
     def _restrict_querysets(self):
         """

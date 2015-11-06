@@ -16,7 +16,8 @@ class TimeSheetForm(OwnedEntityForm):
     def __init__(self, *args, instance=None, **kwargs):
         super(TimeSheetForm, self).__init__(*args, instance=instance, **kwargs)
 
-        # Hide fields depending on whether it's new or not
+        # Remove team field for existing timesheets (logs depend on this, so we
+        # can't have people changing this)
         if instance:
             self.fields.pop('team')
 
