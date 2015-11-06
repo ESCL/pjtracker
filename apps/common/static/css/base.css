@@ -7,6 +7,9 @@
     src: url('../fonts/Roboto-Regular.ttf') format('truetype');
 }
 
+h1{
+    color: #888;
+}
 
 /** Body and container **/
 
