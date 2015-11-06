@@ -60,25 +60,26 @@ class TimeSheet(OwnedEntity, SignalsMixin):
         return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
 
     @cached_property
-    def activities(self):
-        d = {a.id: a for a in self.team.activities.all()}
-        for acts in self.work_logs_data.values():
-            d.update({a.id: a for a in acts.keys()})
+    def resources(self):
+        d = {r.id: r for r in self.team.resource_set.all()}
+        d.update({log.resource.id: log.resource
+                  for log in self.work_logs.all()})
         return d
 
     @cached_property
-    def employees(self):
-        d = {e.id: e for e in self.team.employees}
-        d.update({e.id: e for e in self.work_logs_data.keys()})
+    def activities(self):
+        d = {a.id: a for a in self.team.activities.all()}
+        d.update({log.activity.id: log.activity
+                  for log in self.work_logs.all()})
         return d
 
     @cached_property
     def work_logs_data(self):
         d = {}
-        for wl in self.work_logs.order_by('employee', 'activity'):
-            if wl.employee not in d:
-                d[wl.employee] = {}
-            d[wl.employee][wl.activity] = wl
+        for wl in self.work_logs.all():
+            if wl.resource not in d:
+                d[wl.resource] = {}
+            d[wl.resource][wl.activity] = wl
         return d
 
     def __str__(self):
@@ -115,8 +116,8 @@ class WorkLog(models.Model):
         'TimeSheet',
         related_name='work_logs'
     )
-    employee = models.ForeignKey(
-        'resources.Employee'
+    resource = models.ForeignKey(
+        'resources.Resource'
     )
     activity = models.ForeignKey(
         'work.Activity',
@@ -134,17 +135,22 @@ class WorkLog(models.Model):
 
     # De-normalization, keep attrs that can change in an employee
     company = models.ForeignKey('organizations.Company')
-    position = models.ForeignKey('organizations.Position')
     location = models.ForeignKey('geo.Location')
+    position = models.ForeignKey(
+        'organizations.Position',
+        null=True
+    )
+    equipment_type = models.ForeignKey(
+        'resources.EquipmentType',
+        null=True
+    )
 
     def save(self, *args, **kwargs):
         # Update de-normalized attributes
-        self.company = self.employee.company
-        self.position = self.employee.position
-        self.location = self.employee.location
+        self.resource.instance.complete_work_log(self)
 
         # Save and return
         return super(WorkLog, self).save(*args, **kwargs)
 
     def __str__(self):
-        return '{} - {}'.format(self.employee, self.activity)
+        return '{} - {}'.format(self.resource, self.activity)

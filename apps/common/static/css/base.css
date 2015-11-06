@@ -67,6 +67,13 @@ button {
 }
 
 
+/** Definition lists */
+
+dt {
+    font-weight: bold;
+}
+
+
 /** Table elements **/
 
 table {

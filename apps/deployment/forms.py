@@ -40,63 +40,66 @@ class WorkLogsForm(forms.Form):
         self.timesheet = instance
         self.rows = []
 
-        for employee in instance.employees.values():
+        for pk, resource in self.timesheet.resources.items():
             logs = []
             for activity in self.timesheet.activities.values():
                 # Get log (existing or new)
-                log = self._get_log_for(employee, activity)
+                log = self._get_log_for(resource, activity)
 
                 # Append to row and to form
-                name = '{}.{}'.format(employee.id, activity.id)
+                name = '{}.{}'.format(pk, activity.id)
                 self.fields[name] = forms.DecimalField(
-                    initial=log.hours, required=False, max_value=12
+                    initial=log.hours, required=False, max_value=12,
                 )
+                if not set(resource.allowed_labour_types).intersection(activity.allowed_labour_types):
+                    self.fields[name].widget.attrs.update({'disabled': 'disabled',
+                                                           'readonly': True})
                 log.field = self[name]
                 logs.append(log)
 
-            self.rows.append({'employee': employee, 'logs': logs})
+            self.rows.append({'resource': resource, 'logs': logs})
+
+    def _get_log_for(self, resource, activity):
+        return self.timesheet.work_logs_data.get(resource, {}).get(
+            activity,
+            WorkLog(timesheet=self.timesheet, resource=resource, activity=activity)
+        )
 
     def _iter_fields_values(self, cleaned_data):
         for fname, v in cleaned_data.items():
-            e_id, a_id = fname.split('.')
-            e = self.timesheet.employees[int(e_id)]
+            r_id, a_id = fname.split('.')
+            r = self.timesheet.resources[int(r_id)]
             a = self.timesheet.activities[int(a_id)]
-            yield e, a, v
-
-    def _get_log_for(self, employee, activity):
-        return self.timesheet.work_logs_data.get(employee, {}).get(
-            activity,
-            WorkLog(timesheet=self.timesheet, employee=employee, activity=activity)
-        )
+            yield r, a, v
 
     def clean(self):
         cleaned_data = super(WorkLogsForm, self).clean()
+        es = []
 
-        for employee, activity, value in self._iter_fields_values(cleaned_data):
+        for resource, activity, value in self._iter_fields_values(cleaned_data):
             if value:
                 # Check that labour types match
-                p_labour = {lt for lt in employee.position.labour_types if lt.allowed}
-                a_labour = {lt for lt in activity.labour_types if lt.allowed}
-                if not set(p_labour).intersection(a_labour):
-                    es = []
-                    if not p_labour:
-                        es.append("Position {} does not allow charging hours.".format(employee.position))
+                r_labour = resource.allowed_labour_types
+                a_labour = activity.allowed_labour_types
+                if not set(r_labour).intersection(a_labour):
+                    if not r_labour:
+                        es.append("{} cannot charge hours.".format(resource.instance))
                     if not a_labour:
                         es.append("Activity {} does not allow charging hours for any labour types.".format(activity))
 
                     if not es:
-                        es.append("Employee {} can charge hours as {}, activity {} only allows {}.".format(
-                            employee, ', '.join(str(l) for l in p_labour), activity, ', '.join(str(l) for l in a_labour))
+                        es.append("{} can charge hours as {}, activity {} only allows {}.".format(
+                            resource, ', '.join(str(l) for l in r_labour), activity, ', '.join(str(l) for l in a_labour))
                         )
 
-                    raise forms.ValidationError(es)
-
+        if es:
+            raise forms.ValidationError(es)
         return cleaned_data
 
     def save(self):
-        for employee, activity, value in self._iter_fields_values(self.cleaned_data):
+        for resource, activity, value in self._iter_fields_values(self.cleaned_data):
             # Get log (existing or new)
-            log = self._get_log_for(employee, activity)
+            log = self._get_log_for(resource, activity)
 
             if value:
                 # Some hours set, process the log
@@ -104,9 +107,7 @@ class WorkLogsForm(forms.Form):
 
                 # Use the first allowed labour type (we'll fix that later)
                 # TODO: Allow setting labour type in timesheet
-                p_labour = filter(lambda lt: lt.allowed, employee.position.labour_types)
-                a_labour = filter(lambda lt: lt.allowed, activity.labour_types)
-                log.labour_type = list(set(p_labour).intersection(a_labour))[0].value
+                log.labour_type = list(set(resource.allowed_labour_types).intersection(activity.allowed_labour_types))[0].value
 
                 # Save the log
                 log.save()

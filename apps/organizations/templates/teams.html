@@ -32,8 +32,8 @@
                 <td>{{ t.name }}</td>
                 <td>{{ t.company }}</td>
                 <td>{{ t.supervisor }}</td>
-                <td>{{ t.employees.count }}</td>
-                <td>{{ t.equipment.count }}</td>
+                <td>{{ t.employees_resources.count }}</td>
+                <td>{{ t.equipment_resources.count }}</td>
                 <td>{{ t.activities.count }}</td>
                 <td class="actions">
                     <a href="{% url 'team' pk=t.id %}">view</a>

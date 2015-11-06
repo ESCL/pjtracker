@@ -38,9 +38,13 @@ class History(models.Model):
 
 class LabourType(object):
 
-    TYPES = (('managerial', 'M', 'MGT'),
-             ('indirect', 'I', 'IND'),
-             ('direct', 'D', 'DIR'))
+    MANAGERIAL = 'M'
+    INDIRECT = 'I'
+    DIRECT = 'D'
+
+    TYPES = (('managerial', MANAGERIAL, 'MGT'),
+             ('indirect', INDIRECT, 'IND'),
+             ('direct', DIRECT, 'DIR'))
     CHOICES = ((t[1], t[0].title()) for t in TYPES)
 
     def __init__(self, name, value, code, allowed):
@@ -83,3 +87,8 @@ class AllowedLabourMixin(models.Model):
             allowed = getattr(self, '{}_labour'.format(name))
             l.append(LabourType(name, value, code, allowed))
         return l
+
+    @property
+    def allowed_labour_types(self):
+        return {lt for lt in self.labour_types if lt.allowed}
+

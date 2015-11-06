@@ -32,6 +32,7 @@ class EquipmentFactory(DjangoModelFactory):
 
     identifier = Faker('ssn')
     company = SubFactory(CompanyFactory)
+    team = SubFactory(TeamFactory)
     project = SubFactory(ProjectFactory)
     type = SubFactory(EquipmentSubTypeFactory)
     space = SubFactory(SpaceFactory)

@@ -10,7 +10,7 @@
 
 <div class="row timesheet-header">
     <div class="three columns">
-        <h4><span class="activities-title">Activities</span><br>Employees</h4>
+        <h4><span class="activities-title">Activities</span><br>Resources</h4>
     </div>
     <div class="nine columns">
         {% for activity in timesheet.activities.values %}
@@ -25,13 +25,20 @@
     {% for row in sub_form.rows %}
         <div class="row">
 
-            <div class="three columns">
-                <span class="employee-name">{{ row.employee.full_name }}</span><br>
-                <span class="employee-identifier">{{ row.employee.identifier }}</span><br>
-                <span class="employee-position">{{ row.employee.position }}</span>
+            <div class="three columns resource">
+                {% if row.resource.resource_type == 'employee' %}
+                    <span>{{ row.resource.identifier}}</span><br>
+                    <span>
+                        {{ row.resource.employee.full_name }}<br>
+                        {{ row.resource.employee.position }}
+                    </span>
+                {% else %}
+                    <span>{{ row.resource.identifier }}</span><br>
+                    <span>{{ row.resource.equipment.type }}</span>
+                {% endif %}
             </div>
 
-            <div class="nine columns">
+            <div class="nine columns logs">
                 {% for log in row.logs %}
                     <div class="grid-column log {% if log.field.errors %}invalid{% endif %}">
                         {{ log.field }}

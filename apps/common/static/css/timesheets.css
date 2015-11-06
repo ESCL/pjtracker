@@ -14,12 +14,16 @@
     float: right;
 }
 
-.timesheet-body .employee-name {
+.timesheet-body .resource {
+    line-height: 1.1em;
+}
+
+.timesheet-body .resource span:first-of-type{
     font-weight: bold;
 }
 
 .timesheet-body .log {
-    padding: 0;
+
 }
 
 .timesheet-body .log input {
@@ -32,3 +36,6 @@
     box-shadow: 0 0 2px #f00;
 }
 
+.timesheet-body .log input[disabled=disabled] {
+    border: 0;
+}

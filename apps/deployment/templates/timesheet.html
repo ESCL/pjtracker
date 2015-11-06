@@ -36,32 +36,22 @@
     <table>
         <thead>
             <tr>
-                <th>Employee</th>
+                <th>Resource</th>
                 <th colspan="2">Activity</th>
                 <th>Labour</th>
                 <th>Hours</th>
             </tr>
         </thead>
         <tbody>
-            {% for employee, activities in timesheet.work_logs_data.items %}
-                <tr>
-                    <td rowspan="{{ activities|length }}">
-                        <b>{{ employee.identifier }}</b><br>
-                        {{ employee.full_name }}<br>
-                        {{ employee.position }}
-                    </td>
-                    <td colspan="3" class="subtotal">Overall</td>
-                    <td class="subtotal">{{ activities.total }}</td>
-                </tr>
+            {% for resource, activities in timesheet.work_logs_data.items %}
                 {% for activity, log in activities.items %}
-                    {% if activity.id %}
                     <tr>
+                        <td>{{ resource }}</td>
                         <td>{{ activity.wbs_code }}</td>
                         <td>{{ activity.name }}</td>
-                        <td>{{ activity.get_labour_type_display }}</td>
+                        <td>{{ log.get_labour_type_display }}</td>
                         <td>{{ log.hours }}</td>
                     </tr>
-                    {% endif %}
                 {% endfor %}
             {% endfor %}
         </tbody>

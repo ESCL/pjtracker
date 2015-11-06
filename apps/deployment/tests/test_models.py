@@ -4,10 +4,10 @@ from django.test import TestCase
 from ...accounts.factories import AccountFactory, UserFactory
 from ...notifications.models import Notification
 from ...organizations.factories import TeamFactory
-from ...resources.factories import EmployeeFactory
+from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet, WorkLog
+from ..models import TimeSheet, WorkLog, LabourType
 
 
 class TimeSheetTest(TestCase):
@@ -85,12 +85,11 @@ class TimeSheetTest(TestCase):
     def test_work_logs_properties(self):
         # All properties are empty first
         self.assertEqual(self.ts.work_logs_data, {})
-        self.assertEqual(self.ts.employees, {})
-        self.assertEqual(self.ts.activities, {})
+        self.assertEqual(self.ts.resources, {})
 
-        # Add two employees, one belonging to the team
+        # Add two resources, one belonging to the team
         e1 = EmployeeFactory.create(team=self.team)
-        e2 = EmployeeFactory.create()
+        e2 = EquipmentFactory.create()
 
         # Add a few activities, link team to last one
         a1 = ActivityFactory.create()
@@ -98,32 +97,26 @@ class TimeSheetTest(TestCase):
         a3 = ActivityFactory.create()
         self.team.activities.add(a1)
 
-        # Sets still show nothing added because they're cached
-        self.assertEqual(self.ts.employees, {})
-        self.assertEqual(self.ts.activities, {})
-
         # Fetch again, employees and acts are updated
         self.ts = TimeSheet.objects.get(id=self.ts.id)
-        self.assertEqual(self.ts.employees, {e1.id: e1})
+        self.assertEqual(self.ts.resources, {e1.resource_ptr.id: e1.resource_ptr})
         self.assertEqual(self.ts.activities, {a1.id: a1})
 
         # Add a few logs with employees and activities not belonging to team
         log1 = WorkLog.objects.create(timesheet=self.ts,
-                                      employee=e2,
+                                      resource=e2.resource_ptr,
                                       activity=a2,
                                       hours=3,
-                                      labour_type=WorkLog.LABOUR_INDIRECT)
+                                      labour_type=LabourType.INDIRECT)
         log2 = WorkLog.objects.create(timesheet=self.ts,
-                                      employee=e2,
+                                      resource=e2.resource_ptr,
                                       activity=a3,
                                       hours=5,
-                                      labour_type=WorkLog.LABOUR_INDIRECT)
-
-        # Log still shows nothing because it's cached
-        self.assertEqual(self.ts.work_logs_data, {})
+                                      labour_type=LabourType.INDIRECT)
 
         # Fetch again, everything updated (and what belongs to team is first)
         self.ts = TimeSheet.objects.get(id=self.ts.id)
-        self.assertEqual(self.ts.work_logs_data, {e2: {a2: log1, a3: log2}})
-        self.assertEqual(self.ts.employees, {e1.id: e1, e2.id: e2})
+        self.assertEqual(self.ts.work_logs_data, {e2.resource_ptr: {a2: log1, a3: log2}})
+        self.assertEqual(self.ts.resources, {e1.resource_ptr.id: e1.resource_ptr,
+                                             e2.resource_ptr.id: e2.resource_ptr})
         self.assertEqual(self.ts.activities, {a1.id: a1, a2.id: a2, a3.id: a3})
