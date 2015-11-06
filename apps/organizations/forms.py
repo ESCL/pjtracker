@@ -16,3 +16,11 @@ class TeamForm(OwnedEntityForm):
     class Meta:
         model = Team
         exclude = ('owner',)
+
+    def __init__(self, *args, **kwargs):
+        super(TeamForm, self).__init__(*args, **kwargs)
+
+        # Restrict activities to workable only
+        f = self.fields['activities']
+        f.queryset = f.queryset.workable()
+    
