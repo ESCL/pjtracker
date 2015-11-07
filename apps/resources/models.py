@@ -87,14 +87,6 @@ class Employee(Resource):
     def full_name(self):
         return '{}, {}'.format(self.last_name, self.first_name)
 
-    @property
-    def lodging(self):
-        return self.space
-
-    @property
-    def nationality(self):
-        return self.nation.__str__()
-
     def complete_work_log(self, work_log):
         super(Employee, self).complete_work_log(work_log)
         work_log.position = self.position
@@ -115,10 +107,6 @@ class Equipment(Resource):
     @property
     def allowed_labour_types(self):
         return self.type.allowed_labour_types
-
-    @property
-    def storage(self):
-        return self.space
 
     def complete_work_log(self, work_log):
         super(Equipment, self).complete_work_log(work_log)

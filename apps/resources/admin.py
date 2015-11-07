@@ -4,8 +4,7 @@ from .models import Employee, Equipment, EquipmentType
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('identifier', 'full_name', 'nationality', 'company',
-                    'project', 'position',)
+    list_display = ('identifier', 'full_name', 'company', 'project', 'position',)
 
 
 class EquipmentAdmin(admin.ModelAdmin):

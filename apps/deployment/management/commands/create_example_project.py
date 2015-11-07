@@ -2,7 +2,6 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
-from ....geo.factories import SpaceFactory
 from ....resources.factories import EmployeeFactory, EquipmentFactory
 from ....work.factories import ProjectFactory, ActivityFactory, ActivityGroupFactory, ActivityGroupTypeFactory
 from ....work.models import Project
