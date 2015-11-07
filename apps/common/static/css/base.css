@@ -8,7 +8,7 @@
 }
 
 h1{
-    color: #888;
+    color: #44BBEE;
 }
 
 /** Body and container **/
@@ -92,6 +92,7 @@ table .actions {
 thead th {
     text-transform: uppercase;
     padding-left: 16px;
+    color: #488;
 }
 
 tbody td {
