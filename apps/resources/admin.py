@@ -5,12 +5,11 @@ from .models import Employee, Equipment, EquipmentType
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('identifier', 'full_name', 'nationality', 'company',
-                    'project', 'position', 'location', 'lodging',)
+                    'project', 'position',)
 
 
 class EquipmentAdmin(admin.ModelAdmin):
-    list_display = ('identifier', 'company', 'project', 'type', 'location',
-                    'storage',)
+    list_display = ('identifier', 'company', 'project', 'type',)
 
 
 class EquipmentTypeAdmin(admin.ModelAdmin):

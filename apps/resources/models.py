@@ -32,14 +32,6 @@ class Resource(OwnedEntity):
     project = models.ForeignKey(
         'work.Project'
     )
-    location = models.ForeignKey(
-        'geo.Location',
-        null=True
-    )
-    space = models.ForeignKey(
-        'geo.Space',
-        null=True
-    )
     resource_type = models.CharField(
         max_length=32,
     )
@@ -71,9 +63,6 @@ class Employee(Resource):
     )
     last_name = models.CharField(
         max_length=64
-    )
-    nation = models.ForeignKey(
-        'geo.Nation'
     )
     birth_date = models.DateField(
         null=True, blank=True
@@ -145,20 +134,6 @@ class ResourceHistory(History):
         abstract = True
 
 
-class LocationHistory(ResourceHistory):
-
-    space = models.ForeignKey(
-        'geo.Location'
-    )
-
-
-class SpaceHistory(ResourceHistory):
-
-    space = models.ForeignKey(
-        'geo.Space'
-    )
-
-
 class CompanyHistory(ResourceHistory):
 
     team = models.ForeignKey(
@@ -188,4 +163,3 @@ class PositionHistory(History):
     position = models.ForeignKey(
         'organizations.Position'
     )
-

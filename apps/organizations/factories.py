@@ -25,18 +25,12 @@ class TeamFactory(DjangoModelFactory):
 
     @post_generation
     def timekeepers(self, create, values):
-        if not create:
-            return
-
-        if values:
+        if create and values:
             self.timekeepers.add(*values)
 
     @post_generation
     def supervisors(self, create, values):
-        if not create:
-            return
-
-        if values:
+        if create and values:
             self.supervisors.add(*values)
 
 

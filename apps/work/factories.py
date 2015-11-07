@@ -2,7 +2,6 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, Faker, SubFactory, post_generation
 
-from ..geo.factories import LocationFactory
 from .models import Project, Activity, ActivityGroup, ActivityGroupType
 
 
@@ -13,7 +12,6 @@ class ProjectFactory(DjangoModelFactory):
 
     name = Faker('street_address')
     code = Faker('military_ship')
-    location = SubFactory(LocationFactory)
 
 
 class ActivityGroupTypeFactory(DjangoModelFactory):

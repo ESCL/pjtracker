@@ -4,7 +4,7 @@ from .models import Project, Activity, ActivityGroup, ActivityGroupType
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'location',)
+    list_display = ('name', 'code',)
 
 
 class ActivityAdmin(admin.ModelAdmin):

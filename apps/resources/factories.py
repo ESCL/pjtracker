@@ -2,7 +2,6 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker
 
-from ..geo.factories import NationFactory, SpaceFactory
 from ..organizations.factories import CompanyFactory, PositionFactory, TeamFactory
 from ..work.factories import ProjectFactory
 from .models import Employee, Equipment, EquipmentType
@@ -35,8 +34,6 @@ class EquipmentFactory(DjangoModelFactory):
     team = SubFactory(TeamFactory)
     project = SubFactory(ProjectFactory)
     type = SubFactory(EquipmentSubTypeFactory)
-    space = SubFactory(SpaceFactory)
-    location = LazyAttribute(lambda obj: obj.space.location)
 
 
 class EmployeeFactory(DjangoModelFactory):
@@ -47,10 +44,7 @@ class EmployeeFactory(DjangoModelFactory):
     identifier = Faker('ssn')
     first_name = Faker('first_name')
     last_name = Faker('last_name')
-    nation = SubFactory(NationFactory)
     company = LazyAttribute(lambda obj: obj.team.company)
     project = SubFactory(ProjectFactory)
     position = SubFactory(PositionFactory)
-    space = SubFactory(SpaceFactory)
-    location = LazyAttribute(lambda obj: obj.space.location)
     team = SubFactory(TeamFactory)

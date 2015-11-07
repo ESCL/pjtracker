@@ -213,7 +213,6 @@ class WorkLog(models.Model):
 
     # De-normalization, keep attrs that can change in an employee
     company = models.ForeignKey('organizations.Company')
-    location = models.ForeignKey('geo.Location')
     position = models.ForeignKey(
         'organizations.Position',
         null=True
