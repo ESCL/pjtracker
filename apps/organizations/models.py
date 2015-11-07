@@ -31,9 +31,15 @@ class Team(OwnedEntity):
     company = models.ForeignKey(
         'organizations.Company'
     )
-    supervisor = models.ForeignKey(
+    timekeepers = models.ManyToManyField(
         'auth.User',
-        null=True
+        blank=True,
+        related_name='timekept_teams'
+    )
+    supervisors = models.ManyToManyField(
+        'auth.User',
+        blank=True,
+        related_name='supervised_teams'
     )
     activities = models.ManyToManyField(
         'work.Activity',

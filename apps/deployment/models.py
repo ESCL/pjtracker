@@ -21,6 +21,10 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     STATUS_REJECTED = 'R'
     STATUS_APPROVED = 'A'
 
+    REVIEW_POLICY_FIRST = 'F'
+    REVIEW_POLICY_MAJORITY = 'M'
+    REVIEW_POLICY_ALL = 'A'
+
     team = models.ForeignKey(
         'organizations.Team'
     )
@@ -34,17 +38,6 @@ class TimeSheet(OwnedEntity, SignalsMixin):
                  (STATUS_REJECTED, 'Rejected'),
                  (STATUS_APPROVED, 'Approved')),
         default=STATUS_PREPARING
-    )
-    issuer = models.ForeignKey(
-        'auth.User',
-        related_name='timesheets_issued',
-        null=True
-    )
-    reviewer = models.ForeignKey(
-        'auth.User',
-        related_name='timesheets_reviewed',
-        null=True,
-        blank=True
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
@@ -60,16 +53,36 @@ class TimeSheet(OwnedEntity, SignalsMixin):
         return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
 
     @cached_property
-    def resources(self):
-        d = {r.id: r for r in self.team.resource_set.all()}
-        d.update({log.resource.id: log.resource
-                  for log in self.work_logs.all()})
-        return d
+    def active_reviews(self):
+        """
+        Return all reviews since the last issuance of the timesheet.
+        """
+        res = []
+        for r in self.actions.order_by('-timestamp'):
+            if r.action == r.ISSUED:
+                break
+            else:
+                res.append(r)
+
+        return list(reversed(res))
+
+    @cached_property
+    def pending_reviews(self):
+        supervisors = set(self.team.supervisors.all())
+        supervisors.difference_update(r.actor for r in self.active_reviews)
+        return supervisors
 
     @cached_property
     def activities(self):
         d = {a.id: a for a in self.team.activities.all()}
         d.update({log.activity.id: log.activity
+                  for log in self.work_logs.all()})
+        return d
+
+    @cached_property
+    def resources(self):
+        d = {r.id: r for r in self.team.resource_set.all()}
+        d.update({log.resource.id: log.resource
                   for log in self.work_logs.all()})
         return d
 
@@ -86,28 +99,93 @@ class TimeSheet(OwnedEntity, SignalsMixin):
         return '{} - {}'.format(self.team, self.date.isoformat())
 
     def issue(self, user):
+        if user not in self.team.timekeepers.all():
+            raise TypeError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
+
+        TimeSheetAction.objects.create(
+            timesheet=self,
+            actor=user,
+            action=TimeSheetAction.ISSUED
+        )
         self.status = self.STATUS_ISSUED
-        self.issuer = user
         self.save()
         self.signal('issued')
 
     def reject(self, user):
-        if user != self.team.supervisor:
+        if user not in self.team.supervisors.all():
             raise TypeError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
-        self.status = self.STATUS_REJECTED
-        self.reviewer = user
-        self.save()
-        self.signal('rejected')
+        TimeSheetAction.objects.create(
+            timesheet=self,
+            actor=user,
+            action=TimeSheetAction.REJECTED
+        )
+        if self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED):
+            self.signal('rejected')
 
     def approve(self, user):
-        if user != self.team.supervisor:
+        if user not in self.team.supervisors.all():
             raise TypeError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
-        self.status = self.STATUS_APPROVED
-        self.reviewer = user
-        self.save()
-        self.signal('approved')
+        TimeSheetAction.objects.create(
+            timesheet=self,
+            actor=user,
+            action=TimeSheetAction.APPROVED
+        )
+        if self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED):
+            self.signal('approved')
+
+    def update_status(self, operation, action, status):
+        """
+        Update the status if required and return whether it was updated or not,
+        by checking that the condition to update defined by the review policy
+        allows it.
+        """
+        # Get the total number of reviews and the ones in target status
+        total_reviews = len(self.pending_reviews) + len(self.active_reviews)
+        in_status = len([r for r in self.active_reviews if r.action == action])
+
+        # Get review policy from settings
+        policy = getattr(self.owner.timesheet_settings, '{}_policy'.format(operation))
+
+        # Determine whether we can update status
+        if policy == self.REVIEW_POLICY_FIRST:
+            update = bool(in_status)
+        elif policy == self.REVIEW_POLICY_MAJORITY:
+            update = float(in_status) / total_reviews > 0.5
+        else:
+            update = in_status == total_reviews
+
+        # Finally, set the status, save and return the result
+        if update:
+            self.status = status
+            self.save()
+            return True
+        return False
+
+
+class TimeSheetAction(models.Model):
+
+    ISSUED = 'I'
+    REJECTED = 'R'
+    APPROVED = 'A'
+
+    timesheet = models.ForeignKey(
+        'TimeSheet',
+        related_name='actions'
+    )
+    actor = models.ForeignKey(
+        'auth.User'
+    )
+    action = models.CharField(
+        max_length=16,
+        choices=((ISSUED, 'Issued'),
+                 (REJECTED, 'Rejected'),
+                 (APPROVED, 'Approved'))
+    )
+    timestamp = models.DateTimeField(
+        default=datetime.utcnow
+    )
 
 
 class WorkLog(models.Model):
@@ -154,3 +232,28 @@ class WorkLog(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.resource, self.activity)
+
+
+class AccountSettings(models.Model):
+    """
+    Settings for timesheets and related entities for a given account.
+    """
+    # TODO: Validate poilicies, they must be different to avoid status limbo!!!
+    account = models.OneToOneField(
+        'accounts.Account',
+        related_name='timesheet_settings'
+    )
+    approval_policy = models.CharField(
+        max_length=1,
+        choices=((TimeSheet.REVIEW_POLICY_FIRST, 'Any'),
+                 (TimeSheet.REVIEW_POLICY_MAJORITY, 'Majority'),
+                 (TimeSheet.REVIEW_POLICY_ALL, 'All')),
+        default=TimeSheet.REVIEW_POLICY_ALL
+    )
+    rejection_policy = models.CharField(
+        max_length=1,
+        choices=((TimeSheet.REVIEW_POLICY_FIRST, 'Any'),
+                 (TimeSheet.REVIEW_POLICY_MAJORITY, 'Majority'),
+                 (TimeSheet.REVIEW_POLICY_ALL, 'All')),
+        default=TimeSheet.REVIEW_POLICY_FIRST
+    )

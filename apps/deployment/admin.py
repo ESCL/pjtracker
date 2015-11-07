@@ -9,7 +9,7 @@ class WorkLogInline(admin.TabularInline):
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
-    list_display = ('team', 'date', 'status', 'issuer', 'timestamp',)
+    list_display = ('team', 'date', 'status',)
     inlines = (WorkLogInline,)
 
 
