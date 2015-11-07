@@ -21,45 +21,45 @@
 
     <nav>
         <a href="{% url 'companies' %}" class="button">
+            <img src="{% static 'img/menu/companies.png' %}"><br>
             <span class="icon-text">Companies</span>
-            <img src="{% static 'img/menu/companies.png' %}">
         </a>
 
         <a href="{% url 'teams' %}" class="button">
+            <img src="{% static 'img/menu/teams.png' %}"><br>
             <span class="icon-text">Teams</span>
-            <img src="{% static 'img/menu/teams.png' %}">
         </a>
 
         <a href="{% url 'employees' %}" class="button">
+            <img src="{% static 'img/menu/employees.png' %}"><br>
             <span class="icon-text">Employees</span>
-            <img src="{% static 'img/menu/employees.png' %}">
         </a>
 
         <a href="{% url 'equipments' %}" class="button">
+            <img src="{% static 'img/menu/equipment.png' %}"><br>
             <span class="icon-text">Equipment</span>
-            <img src="{% static 'img/menu/equipment.png' %}">
         </a>
 
         <a href="{% url 'projects' %}" class="button">
+            <img src="{% static 'img/menu/projects.png' %}"><br>
             <span class="icon-text">Projects</span>
-            <img src="{% static 'img/menu/projects.png' %}">
         </a>
 
         <a href="{% url 'timesheets' %}" class="button">
+            <img src="{% static 'img/menu/timesheets.png' %}"><br>
             <span class="icon-text">Time-Sheets</span>
-            <img src="{% static 'img/menu/timesheets.png' %}">
         </a>
 
         {% if user.is_staff %}
             <a href="/admin/" class="button">
+                <img src="{% static 'img/menu/admin.png' %}"><br>
                 <span class="icon-text">Admin</span>
-                <img src="{% static 'img/menu/admin.png' %}">
             </a>
         {% endif %}
 
         <a href="{% url 'logout' %}" class="button">
+            <img src="{% static 'img/menu/logout.png' %}"><br>
             <span class="icon-text">Log out</span>
-            <img src="{% static 'img/menu/logout.png' %}">
         </a>
 
     </nav>

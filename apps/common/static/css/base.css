@@ -20,7 +20,6 @@ body {
 
 .container {
     font-size: 0.9em;
-    padding: 20px 0;
 }
 
 /** Links **/
@@ -92,6 +91,7 @@ table .actions {
 thead th {
     text-transform: uppercase;
     padding-left: 16px;
+    color: #488;
 }
 
 tbody td {
