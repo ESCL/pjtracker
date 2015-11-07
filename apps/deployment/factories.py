@@ -13,4 +13,3 @@ class TimeSheetFactory(DjangoModelFactory):
         model = TimeSheet
 
     team = SubFactory(TeamFactory)
-    issuer = SubFactory(UserFactory)

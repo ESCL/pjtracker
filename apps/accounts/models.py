@@ -3,6 +3,10 @@ from django.db import models
 
 class Account(models.Model):
 
+    TIMESHEET_REVIEW_ANY = 'any'
+    TIMESHEET_REVIEW_MAJORITY = 'majority'
+    TIMESHEET_REVIEW_ALL = 'all'
+
     name = models.CharField(
         max_length=128
     )
@@ -31,3 +35,4 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.account.name
+
