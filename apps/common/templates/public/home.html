@@ -20,6 +20,8 @@
 
 <div class="title">
     pjtracker &copy;
+    <br /> 
+    <span class="grey">Project Tracker Tool</span>
 </div>
 
 <!-- Marketing messaging and featurettes
@@ -31,24 +33,39 @@
     <!-- Three columns of text below the carousel -->
     <div class="row">
         <div class="col-lg-4">
-            <img class="img-circle" src="{% static 'img/menu/timesheets.png' %}" alt="Generic placeholder image">
+            <img class="img-circle" src="{% static 'img/menu/timesheets.png' %}" alt="Timesheets">
             <h2>Timesheets</h2>
             <p>
-                Control the costs by controlling the hours
+                Knowing how many hours you have spent in each project activity will help you understand where the cost is coming from.
+                <br />
+                Having access to accurate information helps you take right decisions; generate more accurate budgets and clearly improve your ROI.
+            </p>
+            <p>
+                We provide a simple timesheet that is customized to allow loading hours only to previously assigned activities which minimizes the risk of wrongly data entry
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
-            <img class="img-circle" src="{% static 'img/menu/companies.png' %}" alt="Generic placeholder image">
+            <img class="img-circle" src="{% static 'img/menu/companies.png' %}" alt="Companies">
             <h2>Multi-company</h2>
             <p>
-                Allows the management of multiple companies.
+                You may handle multiple projects, on different locations and even group companies.
+                <br />
+                The same approach and a fine tuned setup will help your organization track the project progress and costs whit this user friendly tool
+            </p>
+            <p>
+                This tool is customizable at the point that it'll surely fit your company structure and demands
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
             <img class="img-circle" src="{% static 'img/menu/employees.png' %}" alt="Generic placeholder image">
             <h2>Employees</h2>
             <p>
-                Manage employees.
+                The biggest asset of any company is their staff.
+                <br />
+                Every collaborator in the company deserves to get paid correctly as per their conditions of service and on time
+            </p>
+            <p>
+                We provide interfaces for payroll from the timesheet module. This will ensure project progress as well as salary are based on the same source
             </p>
         </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
@@ -59,48 +76,62 @@
             <img class="img-circle" src="{% static 'img/menu/equipment.png' %}" alt="Generic placeholder image">
             <h2>Equipment</h2>
             <p>
-                Manage equipment
+                The same way you assign workers to a working team, you assign equipment.
+                That equipment must also be tracked. Not only the location where the asset is but also its production
+            </p>
+            <p>
+                The timesheet allows also to load worked hours of equipment in the different activities and phases of the project clearly identified
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
             <img class="img-circle" src="{% static 'img/menu/projects.png' %}" alt="Generic placeholder image">
             <h2>Projects</h2>
             <p>
-                Manage projects
+                Scheduling software allows to split a project in different milestones, WBS, phases etc.
+                A project can contain thousand of activities and all those activities will eventualy receive man-hours or equipment hours.
+                So an accurate input of the activities inside the tool is crucial.
+            </p>
+            <p>
+                This tool allows you to import the list of WBS directly from task / project management software like Oracle Primavera P6 &reg;
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
             <img class="img-circle" src="{% static 'img/menu/teams.png' %}" alt="Generic placeholder image">
             <h2>Teams</h2>
             <p>
-                Manage teams.
+                Employees that work together in the same location and their activities are related are part of a team.
+                Per instance, welders, with grinders and also helpers.
+                And those teams also make use of equipment.
+                Usually those teams report to a team leader, supervisor, head of department, etc.
+            </p>
+            <p>
+                Timesheets are generated based on teams and the hours entered by the timekeeper assigned to the team, are approved by a reponsible for that team
             </p>
         </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
 
     <!-- START THE FEATURETTES -->
 
-    <hr class="featurette-divider">
-
+    <p>
+        <div class="title">
+            <span class="grey">How</span> pjtracker &copy; <span class="grey">works?</span>
+        </div>
+    </p>
+    <br /><br />
     <div class="row featurette" id="personal-protection">
         <div class="col-md-7">
-            <h2 class="featurette-heading">Personal <span class="text-muted">Protection</span></h2>
+            <h2 class="featurette-heading">1. WBS <span class="text-muted">definition</span></h2>
             <p class="lead">
-                BKS provide specially trained personnel to
-                clients, for the provision of personal protection
-                to such clients. We operate full and part-time
-                teams involved in the protection of recognized
-                leaders, corporate executives, dignitaries and
-                celebrities. Our concerns include travel as well
-                as family and residential protection. We can
-                arrange for stockholders meetings, conference
-                and convention protective services and can
-                coordinate executive travel domestically and
-                internationally in a safe and secure manner.
+                The WBS are imported from an interface.
+                When the list of activities has been loaded, is responsibility of Project Control to determine
+                if each activity can receive hours of management, direct or indirec type.
+                This process is done only once because is very rare that an activity that is supposed to receive
+                direct hours can change later on to receive only management hours.
+                So the definition of the the type of hours is done at the beginning of the project only
             </p>
         </div>
         <div class="col-md-5">
-            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/admin.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/projects.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
@@ -108,22 +139,18 @@
 
     <div class="row featurette"  id="escort-services">
         <div class="col-md-7 col-md-push-5">
-            <h2 class="featurette-heading">Escort <span class="text-muted">Services</span></h2>
+            <h2 class="featurette-heading">2. Manpower <span class="text-muted">Resources</span></h2>
             <p class="lead">
-                BKS provide escort services for discerning
-                clients/customers and also ensure adequate
-                monitoring and surveillance of the premises
-                and movement of such clients. To be a
-                Personal Protection Escort for a Client or
-                Principal is a task of immense pride and
-                responsibility. Our Escort Section Team
-                members are Qualified and trained to be
-                efficient, courteous, diligent and to act with
-                integrity in all they do.
+                The manpower will also be imported from an interface.
+                The source of data can be an HR or payroll database that will be able to produce the list of workers
+                currently active.
+                This list is updated regularly thorouhg the same interface in order to include new hired staff or to remove those that have been terminated.
+                After the import of the manpower the table of job titles (generated during this import process) shall be updated by
+                identifying on each job title which type of hours the position will be able to book worked time. The types are direct, indirect and management hours
             </p>
         </div>
         <div class="col-md-5 col-md-pull-7">
-            <img class="featurette-image img-responsive center-block" src="img/security8.jpg" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/employees.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
@@ -131,129 +158,67 @@
 
     <div class="row featurette" id="maritime-services">
         <div class="col-md-7">
-            <h2 class="featurette-heading">Maritime <span class="text-muted">Services</span></h2>
+            <h2 class="featurette-heading">3. Equipment <span class="text-muted">Resources</span></h2>
             <p class="lead">
-                In our bid to take full advantage of the Local
-                Content Policy of the Federal Government of
-                Nigeria, we have diversified into the marine
-                sector by offering Offshore Security Services.
-                We use our private security personnel in
-                collaboration with Government Security
-                Forces, The Nigerian Navy (NN), The Joint Task
-                Force (JTF) and Mobile Police (MOPOL) to
-                ensure that the maritime environment where
-                assets are located are effectively and
-                efficiently monitored and protected against
-                insurgents.
+                The equipment list will also be imported.
+                The source is usually the assets table that exists in the Accounting or ERP sytem the company is using to support their businesss.
+                The import of equipment from the interface is usually done only once at the beginning of the project.
+                There is need to import the interface again only when there is new equipment being assigned to the project.
+                Equipment assigned to the project that is not being used will not register hours
+
             </p>
         </div>
         <div class="col-md-5">
-            <img class="featurette-image img-responsive center-block" src="img/security7.jpg" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/equipment.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
     <hr class="featurette-divider">
 
-    <div class="row featurette" id="about">
-        <div class="col-md-7">
-            <h2 class="featurette-heading">About us</h2>
+    <div class="row featurette"  id="escort-services">
+        <div class="col-md-7 col-md-push-5">
+            <h2 class="featurette-heading">4. Teams <span class="text-muted">Definition</span></h2>
             <p class="lead">
-                Beosun Korporate Services Limited (BKS) is one of Nigeria’s leading security mergency response company with office in Port Harcourt, Rivers State, Nigeria.
-                <br />
-                Beosun Korporate Services Ltd is a well-known brand name in the onshore/offshore maritime, oil, gas, energy and industrial security sector in Nigeria. Established in 1988, Beosun Korporate Services Ltd has continued to offer quality and total security services to its numerous clients spread across the length and breath of the country.
-                <br />
-                Since Incorporation, our watchword has been “the expert in guard” and within a short time, the company has acquired the toga of leadership in the Nigerian security business.
-                <br />
-                Our very strong presence in every sector of the Nigerian economy is an eloquent testimony of our elaborate and efficient machinery geared towards the provision of distinguished security services to our clients at short notices, and we are forever growing.
-                <br />
-                Our Training programmes continually provide in-depth knowledge and skills to our operatives and staff, in turn contributing to the efficient services we are known for.
+                A team is a working unit.
+                It is compossed by staff and equipment.
+                A team includes those workers and equipment that are usually assigned to activities that they must be together to perform.
+                In a workshop there could be one or more teams involved in several activities.
+                Per instance, a welding team. It will include a forerman or supervisor, some welders, grinders, helpers, etc.
+                The staff working in HR and responsible for the payroll are also part of a team.
+                The protocol staff are a team.
+                The concept of team helps to centralize the input of data for timekeeping purposes.
+                A team must have a timekeeper assigned and at least one approver for the timesheet.
+                A team will be allowed to charge hours to specific project adctivities that are defined usually by the planner of the project.
+                Inside this tool a team is work unit that is allowed to charge hours to predefined WBS only.
+            </p>
+        </div>
+        <div class="col-md-5 col-md-pull-7">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/employees.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette" id="maritime-services">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">5. Timesheet <span class="text-muted">Entry and Approval</span></h2>
+            <p class="lead">
+                The timekeeper assigned to input man and equipment hours for the team will do so in a daily basis.
+                Once the timesheets has been completed the timekeeper will send the timesheet for review.
+                This is done electronically and the review by the assiged user to review that team will be immediately notified.
+                If there are more than one approver/reviewer assigned to a team once the first approval is done the workflow continues and notifies the next approver and so on until the timesheet is fully approved.
+                As the team is allowed to charge hours to specific WBS assiged by the project, is not possible for the timekeeper to enter hours in activities that that team is suposed not to be involved.
+                Once the timesheets are approved they are available for further consultation whenever is needed.
+                The timesheet will save also the name and time of filling up by the timekeeper as well as the information of all the approvers that intervened.
             </p>
         </div>
         <div class="col-md-5">
-            <img class="featurette-image img-responsive center-block" src="img/IMG-20151008-WA001.jpg" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/timesheets.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
     <hr class="featurette-divider">
 
-    <div class="row featurette" id="mission">
-        <div class="col-md-7">
-            <h2 class="featurette-heading">Mission</h2>
-            <p class="lead">
-                To provide reliable and effective security services to our clients through
-                excellent world class customer services and appropriate application of the
-                required resources.
-            </p>
-        </div>
-    </div>
-
-    <div class="row featurette">
-        <div class="col-md-7">
-            <h2 class="featurette-heading">Vision</h2>
-            <p class="lead">
-                To become the premier outfit in Nigeria with Global Network achieved
-                through commitment to excellence in the provision of qualitative security
-                services.
-            </p>
-        </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette" id="contact">
-        <div class="col-md-7">
-            <h2 class="featurette-heading">Contact</h2>
-            <p class="contact">
-                <br />
-                <strong>CORPORATE OFFICE</strong>
-                <br />
-                48 Tombia Road
-                <br />
-                GRA PHASE II
-                <br />
-                Port Harcourt
-                <br />
-                Rivers State
-                <br />
-                Nigeria
-                <br />
-                Email: <a href="mailto:woluchim@yahoo.com?subject=Request for information">woluchim@yahoo.com</a>
-                <br />
-                Tel. +234 (0) 803 309 3440
-            </p>
-        </div>
-        <div class="col-md-5">
-            <img class="featurette-image img-responsive center-block" src="img/IMG-20151008-WA000.jpg" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
-        </div>
-    </div>
-    <hr class="featurette-divider">
-
-    <div class="row featurette" id="management">
-        <div class="col-md-7">
-            <h2 class="featurette-heading">Management</h2>
-            <p class="contact">
-                <br />
-                MR CHIM OKWUWOLU, B.Sc
-                <br />
-                Managing Director
-                <br />
-                <br />
-                HON. CHIDIEBERE OKWUWOLU, B.Sc
-                <br />
-                Director
-                <br />
-                <br />
-                MR BENNY OKWUWOLU Jr., B.Sc.
-                <br />
-                Director
-            </p>
-        </div>
-        <div class="col-md-5">
-            <img class="featurette-image img-responsive center-block" src="img/IMG-20151008-WA006.jpg" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
-        </div>
-    </div>
-
-    <hr class="featurette-divider">
     <!-- /END THE FEATURETTES -->
 
     <!-- FOOTER -->
@@ -262,7 +227,7 @@
             <a href="#">Back to top</a>
         </p>
         <p>
-            © 2015 Pjtracker - A product of Enterprise Systems Consultancy Ltd · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
+            © 2015 pjtracker - A product of Enterprise Systems Consultancy Ltd · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
         </p>
     </footer>
 </div>
