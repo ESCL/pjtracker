@@ -22,3 +22,6 @@ class UserProfileTest(TestCase):
         self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(UserProfile.objects.count(), 1)
 
+        # Account should also add settings (through signals)
+        self.assertIsNotNone(user.profile.account.timesheet_settings)
+

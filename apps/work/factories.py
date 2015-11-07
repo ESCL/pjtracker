@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation
+from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute
 
 from .models import Project, Activity, ActivityGroup, ActivityGroupType
 
@@ -37,6 +37,7 @@ class ActivityFactory(DjangoModelFactory):
     class Meta:
         model = Activity
 
+    owner = LazyAttribute(lambda obj: obj.project.owner)
     name = 'Foundation 23 Design'
     code = 'FND23'
     project = SubFactory(ProjectFactory)

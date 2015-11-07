@@ -1,7 +1,8 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, Faker, post_generation
+from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute
 
+from ..accounts.factories import AccountFactory
 from .models import Company, Team, Position
 
 
@@ -10,6 +11,7 @@ class CompanyFactory(DjangoModelFactory):
     class Meta:
         model = Company
 
+    owner = SubFactory(AccountFactory)
     name = Faker('company')
     code = Faker('word')
 
@@ -19,6 +21,7 @@ class TeamFactory(DjangoModelFactory):
     class Meta:
         model = Team
 
+    owner = LazyAttribute(lambda obj: obj.company.owner)
     name = Faker('sentence', nb_words=2)
     code = Faker('word')
     company = SubFactory(CompanyFactory)

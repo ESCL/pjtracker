@@ -29,8 +29,9 @@ class EquipmentFactory(DjangoModelFactory):
     class Meta:
         model = Equipment
 
+    owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
-    company = SubFactory(CompanyFactory)
+    company = LazyAttribute(lambda obj: obj.team.company)
     team = SubFactory(TeamFactory)
     project = SubFactory(ProjectFactory)
     type = SubFactory(EquipmentSubTypeFactory)
@@ -41,6 +42,7 @@ class EmployeeFactory(DjangoModelFactory):
     class Meta:
         model = Employee
 
+    owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
     first_name = Faker('first_name')
     last_name = Faker('last_name')

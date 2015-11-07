@@ -20,7 +20,6 @@
             <th>Company</th>
             <th>Team</th>
             <th>Project</th>
-            <th>Location</th>
             <th class="actions">Actions</th>
         </tr>
     </thead>
@@ -32,7 +31,6 @@
                 <td>{{ e.company }}</td>
                 <td>{{ e.team }}</td>
                 <td>{{ e.project }}</td>
-                <td>{{ e.location }}</td>
                 <td class="actions">
                     <a href="{% url 'equipment' pk=e.id %}" class="action">view</a>
                     <a href="{% url 'equipment' pk=e.id action='edit' %}" class="action">edit</a>

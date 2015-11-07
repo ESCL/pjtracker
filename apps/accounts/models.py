@@ -1,7 +1,9 @@
 from django.db import models
 
+from ..common.signals import SignalsMixin
 
-class Account(models.Model):
+
+class Account(models.Model, SignalsMixin):
 
     TIMESHEET_REVIEW_ANY = 'any'
     TIMESHEET_REVIEW_MAJORITY = 'majority'

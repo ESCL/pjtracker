@@ -18,3 +18,5 @@ class EquipmentView(StandardResourceView):
     edit_template = 'equipment-edit.html'
     main_form = EquipmentForm
     model = Equipment
+    # Override collection view name to incorrect plural
+    collection_view_name = 'equipments'
