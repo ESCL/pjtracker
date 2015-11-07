@@ -25,7 +25,23 @@ def handle_exception(func):
     return wrapper_func
 
 
-class ReadOnlyResourceView(View):
+class SafeView(View):
+    error_template = None
+
+    @classmethod
+    def process_exception(cls, request, exception):
+        # Build the context from the error data
+        status_code = getattr(exception, 'status_code', 500)
+        context = {'error': exception.__class__.__name__,
+                   'status': status_code,
+                   'message': str(exception)}
+
+        # Render the error template with the data
+        return render(request, cls.error_template,
+                      context, status=status_code)
+
+
+class ReadOnlyResourceView(SafeView):
     """
     Standard resource view that provides read-only operations for a model's
     collection (list) and instance (detail).
@@ -52,18 +68,6 @@ class ReadOnlyResourceView(View):
     @classmethod
     def get_object(cls, user, pk):
         return cls.model.objects.filter(id=pk).for_user(user).get()
-
-    @classmethod
-    def process_exception(cls, request, exception):
-        # Build the context from the error data
-        status_code = getattr(exception, 'status_code', 500)
-        context = {'error': exception.__class__.__name__,
-                   'status': status_code,
-                   'message': str(exception)}
-
-        # Render the error template with the data
-        return render(request, cls.error_template,
-                      context, status=status_code)
 
     # Main http methods (proxy to worker methods)
 
