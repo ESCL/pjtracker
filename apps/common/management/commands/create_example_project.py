@@ -2,7 +2,6 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
-from ....geo.factories import SpaceFactory
 from ....resources.factories import EmployeeFactory, EquipmentFactory
 from ....work.factories import ProjectFactory, ActivityFactory, ActivityGroupFactory, ActivityGroupTypeFactory
 from ....work.models import Project
@@ -84,4 +83,4 @@ class Command(BaseCommand):
         print('Created team "{}" with resources {}'.format(em1.team, em1.team.resource_set.all()))
 
         # Return the project
-        print('Done.'.format(proj))
+        print('Example project created successfully.'.format(proj))

@@ -17,7 +17,6 @@
         <tr>
             <th>Code</th>
             <th>Name</th>
-            <th>Location</th>
             <th>Activities</th>
             <th class="actions">Actions</th>
         </tr>
@@ -27,7 +26,6 @@
             <tr>
                 <td>{{ p.code }}</td>
                 <td>{{ p.name }}</td>
-                <td>{{ p.location }}</td>
                 <td><a href="{% url 'activities' pj_pk=p.id %}">{{ p.activity_set.count }} activities</a></td>
                 <td class="actions">
                     <a href="{% url 'project' pk=p.id %}">view</a>
