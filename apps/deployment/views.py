@@ -1,11 +1,9 @@
 
-from django.shortcuts import render
 from django.views.generic import View
 
-from ..common.views.base import StandardResourceView
-from ..organizations.models import Team
-from .models import TimeSheet
-from .forms import TimeSheetForm, TeamActivityForm, WorkLogsForm
+from ..common.views.base import StandardResourceView, SafeView, handle_exception
+from .models import TimeSheet, TimeSheetAction
+from .forms import TimeSheetForm, TimeSheetActionForm, WorkLogsForm
 
 
 class TimeSheetView(StandardResourceView):
@@ -17,16 +15,9 @@ class TimeSheetView(StandardResourceView):
     sub_form = WorkLogsForm
 
 
-class TeamActivityView(View):
-    template = 'team-activities.html'
-
-    def get(self, request, team_id, date):
-        team = Team.objects.get(pk=team_id)
-        form = TeamActivityForm(request.user, team)
-        context = {'team': team, 'date': date, 'form': form}
-        return render(request, self.template, context)
-
-    def post(self, request, team_id, date):
-        team = Team.objects.get(pk=team_id)
-        form = TeamActivityForm(request.user, team, request.POST)
-        context = {'team': team, 'date': date, 'form': form}
+class TimeSheetActionView(StandardResourceView):
+    model = TimeSheet
+    list_template = 'timesheets.html'
+    detail_template = 'timesheet.html'
+    edit_template = 'timesheet-action-edit.html'
+    main_form = TimeSheetActionForm

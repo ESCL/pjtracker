@@ -25,6 +25,13 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     REVIEW_POLICY_MAJORITY = 'M'
     REVIEW_POLICY_ALL = 'A'
 
+    ALLOWED_ACTIONS = {
+        STATUS_PREPARING: (('issue', 'Issue'),),
+        STATUS_ISSUED: (('approve', 'Approve'),
+                        ('reject', 'Reject')),
+        STATUS_REJECTED: (('issue', 'Issue'),)
+    }
+
     team = models.ForeignKey(
         'organizations.Team'
     )
@@ -49,8 +56,20 @@ class TimeSheet(OwnedEntity, SignalsMixin):
     )
 
     @property
+    def allowed_actions(self):
+        return self.ALLOWED_ACTIONS.get(self.status, [])
+
+    @property
     def code(self):
         return '{}-{:%Y%m%d}'.format(self.team.code, self.date)
+
+    @property
+    def is_editable(self):
+        return self.status in (self.STATUS_PREPARING, self.STATUS_REJECTED)
+
+    @property
+    def is_reviewable(self):
+        return self.status in (self.STATUS_ISSUED,)
 
     @cached_property
     def active_reviews(self):
@@ -164,7 +183,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
         return False
 
 
-class TimeSheetAction(models.Model):
+class TimeSheetAction(OwnedEntity):
 
     ISSUED = 'I'
     REJECTED = 'R'
@@ -183,12 +202,14 @@ class TimeSheetAction(models.Model):
                  (REJECTED, 'Rejected'),
                  (APPROVED, 'Approved'))
     )
+    feedback = models.TextField(
+    )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
     )
 
 
-class WorkLog(models.Model):
+class WorkLog(OwnedEntity):
 
     timesheet = models.ForeignKey(
         'TimeSheet',
@@ -233,7 +254,7 @@ class WorkLog(models.Model):
         return '{} - {}'.format(self.resource, self.activity)
 
 
-class AccountSettings(models.Model):
+class TimeSheetSettings(OwnedEntity):
     """
     Settings for timesheets and related entities for a given account.
     """

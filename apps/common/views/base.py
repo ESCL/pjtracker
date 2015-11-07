@@ -3,7 +3,6 @@ __author__ = 'kako'
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from django.template.defaultfilters import slugify
 
 
 def handle_exception(func):
@@ -74,18 +73,20 @@ class ReadOnlyResourceView(SafeView):
     @handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
         if pk:
-            return self.show_instance(request, pk)
+            return self.show_instance(request, pk, **kwargs)
         else:
             return self.show_list(request, **kwargs)
 
     # Worker methods
 
     def show_list(self, request, status=200, **kwargs):
-        context = {self.model._meta.verbose_name_plural.replace(' ', ''): self.filter_objects(request.user, request.GET, **kwargs)}
+        objs = self.filter_objects(request.user, request.GET, **kwargs)
+        context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs}
         return render(request, self.list_template, context, status=status)
 
-    def show_instance(self, request, pk):
-        context = {self.model._meta.verbose_name.replace(' ', ''): self.get_object(request.user, pk)}
+    def show_instance(self, request, pk, **kwargs):
+        obj = self.get_object(request.user, pk)
+        context = {self.model._meta.verbose_name.replace(' ', ''): obj}
         return render(request, self.detail_template, context)
 
 
@@ -113,52 +114,73 @@ class StandardResourceView(ReadOnlyResourceView):
         return super(StandardResourceView, self).get(request, pk, action, **kwargs)
 
     @handle_exception
-    def post(self, request, pk=None, **kwargs):
+    def post(self, request, pk=None, action=None, **kwargs):
         if pk:
-            return self.put(request, pk)
-        return self.upsert_instance(request, pk)
+            return self.put(request, pk, **kwargs)
+        return self.upsert_instance(request, pk, **kwargs)
 
     @handle_exception
-    def put(self, request, pk, **kwargs):
-        return self.upsert_instance(request, pk)
+    def put(self, request, pk, action=None, **kwargs):
+        return self.upsert_instance(request, pk, **kwargs)
 
     @handle_exception
-    def delete(self, request, pk, **kwargs):
-        return self.delete_instance(request, pk)
+    def delete(self, request, pk, action=None, **kwargs):
+        return self.delete_instance(request, pk, **kwargs)
 
     # Worker methods
     # Override to modify standard behaviour
 
     def show_forms(self, request, pk):
+        """
+        Render the main form and subform for the given instance pk.
+        """
         obj = pk and self.get_object(request.user, pk) or None
         main_form = self.main_form(instance=obj, user=request.user, prefix='main')
         context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
+
         if pk and self.sub_form:
+            # Existing instance and sub_form defined, use it
             context['sub_form'] = self.sub_form(instance=obj, user=request.user, prefix='sub')
+
         return render(request, self.edit_template, context)
 
-    def upsert_instance(self, request, pk):
+    def upsert_instance(self, request, pk, **kwargs):
+        """
+        Save the main form (and subform is the instance is not new) and redirect
+        to the collection view.
+        """
         obj = pk and self.get_object(request.user, pk) or None
         main_form = self.main_form(request.POST, instance=obj, user=request.user, prefix='main')
         context = {self.model._meta.verbose_name.replace(' ', ''): obj, 'main_form': main_form}
 
         if pk and self.sub_form:
+            # Existing instance and sub_form defined, use it
             sub_form = self.sub_form(request.POST, instance=obj, user=request.user, prefix='sub')
             context['sub_form'] = sub_form
         else:
             sub_form = None
 
         if main_form.is_valid() and (not sub_form or sub_form.is_valid()):
+            # If all defined forms are valid, save them
             main_form.save()
             if sub_form:
                 sub_form.save()
-            return redirect(self.collection_view_name or
-                            self.model._meta.verbose_name_plural.lower().replace(' ', ''))
+
+            # Now redirect to collection view, passing kwargs (subresources work too)
+            view_name = self.collection_view_name or self.model._meta.verbose_name_plural.lower().replace(' ', '')
+            return redirect(view_name, **kwargs)
 
         else:
+            # Invalid, render forms again with errors
             return render(request, self.edit_template, context, status=400)
 
-    def delete_instance(self, request, pk):
+    def delete_instance(self, request, pk, **kwargs):
+        """
+        Delete the instance matching the given pk and redirect to collection view.
+        """
         obj = self.get_object(request.user, pk)
         obj.delete()
-        return self.show_list(request, status=204)
+
+        # Now redirect to collection view, passing kwargs (subresources work too)
+        view_name = self.collection_view_name or self.model._meta.verbose_name_plural.lower().replace(' ', '')
+        return redirect(view_name, **kwargs)

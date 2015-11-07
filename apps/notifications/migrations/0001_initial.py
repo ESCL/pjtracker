@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import datetime
-import apps.common.signals
 from django.conf import settings
+import apps.common.signals
+import datetime
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Notification',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('event_target_id', models.PositiveIntegerField()),
                 ('event_type', models.CharField(max_length=16)),
                 ('title', models.CharField(max_length=128)),
