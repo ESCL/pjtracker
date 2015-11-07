@@ -3,7 +3,7 @@
 /* Padding below the footer and lighter body text */
 
 a, a:visited, a:hover {
-    color: #aaa;
+    color: #448888;
 }
 
 body {
@@ -16,6 +16,12 @@ body {
 .title{
     font-size: 5em;
     text-align: center;
+    color:#44BBEE;
+}
+
+h2{
+        color:#44BBEE;
+
 }
 
 .light {
