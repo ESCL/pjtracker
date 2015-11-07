@@ -13,15 +13,18 @@ body {
     font-size: 18px;
 }
 
-.title{
-    font-size: 5em;
+.title {
+    font-size: 4em;
     text-align: center;
-    color:#44BBEE;
+    color: #44BBEE;
 }
 
-h2{
-        color:#44BBEE;
+.grey {
+    color: #888;
+}
 
+h2, h3, h4 {
+    color: #44BBEE;
 }
 
 .light {
