@@ -154,7 +154,7 @@ form ul.errorlist {
 }
 
 select[multiple] {
-    height: 20em;
+    height: 12em;
 }
 
 .multiselect-button {

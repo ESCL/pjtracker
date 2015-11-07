@@ -23,9 +23,9 @@ var FilterMultiSelect = function(field) {
         this.container.setAttribute('class', 'row');
 
         // Create and append containers for the elements
-        this.container.appendChild(this.createSelectContainer(self.filters.available, self.selects.available, 'Available'));
+        this.container.appendChild(this.createSelectContainer(this.filters.available, this.selects.available, 'Available'));
         this.container.appendChild(this.createButtonContainer(this.button));
-        this.container.appendChild(this.createSelectContainer(self.filters.selected, self.selects.selected, 'Selected'));
+        this.container.appendChild(this.createSelectContainer(this.filters.selected, this.selects.selected, 'Selected'));
     };
 
     this.createButtonContainer = function(button) {
