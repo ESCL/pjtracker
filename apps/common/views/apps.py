@@ -10,7 +10,7 @@ class HomeView(View):
     template_name = 'apps/home.html'
 
     def get(self, request):
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated():
             return redirect('public', page='home')
 
         context = {'user': request.user,
