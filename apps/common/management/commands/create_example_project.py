@@ -83,4 +83,4 @@ class Command(BaseCommand):
         print('Created team "{}" with resources {}'.format(em1.team, em1.team.resource_set.all()))
 
         # Return the project
-        print('Done.'.format(proj))
+        print('Example project created successfully.'.format(proj))
