@@ -24,13 +24,11 @@ class Command(BaseCommand):
         # Create superuser
         call_command('createsuperuser')
 
-        # Set up groups
-        call_command('setup_groups')
-
         # Set up default global objects
-        call_command('setup_positions')
-        call_command('setup_equipment_types')
-        call_command('setup_activity_groups')
+        call_command('create_default_groups')
+        call_command('create_default_positions')
+        call_command('create_default_equipment_types')
+        call_command('create_default_activity_groups')
 
         if settings.BOOTSTRAP_EXAMPLE:
             # Create example data for development environment

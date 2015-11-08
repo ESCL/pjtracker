@@ -2,8 +2,29 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
+from ....organizations.models import Team
+from ...factories import EmployeeFactory, EquipmentFactory
+
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        print("Yeah, not yet")
+        print("Creating example resources...")
+        res = []
+
+        # Fetch teams
+        eng_team, cst_team = Team.objects.all()
+
+        # Create resources for eng team
+        res.append(EmployeeFactory.create(team=eng_team))
+        res.append(EmployeeFactory.create(team=eng_team))
+
+        # Create resources for cst team
+        res.append(EmployeeFactory.create(team=cst_team))
+        res.append(EmployeeFactory.create(team=cst_team))
+        res.append(EquipmentFactory.create(team=cst_team))
+
+        # Done, print resources
+        print("Created resources {}.".format(res))
+
+

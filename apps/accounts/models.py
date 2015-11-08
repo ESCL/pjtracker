@@ -19,7 +19,7 @@ class Account(models.Model, SignalsMixin):
         return self.name
 
 
-class User(AbstractUser):
+class User(AbstractUser, SignalsMixin):
 
     owner = models.ForeignKey(
         'Account',
