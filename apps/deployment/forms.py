@@ -3,7 +3,6 @@ __author__ = 'kako'
 from django import forms
 
 from ..common.forms import OwnedEntityForm
-from ..work.models import Activity
 from .models import TimeSheet, WorkLog
 
 
@@ -22,16 +21,37 @@ class TimeSheetForm(OwnedEntityForm):
             self.fields.pop('team')
 
 
-class TeamActivityForm(OwnedEntityForm):
+class TimeSheetActionForm(forms.Form):
 
-    def __init__(self, user, team, post_data=None):
-        super(TeamActivityForm, self).__init__(post_data)
+    action = forms.ChoiceField()
+    feedback = forms.CharField(widget=forms.Textarea, required=False)
 
-        allowed_activities = Activity.objects.for_user(user)
-        self.fields['activities'] = forms.ModelMultipleChoiceField(
-            queryset=allowed_activities,
-            initial=team.activities.all()
-        )
+    def __init__(self, *args, instance=None, user=None, **kwargs):
+        super(TimeSheetActionForm, self).__init__(*args, **kwargs)
+
+        # Add choices to actions based on current status
+        self.fields['action'].choices = instance.allowed_actions
+
+        # Store user and timesheet for future ref
+        self.timesheet = instance
+        self.user = user
+
+    def clean(self):
+        cleaned_data = super(TimeSheetActionForm, self).clean()
+
+        # Make sure we include feedback for rejections
+        action = cleaned_data.get('action')
+        feedback = cleaned_data.get('feedback')
+        if action == 'reject' and not feedback:
+            raise forms.ValidationError("Feedback is required for rejections to "
+                                        "help timekeepers correct any mistakes.")
+
+        return cleaned_data
+
+    def save(self):
+        action = self.cleaned_data.get('action')
+        method = getattr(self.timesheet, action)
+        method(self.user)
 
 
 class WorkLogsForm(forms.Form):

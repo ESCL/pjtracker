@@ -2,7 +2,9 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
+from ....accounts.factories import UserFactory, Account
 from ....resources.factories import EmployeeFactory, EquipmentFactory
+from ....organizations.factories import CompanyFactory
 from ....work.factories import ProjectFactory, ActivityFactory, ActivityGroupFactory, ActivityGroupTypeFactory
 from ....work.models import Project
 
@@ -21,7 +23,7 @@ class Command(BaseCommand):
             print('Project {} already exists, nothing to do.'.format(Project.objects.all()[0]))
             return
 
-        # Setup activity groups
+        # Setup generic activity groups
         print('Setting up activity groups...')
         ph = ActivityGroupTypeFactory.create(name='Phase')
         ds = ActivityGroupTypeFactory.create(name='Discipline')
@@ -33,9 +35,15 @@ class Command(BaseCommand):
         ds_mec = ActivityGroupFactory.create(name='Mechanical', code='MEC', type=ds)
         print('Created activity groups: {}'.format([ph_eng, ph_prt, ph_cst, ds_civ, ds_str, ds_mec]))
 
+        # Create a user, which also creates a profile, an account and account settings
+        print('Creating user with account...')
+        user = UserFactory.create(is_staff=False, is_superuser=False, is_active=True)
+        account = user.profile.account
+        print('Created user {} with account {}'.format(user, account))
+
         # Create project and activities
         print('Creating project...')
-        proj = ProjectFactory.create(name='Some plant revamping')
+        proj = ProjectFactory.create(owner=account, name='Some plant revamping')
         ac_cmp = ActivityFactory.create(code='CMP', name='Temporary Camp', project=proj)
         ActivityFactory.create(code='DES', name='Engineering', project=proj, parent=ac_cmp,
                                groups=[ph_eng, ds_civ], managerial_labour=True)
@@ -77,9 +85,10 @@ class Command(BaseCommand):
 
         # Create one team with two employees and one machine
         print('Creating teams...')
-        em1 = EmployeeFactory.create(project=proj)
-        EmployeeFactory.create(project=proj, company=em1.company, team=em1.team)
-        EquipmentFactory.create(project=proj, company=em1.company, team=em1.team)
+        cpy = CompanyFactory.create(owner=proj.owner)
+        em1 = EmployeeFactory.create(project=proj, team__company=cpy)
+        EmployeeFactory.create(project=proj, team=em1.team)
+        EquipmentFactory.create(project=proj, team=em1.team)
         print('Created team "{}" with resources {}'.format(em1.team, em1.team.resource_set.all()))
 
         # Return the project

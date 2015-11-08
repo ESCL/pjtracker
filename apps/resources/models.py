@@ -46,7 +46,6 @@ class Resource(OwnedEntity):
 
     def complete_work_log(self, work_log):
         work_log.company = self.company
-        work_log.location = self.location
 
     def save(self, *args, **kwargs):
         self.resource_type = self.__class__._meta.model_name

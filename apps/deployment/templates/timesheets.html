@@ -21,8 +21,6 @@
             <th>Team</th>
             <th>Date</th>
             <th>Status</th>
-            <th>Issued By</th>
-            <th>Issued On</th>
             <th class="actions">Actions</th>
         </tr>
     </thead>
@@ -33,11 +31,14 @@
                 <td>{{ t.team }}</td>
                 <td>{{ t.date }}</td>
                 <td>{{ t.get_status_display }}</td>
-                <td>{{ t.issuer }}</td>
-                <td>{{ t.timestamp }}</td>
                 <td class="actions">
                     <a href="{% url 'timesheet' pk=t.id %}" class="action">view</a>
-                    <a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a>
+                    {% if t.is_editable %}
+                        <a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a>
+                        <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">issue</a>
+                    {% elif t.is_reviewable %}
+                        <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">review</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

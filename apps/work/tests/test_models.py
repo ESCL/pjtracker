@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ...accounts.factories import UserProfileFactory
+from ...accounts.factories import UserFactory
 from ..factories import ActivityFactory
 from ..models import Activity
 
@@ -11,7 +11,7 @@ class ActivityTest(TestCase):
         super(ActivityTest, self).setUp()
 
         # Create a user
-        self.user = UserProfileFactory.create().user
+        self.user = UserFactory.create()
 
     def test_filter_workable(self):
         # Create a global and an account activity

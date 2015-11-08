@@ -11,6 +11,8 @@ class AccountFactory(DjangoModelFactory):
     class Meta:
         model = Account
 
+    name = Faker('company')
+
 
 class UserProfileFactory(DjangoModelFactory):
 

@@ -7,15 +7,15 @@ from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet, TimeSheetAction, WorkLog, LabourType, AccountSettings
+from ..models import TimeSheet, TimeSheetAction, WorkLog, LabourType
 
 
 class TimeSheetTest(TestCase):
 
     def setUp(self):
         super(TimeSheetTest, self).setUp()
-        self.account = AccountFactory.create()
-        self.ts_settings = AccountSettings.objects.create(account=self.account)
+        self.account = UserFactory.create().profile.account
+        self.ts_settings = self.account.timesheet_settings
         self.timekeeper = UserFactory.create(profile__account=self.account)
         self.supervisor1 = UserFactory.create(profile__account=self.account)
         self.supervisor2 = UserFactory.create(profile__account=self.account)
