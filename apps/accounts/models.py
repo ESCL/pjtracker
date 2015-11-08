@@ -1,6 +1,8 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from ..common.signals import SignalsMixin
+from .query import UserManager
 
 
 class Account(models.Model, SignalsMixin):
@@ -17,24 +19,11 @@ class Account(models.Model, SignalsMixin):
         return self.name
 
 
-class UserProfile(models.Model):
+class User(AbstractUser):
 
-    TYPE_ADMIN = 'A'
-    TYPE_USER = 'U'
-
-    user = models.OneToOneField(
-        'auth.User',
-        related_name='profile'
-    )
-    account = models.ForeignKey(
-        'Account'
-    )
-    account_role = models.CharField(
-        max_length=1,
-        choices=((TYPE_ADMIN, 'Administrator'),
-                 (TYPE_USER, 'Common'))
+    owner = models.ForeignKey(
+        'Account',
+        null=True
     )
 
-    def __str__(self):
-        return self.account.name
-
+    objects = UserManager()

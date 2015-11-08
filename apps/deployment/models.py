@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.db import models
 from django.dispatch import Signal
 from django.utils.functional import cached_property
@@ -194,7 +195,7 @@ class TimeSheetAction(OwnedEntity):
         related_name='actions'
     )
     actor = models.ForeignKey(
-        'auth.User'
+        settings.AUTH_USER_MODEL
     )
     action = models.CharField(
         max_length=16,

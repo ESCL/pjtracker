@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from ..common.db.models import OwnedEntity, AllowedLabourMixin
@@ -32,12 +33,12 @@ class Team(OwnedEntity):
         'organizations.Company'
     )
     timekeepers = models.ManyToManyField(
-        'auth.User',
+        settings.AUTH_USER_MODEL,
         blank=True,
         related_name='timekept_teams'
     )
     supervisors = models.ManyToManyField(
-        'auth.User',
+        settings.AUTH_USER_MODEL,
         blank=True,
         related_name='supervised_teams'
     )

@@ -21,7 +21,7 @@ class OwnedEntityQuerySet(QuerySet):
             return self
 
         try:
-            account = user.profile.account
+            account = user.owner
 
         except AttributeError:
             raise AuthenticationError('OwnedEntity filters require a user with an account.')

@@ -38,7 +38,7 @@ class Command(BaseCommand):
         # Create a user, which also creates a profile, an account and account settings
         print('Creating user with account...')
         user = UserFactory.create(is_staff=False, is_superuser=False, is_active=True)
-        account = user.profile.account
+        account = user.owner
         print('Created user {} with account {}'.format(user, account))
 
         # Create project and activities
