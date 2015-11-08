@@ -16,7 +16,7 @@ class ActivityTest(TestCase):
     def test_filter_workable(self):
         # Create a global and an account activity
         g_act = ActivityFactory.create(owner=None)
-        a_act = ActivityFactory.create(owner=self.user.profile.account)
+        a_act = ActivityFactory.create(owner=self.user.owner)
 
         # Nothin workable
         self.assertEqual(Activity.objects.for_user(self.user).workable().count(), 0)
