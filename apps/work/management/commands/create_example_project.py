@@ -2,11 +2,8 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
-from ....accounts.factories import UserFactory, Account
-from ....resources.factories import EmployeeFactory, EquipmentFactory
-from ....organizations.factories import CompanyFactory
-from ....work.factories import ProjectFactory, ActivityFactory, ActivityGroupFactory, ActivityGroupTypeFactory
-from ....work.models import Project
+from ....accounts.factories import Account
+from ....work.factories import ProjectFactory, ActivityFactory, ActivityGroup
 
 
 class Command(BaseCommand):
@@ -19,57 +16,45 @@ class Command(BaseCommand):
     :return: created project
     """
     def handle(self, **options):
-        print("Not yet")
-        return
-
-        if Project.objects.exists():
-            print('Project {} already exists, nothing to do.'.format(Project.objects.all()[0]))
-            return
-
-        # Setup generic activity groups
-        print('Setting up activity groups...')
-        ph = ActivityGroupTypeFactory.create(name='Phase')
-        ds = ActivityGroupTypeFactory.create(name='Discipline')
-        ph_eng = ActivityGroupFactory.create(name='Engineering', code='ENG', type=ph)
-        ph_prt = ActivityGroupFactory.create(name='Procurement', code='PRT', type=ph)
-        ph_cst = ActivityGroupFactory.create(name='Construction', code='CST', type=ph)
-        ds_civ = ActivityGroupFactory.create(name='Civil', code='CIV', type=ds)
-        ds_str = ActivityGroupFactory.create(name='Structural', code='STR', type=ds)
-        ds_mec = ActivityGroupFactory.create(name='Mechanical', code='MEC', type=ds)
-        print('Created activity groups: {}'.format([ph_eng, ph_prt, ph_cst, ds_civ, ds_str, ds_mec]))
-
-        # Create a user, which also creates a profile, an account and account settings
-        print('Creating user with account...')
-        user = UserFactory.create(is_staff=False, is_superuser=False, is_active=True)
-        account = user.owner
-        print('Created user {} with account {}'.format(user, account))
-
-        # Create project and activities
         print('Creating project...')
+        account = Account.objects.get()
+
+        # First get default activity groups
+        ph_eng = ActivityGroup.objects.get(name='Engineering')
+        ph_prt = ActivityGroup.objects.get(name='Procurement')
+        ph_cst = ActivityGroup.objects.get(name='Construction')
+        ds_civ = ActivityGroup.objects.get(name='Civil')
+        ds_str = ActivityGroup.objects.get(name='Structural')
+        ds_mec = ActivityGroup.objects.get(name='Mechanical')
+        ds_pip = ActivityGroup.objects.get(name='Piping')
+
+        # Create the project
         proj = ProjectFactory.create(owner=account, name='Some plant revamping')
+
+        # Create temp camp activities
         ac_cmp = ActivityFactory.create(code='CMP', name='Temporary Camp', project=proj)
         ActivityFactory.create(code='DES', name='Engineering', project=proj, parent=ac_cmp,
                                groups=[ph_eng, ds_civ], managerial_labour=True)
         ActivityFactory.create(code='PRT', name='Procurement', project=proj, parent=ac_cmp,
                                groups=[ph_prt, ds_civ], managerial_labour=True)
         ActivityFactory.create(code='CST', name='Construction', project=proj, parent=ac_cmp,
-                               groups=[ph_cst, ds_civ], indirect_labour=True, direct_labour=True)
+                               groups=[ph_cst, ds_civ], indirect_labour=True, direct_labour=
+                               True)
+
+        # Create train 1 main activity
         ac_tr1 = ActivityFactory.create(code='TR1', name='Train 1', project=proj)
+
+        # Create train 1 civil works activities
         u1 = ActivityFactory.create(code='U1', name='Unit 1', project=proj, parent=ac_tr1)
-        u1_fnd = ActivityFactory.create(code='FNS', name='Foundations', project=proj, parent=u1)
+        u1_fnd = ActivityFactory.create(code='FND', name='Foundations', project=proj, parent=u1)
         ActivityFactory.create(code='DES', name='Unit 1 Foundation Design', project=proj, parent=u1_fnd,
                                groups=[ph_eng, ds_civ], managerial_labour=True)
         ActivityFactory.create(code='SUP', name='Unit 1 Concrete Supply', project=proj, parent=u1_fnd,
                                groups=[ph_prt, ds_civ])
         ActivityFactory.create(code='CST', name='Unit 1 Foundation Construction', project=proj, parent=u1_fnd,
                                groups=[ph_cst, ds_civ])
-        u1_eq = ActivityFactory.create(code='EQP', name='Unit 1 HP Drum', project=proj, parent=u1)
-        ActivityFactory.create(code='DES', name='Unit 1 HP Drum Design', project=proj, parent=u1_eq,
-                               groups=[ph_eng, ds_mec], managerial_labour=True)
-        ActivityFactory.create(code='SUP', name='Unit 1 HP Drum Supply', project=proj, parent=u1_eq,
-                               groups=[ph_prt, ds_mec])
-        ActivityFactory.create(code='INS', name='Unit 1 HP Drum Installation', project=proj, parent=u1_eq,
-                               groups=[ph_cst, ds_mec])
+
+        # Create train 1 structural activities
         u1_str = ActivityFactory.create(code='STR', name='Unit 1 Structure', project=proj, parent=u1)
         ActivityFactory.create(code='DES', name='Unit 1 Structure Design', project=proj, parent=u1_str,
                                groups=[ph_eng, ds_str], managerial_labour=True)
@@ -77,22 +62,24 @@ class Command(BaseCommand):
                                groups=[ph_prt, ds_str])
         ActivityFactory.create(code='CST', name='Unit 1 Structure Erection', project=proj, parent=u1_str,
                                groups=[ph_cst, ds_str])
+
+        # Create train 1 mechanical activities
+        u1_eq = ActivityFactory.create(code='EQP', name='Unit 1 HP Drum', project=proj, parent=u1)
+        ActivityFactory.create(code='DES', name='Unit 1 HP Drum Design', project=proj, parent=u1_eq,
+                               groups=[ph_eng, ds_mec], managerial_labour=True)
+        ActivityFactory.create(code='SUP', name='Unit 1 HP Drum Supply', project=proj, parent=u1_eq,
+                               groups=[ph_prt, ds_mec])
+        ActivityFactory.create(code='INS', name='Unit 1 HP Drum Installation', project=proj, parent=u1_eq,
+                               groups=[ph_cst, ds_mec])
+
+        # Create train 1 piping activities
         u1_pip = ActivityFactory.create(code='PIP', name='Unit 1 Piping', project=proj, parent=u1)
         ActivityFactory.create(code='DES', name='Unit 1 Piping Design', project=proj, parent=u1_pip,
                                groups=[ph_eng, ds_mec])
         ActivityFactory.create(code='SUP', name='Unit 1 Piping Supply', project=proj, parent=u1_pip,
                                groups=[ph_prt, ds_mec])
         ActivityFactory.create(code='CST', name='Unit 1 Piping Installation', project=proj, parent=u1_pip,
-                               groups=[ph_cst, ds_mec])
-        print('Created project "{}" with activities {}'.format(proj, proj.activity_set.all()))
+                               groups=[ph_cst, ds_pip])
 
-        # Create one team with two employees and one machine
-        print('Creating teams...')
-        cpy = CompanyFactory.create(owner=proj.owner)
-        em1 = EmployeeFactory.create(project=proj, team__company=cpy)
-        EmployeeFactory.create(project=proj, team=em1.team)
-        EquipmentFactory.create(project=proj, team=em1.team)
-        print('Created team "{}" with resources {}'.format(em1.team, em1.team.resource_set.all()))
-
-        # Return the project
-        print('Example project created successfully.'.format(proj))
+        # Done, print result
+        print('Created project "{}" with activities {}.'.format(proj, proj.activity_set.all()))
