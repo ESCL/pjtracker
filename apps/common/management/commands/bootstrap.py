@@ -22,11 +22,21 @@ class Command(BaseCommand):
             raise TypeError("You shouldn't be doing this on a real database...")
 
         # Create superuser
-        print("Creating superuser...")
         call_command('createsuperuser')
 
-        # Create example project
-        print("Creating example project...")
-        call_command('create_example_project')
+        # Set up groups
+        call_command('setup_groups')
+
+        # Set up default global objects
+        call_command('setup_positions')
+        call_command('setup_equipment_types')
+        call_command('setup_activity_groups')
+
+        if settings.BOOTSTRAP_EXAMPLE:
+            # Create example data for development environment
+            call_command('create_example_account')
+            call_command('create_example_company')
+            call_command('create_example_resources')
+            call_command('create_example_project')
 
         print("Done.")
