@@ -14,11 +14,11 @@ class TimeSheetTest(TestCase):
 
     def setUp(self):
         super(TimeSheetTest, self).setUp()
-        self.account = UserFactory.create().profile.account
+        self.account = UserFactory.create().owner
         self.ts_settings = self.account.timesheet_settings
-        self.timekeeper = UserFactory.create(profile__account=self.account)
-        self.supervisor1 = UserFactory.create(profile__account=self.account)
-        self.supervisor2 = UserFactory.create(profile__account=self.account)
+        self.timekeeper = UserFactory.create(owner=self.account)
+        self.supervisor1 = UserFactory.create(owner=self.account)
+        self.supervisor2 = UserFactory.create(owner=self.account)
         self.team = TeamFactory.create(owner=self.account,
                                        timekeepers=[self.timekeeper],
                                        supervisors=[self.supervisor1, self.supervisor2])

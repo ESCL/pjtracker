@@ -1,6 +1,7 @@
 
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
@@ -20,7 +21,7 @@ class Notification(models.Model, SignalsMixin):
     objects = NotificationQuerySet.as_manager()
 
     recipient = models.ForeignKey(
-        'auth.User'
+        settings.AUTH_USER_MODEL
     )
     event_target_model = models.ForeignKey(
         ContentType
