@@ -1,11 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from ..common.signals import SignalsMixin
 from .query import UserManager
 
 
-class Account(models.Model, SignalsMixin):
+class Account(models.Model):
 
     TIMESHEET_REVIEW_ANY = 'any'
     TIMESHEET_REVIEW_MAJORITY = 'majority'
@@ -19,7 +18,7 @@ class Account(models.Model, SignalsMixin):
         return self.name
 
 
-class User(AbstractUser, SignalsMixin):
+class User(AbstractUser):
 
     owner = models.ForeignKey(
         'Account',
