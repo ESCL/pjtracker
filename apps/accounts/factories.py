@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute
+from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation
 
 from .models import Account, User
 
@@ -21,3 +21,8 @@ class UserFactory(DjangoModelFactory):
     first_name = Faker('first_name')
     username = LazyAttribute(lambda obj: obj.first_name.lower())
     owner = SubFactory(AccountFactory)
+
+    @post_generation
+    def groups(self, created, value):
+        if created and value:
+            self.groups.add(*value)
