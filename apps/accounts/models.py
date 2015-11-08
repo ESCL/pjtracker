@@ -1,10 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from ..common.signals import SignalsMixin
 from .query import UserManager
 
 
-class Account(models.Model):
+class Account(models.Model, SignalsMixin):
 
     TIMESHEET_REVIEW_ANY = 'any'
     TIMESHEET_REVIEW_MAJORITY = 'majority'
