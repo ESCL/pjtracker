@@ -1,8 +1,6 @@
 
-from django.views.generic import View
-
-from ..common.views.base import StandardResourceView, SafeView, handle_exception
-from .models import TimeSheet, TimeSheetAction
+from ..common.views.base import StandardResourceView
+from .models import TimeSheet
 from .forms import TimeSheetForm, TimeSheetActionForm, WorkLogsForm
 
 
@@ -21,3 +19,6 @@ class TimeSheetActionView(StandardResourceView):
     detail_template = 'timesheet.html'
     edit_template = 'timesheet-action-edit.html'
     main_form = TimeSheetActionForm
+    permissions = {
+        'add': ('issue', 'review',)
+    }
