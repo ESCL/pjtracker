@@ -122,26 +122,19 @@ class StandardResourceView(ReadOnlyResourceView):
         for the view model. It also allows partial access (to specific fields
         in the model).
         """
-        model_meta = cls.model._meta
-        if not action:
+        if not action or request.user.is_superuser:
             # No need to check permissions, OK
             return
         else:
-            # Check that user has any of the required permissions for the action
-            for perm in cls.permissions[action]:
-                # Construct permcode (consider partial like "change some_field")
-                parts = perm.split(' ', 1)
-                parts.insert(1, model_meta.model_name)
-                permcode = '{}.{}'.format(model_meta.app_label, '_'.join(parts).replace(' ', ''))
-
-                # Done if user has permission
-                if request.user.has_perm(permcode):
+            # Check if user is allowed to execute the action
+            for a in request.user.get_allowed_actions_for(cls.model):
+                if a[0] in cls.permissions[action]:
                     return
 
-        # If we got this far user is not authorized, raise error
+        # If we got th  is far user is not authorized, raise error
         raise AuthorizationError(
             'User {} is not allowed to {} {}.'.format(request.user, action,
-                                                      model_meta.verbose_name_plural)
+                                                      cls.model._meta.verbose_name_plural)
         )
 
     @handle_exception
