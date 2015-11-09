@@ -101,13 +101,14 @@ class StandardResourceView(ReadOnlyResourceView):
     collection (list) and instance (detail).
 
     In most cases, you won't need to modify any methods, only assign the model,
-    the templates and the edit form.
+    the templates, the edit form and the permissions.
     """
     edit_template = None
     main_form = None
     sub_form = None
     collection_view_name = None
 
+    # Allowed permission per action
     permissions = {
         'add': ('add',),
         'edit': ('change',),

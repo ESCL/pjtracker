@@ -23,11 +23,11 @@ class Command(BaseCommand):
         account = AccountFactory.create()
 
         # Create one user per group for account
-        users.append(UserFactory.create(owner=account, groups=[admin]))
-        users.append(UserFactory.create(owner=account, groups=[hr]))
-        users.append(UserFactory.create(owner=account, groups=[pcon]))
-        users.append(UserFactory.create(owner=account, groups=[tk]))
-        users.append(UserFactory.create(owner=account, groups=[sup]))
+        users.append(UserFactory.create(username='admin', password='123', owner=account, groups=[admin]))
+        users.append(UserFactory.create(username='hr', password='123', owner=account, groups=[hr]))
+        users.append(UserFactory.create(username='pcon', password='123', owner=account, groups=[pcon]))
+        users.append(UserFactory.create(username='timekeeper', password='123', owner=account, groups=[tk]))
+        users.append(UserFactory.create(username='supervisor', password='123', owner=account, groups=[sup]))
 
         # Done, print results
         print('Created account "{}" with users {}.'.format(account, users))

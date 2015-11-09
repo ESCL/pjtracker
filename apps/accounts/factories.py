@@ -26,3 +26,9 @@ class UserFactory(DjangoModelFactory):
     def groups(self, created, value):
         if created and value:
             self.groups.add(*value)
+
+    @post_generation
+    def password(self, created, value):
+        if created and value:
+            self.set_password(value)
+            self.save()

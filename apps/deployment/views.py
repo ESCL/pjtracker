@@ -22,3 +22,4 @@ class TimeSheetActionView(StandardResourceView):
     permissions = {
         'add': ('issue', 'review',)
     }
+
