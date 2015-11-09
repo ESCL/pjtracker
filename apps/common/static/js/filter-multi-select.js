@@ -131,6 +131,11 @@ var FilterMultiSelect = function(field) {
     this.start = function() {
         var this_ = this;
 
+        if (this.field.disabled || this.field.getAttribute('readonly')) {
+            // Field is disabled, don't even bother
+            return;
+        }
+
         // Create all elements and populate magic multi-selects
         this.createElements();
         this.refreshWidgets();

@@ -3,9 +3,10 @@ from django.test import TestCase
 
 from ..models import Account, User
 from ..factories import UserFactory
+from ..utils import create_permissions
 
 
-class UserProfileTest(TestCase):
+class UserTest(TestCase):
 
     def test_user_factory(self):
         # Just testing the behaviour
@@ -40,3 +41,28 @@ class UserProfileTest(TestCase):
         self.assertEqual(qs.count(), 2)
         self.assertEqual(qs[0], user2)
         self.assertEqual(qs[1], user3)
+
+    def test_get_allowed(self):
+        # Create an admin that can change anything
+        user = UserFactory.create()
+        user.user_permissions.add(*create_permissions(User, ['add', 'change']))
+
+        # Actions should be simple
+        actions = user.get_allowed_actions_for(User)
+        self.assertEqual(set(actions), {('add',), ('change',)})
+
+        # Check fields, all
+        fields = user.get_allowed_fields_for(User)
+        self.assertEqual(fields, User._meta.get_all_field_names())
+
+        # Create one that can only change usernames
+        user = UserFactory.create()
+        user.user_permissions.add(*create_permissions(User, ['change username']))
+
+        # Actions should include field name
+        actions = user.get_allowed_actions_for(User)
+        self.assertEqual(actions, [('change', 'username')])
+
+        # Check fields, only username
+        fields = user.get_allowed_fields_for(User)
+        self.assertEqual(fields, ['username'])
