@@ -27,8 +27,18 @@ h2, h3, h4 {
     color: #44BBEE;
 }
 
+.light-blue {
+    color: #44BBEE;
+}
+
 .light {
     opacity: .6;
+}
+
+.mobile-friendly{
+    background-color: #FFFFAA;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* MARKETING CONTENT

@@ -15,14 +15,14 @@
 {% endblock %}
 
 {% block body %}
-<h3>Existing user? <a href="{% url 'login' %}">here's where you log in</a></h3> 
+<h3>Existing user? <a href="{% url 'login' %}">here's where you log in</a></h3>
 <hr>
-<h3>User support? <a href="http://support.pjtracker.com/">here's to launch a ticket</a></h3>
+<h3>User support? <a href="http://support.pjtracker.com/">here's where you launch a ticket</a></h3>
 <hr />
 
 <div class="title">
     pjtracker &copy;
-    <br /> 
+    <br />
     <span class="grey">Project Tracker Tool</span>
 </div>
 
@@ -90,11 +90,11 @@
             <h2>Projects</h2>
             <p>
                 Scheduling software allows to split a project in different milestones, WBS, phases etc.
-                A project can contain thousand of activities and all those activities will eventualy receive man-hours or equipment hours.
+                A project can contain thousand of activities and all those activities will eventually receive man-hours or equipment hours.
                 So an accurate input of the activities inside the tool is crucial.
             </p>
             <p>
-                This tool allows you to import the list of WBS directly from task / project management software like Oracle Primavera P6 &reg;
+                This tool allows you to import the list of WBS directly from task / project management software like Oracle Primavera P6 &reg; but also allows to manage the information with interfaces already available
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
@@ -107,11 +107,11 @@
                 Usually those teams report to a team leader, supervisor, head of department, etc.
             </p>
             <p>
-                Timesheets are generated based on teams and the hours entered by the timekeeper assigned to the team, are approved by a reponsible for that team
+                Timesheets are generated based on teams and the hours entered by the timekeeper assigned to the team, are approved by a responsible for that team
             </p>
         </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
-
+    <hr />
     <!-- START THE FEATURETTES -->
 
     <p>
@@ -119,17 +119,18 @@
             <span class="grey">How</span> pjtracker &copy; <span class="grey">works?</span>
         </div>
     </p>
-    <br /><br />
-    <div class="row featurette" id="personal-protection">
+    <br />
+    <br />
+    <div class="row featurette" id="wbs-definition">
         <div class="col-md-7">
             <h2 class="featurette-heading">1. WBS <span class="text-muted">definition</span></h2>
             <p class="lead">
-                The WBS are imported from an interface.
+                The WBS can be imported from an interface or updated by authorized users.
                 When the list of activities has been loaded, is responsibility of Project Control to determine
-                if each activity can receive hours of management, direct or indirec type.
+                if each activity can receive hours of management, direct or indirect type.
                 This process is done only once because is very rare that an activity that is supposed to receive
                 direct hours can change later on to receive only management hours.
-                So the definition of the the type of hours is done at the beginning of the project only
+                So the definition of the type of hours is done at the beginning of the project only but the tool also allows to introduce changes later on if needed
             </p>
         </div>
         <div class="col-md-5">
@@ -139,15 +140,15 @@
 
     <hr class="featurette-divider">
 
-    <div class="row featurette"  id="escort-services">
+    <div class="row featurette"  id="manpower-resources">
         <div class="col-md-7 col-md-push-5">
             <h2 class="featurette-heading">2. Manpower <span class="text-muted">Resources</span></h2>
             <p class="lead">
-                The manpower will also be imported from an interface.
+                The manpower can also be imported or updated by authorized users.
                 The source of data can be an HR or payroll database that will be able to produce the list of workers
                 currently active.
-                This list is updated regularly thorouhg the same interface in order to include new hired staff or to remove those that have been terminated.
-                After the import of the manpower the table of job titles (generated during this import process) shall be updated by
+                This list is updated manually or thorough the same interface in order to include new hired staff or to remove those that have been terminated.
+                After the updating of the manpower data the table of job titles shall be updated by
                 identifying on each job title which type of hours the position will be able to book worked time. The types are direct, indirect and management hours
             </p>
         </div>
@@ -158,12 +159,12 @@
 
     <hr class="featurette-divider">
 
-    <div class="row featurette" id="maritime-services">
+    <div class="row featurette" id="equipment-resources">
         <div class="col-md-7">
             <h2 class="featurette-heading">3. Equipment <span class="text-muted">Resources</span></h2>
             <p class="lead">
-                The equipment list will also be imported.
-                The source is usually the assets table that exists in the Accounting or ERP sytem the company is using to support their businesss.
+                The equipment can as well be imported or updated by authorized users.
+                The source is usually the assets table that exists in the Accounting or ERP system the company is using to support their business.
                 The import of equipment from the interface is usually done only once at the beginning of the project.
                 There is need to import the interface again only when there is new equipment being assigned to the project.
                 Equipment assigned to the project that is not being used will not register hours
@@ -177,45 +178,60 @@
 
     <hr class="featurette-divider">
 
-    <div class="row featurette"  id="escort-services">
+    <div class="row featurette"  id="teams-definition">
         <div class="col-md-7 col-md-push-5">
             <h2 class="featurette-heading">4. Teams <span class="text-muted">Definition</span></h2>
             <p class="lead">
-                A team is a working unit.
-                It is compossed by staff and equipment.
-                A team includes those workers and equipment that are usually assigned to activities that they must be together to perform.
-                In a workshop there could be one or more teams involved in several activities.
-                Per instance, a welding team. It will include a forerman or supervisor, some welders, grinders, helpers, etc.
-                The staff working in HR and responsible for the payroll are also part of a team.
-                The protocol staff are a team.
-                The concept of team helps to centralize the input of data for timekeeping purposes.
-                A team must have a timekeeper assigned and at least one approver for the timesheet.
-                A team will be allowed to charge hours to specific project adctivities that are defined usually by the planner of the project.
-                Inside this tool a team is work unit that is allowed to charge hours to predefined WBS only.
+                A team is a working unit. It is composed by staff and equipment. A team includes those workers and equipment that are usually assigned to activities that they must be together to perform. In a workshop there could be one or more teams involved in several activities. Per instance, a welding team. It will include a foreman or supervisor, some welders, grinders, helpers, etc. The staff working in HR and responsible for the payroll are also part of a team. The protocol staff are a team. The concept of team helps to normalize the input of data for timekeeping purposes. A team must have a timekeeper assigned and at least one approver for the timesheet. A team will be allowed to charge hours to specific project activities that are defined usually by the planner of the project. Inside this tool a team is a working unit that charges hours to predefined WBS only.
             </p>
         </div>
         <div class="col-md-5 col-md-pull-7">
-            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/employees.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/teams.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
     <hr class="featurette-divider">
 
-    <div class="row featurette" id="maritime-services">
+    <div class="row featurette" id="timesheet-entry">
         <div class="col-md-7">
             <h2 class="featurette-heading">5. Timesheet <span class="text-muted">Entry and Approval</span></h2>
             <p class="lead">
-                The timekeeper assigned to input man and equipment hours for the team will do so in a daily basis.
-                Once the timesheets has been completed the timekeeper will send the timesheet for review.
-                This is done electronically and the review by the assiged user to review that team will be immediately notified.
-                If there are more than one approver/reviewer assigned to a team once the first approval is done the workflow continues and notifies the next approver and so on until the timesheet is fully approved.
-                As the team is allowed to charge hours to specific WBS assiged by the project, is not possible for the timekeeper to enter hours in activities that that team is suposed not to be involved.
-                Once the timesheets are approved they are available for further consultation whenever is needed.
-                The timesheet will save also the name and time of filling up by the timekeeper as well as the information of all the approvers that intervened.
+                The timekeeper assigned to input man and equipment hours for the team will do so in a daily basis. Once the timesheet has been completed the timekeeper will send it for review. This is done electronically and the user assigned to review that team will be notified immediately. If there are more than one approver/reviewer assigned to a team all of them will be notified at once so they can approve online when they consider it convenient. As the team is allowed to charge hours to specific WBS assigned by the project, is not possible for the timekeeper to enter hours in activities where the team is not supposed to work in. Once the timesheets are approved they are available for further consultation whenever is needed. The timesheet will save also the name and time of filling up by the timekeeper as well as the information of all the approvers that intervened in the workflow.
             </p>
         </div>
         <div class="col-md-5">
             <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/timesheets.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette"  id="payroll-interface">
+        <div class="col-md-7 col-md-push-5">
+            <h2 class="featurette-heading">6. Payroll <span class="text-muted">Interfaces</span></h2>
+            <p class="lead">
+                At the end of the payroll period authorized users linked to payroll activities will be able to download from this tool the total worked hours for the staff. The download tool will generate a file (csv, flat file, etc.) that can be imported into the payroll software for salary calculation. So you are going to pay salaries based on actual approved worked hours which helps preventing the existence of ghost workers and unauthorized worked hours.
+            </p>
+            <p class="lead">
+                After processing the payroll calculation it will also be possible (payroll software permitting) to extract the actual labor cost per staff and then upload it into this tool in order to distribute actual cost by WBS. That information can then be downloaded from this tool and then uploaded into the ERP system the company is using. Thus to reduce error merging in the input of date related to Project and Job Costing.
+            </p>
+        </div>
+        <div class="col-md-5 col-md-pull-7">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/payroll.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette" id="scheduling-interface">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">7. Scheduling Software <span class="text-muted">Interface</span></h2>
+            <p class="lead">
+                As this tool helps collecting the actual worked time spent into the different WBS of the project, it also allows exporting the summary of working time by WBS that can later on be uploaded into your project scheduling software (i.e. : Oracle Primavera P6 &reg;) so you will have your progress automatically updated without having to worry about the accuracy of the info as all loaded hours were duly approved.
+            </p>
+        </div>
+        <div class="col-md-5">
+            <img class="featurette-image img-responsive center-block" src="{% static 'img/menu/scheduling2.png' %}" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
     </div>
 
@@ -229,11 +245,10 @@
             <a href="#">Back to top</a>
         </p>
         <p>
-            © 2015 pjtracker - A product of Enterprise Systems Consultancy Ltd · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
+            <span class="light-blue">© 2015 pjtracker</span> - A <span class="mobile-friendly">mobile friendly</span> product of Enterprise Systems Consultancy Ltd · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
         </p>
     </footer>
 </div>
-
 
 {% endblock %}
 
