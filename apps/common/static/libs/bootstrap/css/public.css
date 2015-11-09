@@ -1,0 +1,145 @@
+/* GLOBAL STYLES
+ -------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+a, a:visited, a:hover {
+    color: #448888;
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', 'Lucida Grande', 'Ubuntu', sans-serif;
+    padding-bottom: 40px;
+    color: #888;
+    font-size: 18px;
+}
+
+.title {
+    font-size: 4em;
+    text-align: center;
+    color: #44BBEE;
+}
+
+.grey {
+    color: #888;
+}
+
+h2, h3, h4 {
+    color: #44BBEE;
+}
+
+.light-blue {
+    color: #44BBEE;
+}
+
+.light {
+    opacity: .6;
+}
+
+.mobile-friendly{
+    background-color: #FFFFAA;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* MARKETING CONTENT
+ -------------------------------------------------- */
+
+/* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.2em;
+}
+.marketing h2 {
+    font-weight: normal;
+}
+.marketing .col-lg-4 p {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+/* Featurettes
+ ------------------------- */
+
+.featurette-divider {
+    margin: 40px 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+/* RESPONSIVE CSS
+ -------------------------------------------------- */
+
+@media (min-width: 768px) {
+    /* Navbar positioning foo */
+    .navbar-wrapper {
+        margin-top: 20px;
+    }
+    .navbar-wrapper .container {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .navbar-wrapper .navbar {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    /* The navbar becomes detached from the top, so we round the corners */
+    .navbar-wrapper .navbar {
+        border-radius: 4px;
+    }
+
+    .featurette-heading {
+        font-size: 50px;
+    }
+}
+
+@media (min-width: 992px) {
+    .featurette-heading {
+        margin-top: 20px;
+    }
+}
+
+.text-muted {
+    color: #dadada;
+}
+
+ul.list li {
+    font-size: 2em;
+}
+
+p.lead {
+    margin: 0;
+    text-align: justify;
+}
+p.lead + p {
+    text-indent: 2.5em;
+}
+p.lead:first-letter {
+    font-size: 2.5em;
+    line-height: 1em;
+    font-weight: 800;
+    float: left;
+    margin: 0 0.107em 0 0;
+}
+p.lead:first-line {
+    font-weight: 800;
+}
+p.lead + p:first-letter {
+    font-size: 1em;
+    line-height: 1.25em;
+    float: none;
+    margin: 0;
+}
+p.lead + p:first-line {
+    font-weight: 400;
+}
+
+.contact {
+    font-size: 2em;
+}
