@@ -90,6 +90,10 @@ table .actions {
     width: auto;
 }
 
+.even {
+    background-color: #F8F8F8;
+}
+
 thead th {
     text-transform: uppercase;
     padding-left: 16px;

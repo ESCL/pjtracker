@@ -4,40 +4,43 @@
 
 <html lang="en">
 
-<head>
+    <head>
 
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
 
-    <!-- Skeleton frames -->
-    <link href="{% static 'libs/skeleton-2.0.4/css/normalize.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/skeleton-2.0.4/css/skeleton.css' %}" rel="stylesheet">
+        <!-- Skeleton frames -->
+        <link href="{% static 'libs/skeleton-2.0.4/css/normalize.css' %}" rel="stylesheet">
+        <link href="{% static 'libs/skeleton-2.0.4/css/skeleton.css' %}" rel="stylesheet">
 
-    <!-- Styles -->
-    {% block styles %}
+        <!-- Styles -->
+        {% block styles %}
         <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% endblock %}
+        {% endblock %}
 
-    <!-- Title -->
-    <title>
-        pjtracker - {% block title %}home{% endblock %}
-    </title>
+        <!-- Title -->
+        <title> pjtracker - {% block title %}home{% endblock %} </title>
 
-</head>
-<body>
+    </head>
+    <body>
 
-    <header>
-        {% block header %}{% endblock %}
-    </header>
+        <header>
+            {% block header %}{% endblock %}
+        </header>
 
-    <div class="container">
-        {% block body %}{% endblock %}
-    </div>
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
 
-    <footer>
-        {% block footer %}{% endblock %}
-    </footer>
+        <footer>
+            {% block footer %}{% endblock %}
+        </footer>
 
-    {% block scripts %}{% endblock %}
+        {% block scripts %}
+        <script src="{% static 'libs/jquery/js/jquery.min.js' %}"></script>
+        <script>
+            $('tbody tr:even').addClass('even');
+        </script>
+        {% endblock %}
 
-</body>
+    </body>
 </html>
