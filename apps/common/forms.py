@@ -14,26 +14,46 @@ class ModernizeFieldsMixin(object):
 class OwnedEntityForm(forms.ModelForm, ModernizeFieldsMixin):
 
     def __init__(self, *args, **kwargs):
-        self._user = kwargs.pop('user', None)
+        self.user = kwargs.pop('user')
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
 
-        if self._user:
-            self._restrict_querysets()
+        # Execute all required field modifications
+        self.restrict_fields()
+        self.restrict_querysets()
         self.modernize_fields()
 
-    def _restrict_querysets(self):
+    def restrict_fields(self):
+        """
+        Disable or remove fields for data that the user is not allowed to
+        modify.
+        """
+        # Note: instance is always set, even if it's new
+        allowed_fields = set(self.user.get_allowed_fields_for(self.instance))
+
+        if self.is_bound:
+            # Bound form, remove fields to allow submitting partial data
+            for k in list(self.fields.keys()):
+                if k not in allowed_fields:
+                    self.fields.pop(k)
+
+        else:
+            # Unbound form, disable them only but render them
+            for k, field in self.fields.items():
+                if k not in allowed_fields:
+                    field.widget.attrs.update({'disabled': 'disabled', 'readonly': True})
+
+    def restrict_querysets(self):
         """
         Restrict queryset in all fields for the given user.
-        :return:
         """
         for field in self.fields.values():
             if hasattr(field, 'queryset'):
                 if hasattr(field.queryset, 'for_user'):
-                    field.queryset = field.queryset.for_user(self._user)
+                    field.queryset = field.queryset.for_user(self.user)
 
     def save(self, *args, **kwargs):
         # Make user account owner if object is new
-        if self.instance.id is None and hasattr(self._user, 'profile'):
-            self.instance.owner = self._user.profile.account
+        if not self.instance.id:
+            self.instance.owner = self.user.owner
 
         return super(OwnedEntityForm, self).save(*args, **kwargs)

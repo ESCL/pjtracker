@@ -18,3 +18,7 @@ class TeamView(StandardResourceView):
     detail_template = 'team.html'
     edit_template = 'team-edit.html'
     main_form = TeamForm
+    permissions = {
+        'add': ('add',),
+        'edit': ('change', 'change activities',)
+    }

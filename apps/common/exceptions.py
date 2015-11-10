@@ -9,3 +9,5 @@ class AuthenticationError(Exception):
     status_code = 401
 
 
+class AuthorizationError(Exception):
+    status_code = 403

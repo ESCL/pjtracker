@@ -20,13 +20,3 @@ class Command(BaseCommand):
             call_command('migrate')
         else:
             raise TypeError("You shouldn't be doing this on a real database...")
-
-        # Create superuser
-        print("Creating superuser...")
-        call_command('createsuperuser')
-
-        # Create example project
-        print("Creating example project...")
-        call_command('create_example_project')
-
-        print("Done.")

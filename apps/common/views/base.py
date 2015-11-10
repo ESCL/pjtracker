@@ -4,6 +4,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
+from ..exceptions import AuthorizationError
+
 
 def handle_exception(func):
     if settings.DEBUG:
@@ -39,6 +41,10 @@ class SafeView(View):
         return render(request, cls.error_template,
                       context, status=status_code)
 
+    @handle_exception
+    def dispatch(self, request, *args, **kwargs):
+        return super(SafeView, self).dispatch(request, *args, **kwargs)
+
 
 class ReadOnlyResourceView(SafeView):
     """
@@ -70,7 +76,6 @@ class ReadOnlyResourceView(SafeView):
 
     # Main http methods (proxy to worker methods)
 
-    @handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
         if pk:
             return self.show_instance(request, pk, **kwargs)
@@ -96,34 +101,65 @@ class StandardResourceView(ReadOnlyResourceView):
     collection (list) and instance (detail).
 
     In most cases, you won't need to modify any methods, only assign the model,
-    the templates and the edit form.
+    the templates, the edit form and the permissions.
     """
     edit_template = None
     main_form = None
     sub_form = None
     collection_view_name = None
 
+    # Allowed permission per action
+    permissions = {
+        'add': ('add',),
+        'edit': ('change',),
+    }
+
+    # Authorization methods for edit views
+
+    @classmethod
+    def authorize(cls, request, action):
+        """
+        Authorize the user by checking that he has access to the given action
+        for the view model. It also allows partial access (to specific fields
+        in the model).
+        """
+        if not action or request.user.is_superuser:
+            # No need to check permissions, OK
+            return
+        else:
+            # Check if user is allowed to execute the action
+            for a in request.user.get_allowed_actions_for(cls.model):
+                if a[0] in cls.permissions[action]:
+                    return
+
+        # If we got th  is far user is not authorized, raise error
+        raise AuthorizationError(
+            'User {} is not allowed to {} {}.'.format(request.user, action,
+                                                      cls.model._meta.verbose_name_plural)
+        )
+
+    @handle_exception
+    def dispatch(self, request, *args, action=None, **kwargs):
+        self.authorize(request, action)
+        return super(SafeView, self).dispatch(request, *args, action=action, **kwargs)
+
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
 
-    @handle_exception
     def get(self, request, pk=None, action=None, **kwargs):
         if action in ('add', 'edit'):
             return self.show_forms(request, pk)
 
         return super(StandardResourceView, self).get(request, pk, action, **kwargs)
 
-    @handle_exception
     def post(self, request, pk=None, action=None, **kwargs):
         if pk:
             return self.put(request, pk, **kwargs)
         return self.upsert_instance(request, pk, **kwargs)
 
-    @handle_exception
     def put(self, request, pk, action=None, **kwargs):
         return self.upsert_instance(request, pk, **kwargs)
 
-    @handle_exception
     def delete(self, request, pk, action=None, **kwargs):
         return self.delete_instance(request, pk, **kwargs)
 

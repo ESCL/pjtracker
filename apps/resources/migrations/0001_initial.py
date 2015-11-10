@@ -7,8 +7,8 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
         ('organizations', '0001_initial'),
+        ('accounts', '0001_initial'),
         ('work', '__first__'),
     ]
 
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CompanyHistory',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='organizations.Company')),
@@ -28,13 +28,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EquipmentType',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('managerial_labour', models.BooleanField(default=False)),
                 ('indirect_labour', models.BooleanField(default=False)),
                 ('direct_labour', models.BooleanField(default=False)),
                 ('name', models.CharField(max_length=128)),
-                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
-                ('parent', models.ForeignKey(null=True, related_name='subtypes', to='resources.EquipmentType')),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
+                ('parent', models.ForeignKey(null=True, to='resources.EquipmentType', related_name='subtypes')),
             ],
             options={
                 'abstract': False,
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PositionHistory',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('position', models.ForeignKey(to='organizations.Position')),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProjectHistory',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='work.Project')),
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Resource',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('identifier', models.CharField(max_length=16)),
                 ('resource_type', models.CharField(max_length=32)),
             ],
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TeamHistory',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('start', models.DateTimeField()),
                 ('end', models.DateTimeField()),
                 ('team', models.ForeignKey(to='organizations.Team')),
@@ -90,12 +90,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Employee',
             fields=[
-                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, to='resources.Resource', primary_key=True, parent_link=True)),
+                ('resource_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, to='resources.Resource', parent_link=True)),
                 ('first_name', models.CharField(max_length=64)),
                 ('last_name', models.CharField(max_length=64)),
-                ('birth_date', models.DateField(blank=True, null=True)),
-                ('photo', models.FileField(blank=True, max_length=256, upload_to='')),
-                ('home_address', models.CharField(blank=True, max_length=256, null=True)),
+                ('birth_date', models.DateField(null=True, blank=True)),
+                ('photo', models.FileField(max_length=256, upload_to='', blank=True)),
+                ('home_address', models.CharField(max_length=256, null=True, blank=True)),
                 ('position', models.ForeignKey(to='organizations.Position')),
             ],
             options={
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Equipment',
             fields=[
-                ('resource_ptr', models.OneToOneField(serialize=False, auto_created=True, to='resources.Resource', primary_key=True, parent_link=True)),
+                ('resource_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, to='resources.Resource', parent_link=True)),
                 ('type', models.ForeignKey(to='resources.EquipmentType')),
             ],
             options={
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='owner',
-            field=models.ForeignKey(blank=True, null=True, to='accounts.Account'),
+            field=models.ForeignKey(null=True, to='accounts.Account', blank=True),
         ),
         migrations.AddField(
             model_name='resource',

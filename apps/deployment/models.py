@@ -1,10 +1,12 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.db import models
 from django.dispatch import Signal
 from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity, LabourType
+from ..common.exceptions import AuthorizationError
 from ..common.signals import SignalsMixin
 
 
@@ -119,7 +121,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def issue(self, user):
         if user not in self.team.timekeepers.all():
-            raise TypeError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
+            raise AuthorizationError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,
@@ -132,7 +134,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def reject(self, user):
         if user not in self.team.supervisors.all():
-            raise TypeError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
+            raise AuthorizationError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,
@@ -144,7 +146,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def approve(self, user):
         if user not in self.team.supervisors.all():
-            raise TypeError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
+            raise AuthorizationError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,
@@ -194,7 +196,7 @@ class TimeSheetAction(OwnedEntity):
         related_name='actions'
     )
     actor = models.ForeignKey(
-        'auth.User'
+        settings.AUTH_USER_MODEL
     )
     action = models.CharField(
         max_length=16,

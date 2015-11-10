@@ -1,9 +1,8 @@
 __author__ = 'kako'
 
-from django.contrib.auth.models import User
-from factory import DjangoModelFactory, Faker, SubFactory, RelatedFactory, LazyAttribute
+from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation
 
-from .models import Account, UserProfile
+from .models import Account, User
 
 
 class AccountFactory(DjangoModelFactory):
@@ -14,14 +13,6 @@ class AccountFactory(DjangoModelFactory):
     name = Faker('company')
 
 
-class UserProfileFactory(DjangoModelFactory):
-
-    class Meta:
-        model = UserProfile
-
-    account = SubFactory(AccountFactory)
-
-
 class UserFactory(DjangoModelFactory):
 
     class Meta:
@@ -29,4 +20,15 @@ class UserFactory(DjangoModelFactory):
 
     first_name = Faker('first_name')
     username = LazyAttribute(lambda obj: obj.first_name.lower())
-    profile = RelatedFactory(UserProfileFactory, 'user', user=None)
+    owner = SubFactory(AccountFactory)
+
+    @post_generation
+    def groups(self, created, value):
+        if created and value:
+            self.groups.add(*value)
+
+    @post_generation
+    def password(self, created, value):
+        if created and value:
+            self.set_password(value)
+            self.save()
