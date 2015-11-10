@@ -26,7 +26,9 @@
 
     <div class="eight columns">
         <h1>Welcome to <span class="light-blue">pjtracker&copy;</span>!</h1>
+        <div id="graphs"></div>
     </div>
+
     <div class="user-support-link">
         <span class="light-blue">User support?</span>&nbsp;<a href="http://support.pjtracker.com/" target="_blank">here's where you launch a ticket</a>
     </div>
@@ -42,13 +44,13 @@
 
 {% block scripts %}
 
-<script src="{% static 'libs/jquery/js/jquery.min.js' %}"></script>
+<script src="{% static 'js/ajax.js' %}"></script>
 <script src="{% static 'libs/canvas/js/canvasjs.min.js' %}"></script>
-<script src="{% static 'js/extended.js' %}"></script>
+<script src="{% static 'js/graphs.js' %}"></script>
 <script>
-    generate_graph("/resources/api/v0/employees/?format=json", "Resources", "column");
-    generate_graph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
-    generate_graph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
-    generate_graph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
+    generateGraph("/resources/api/v0/employees/?format=json", "Resources", "column");
+    generateGraph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
+    generateGraph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
+    generateGraph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
 </script>
 {% endblock %}
