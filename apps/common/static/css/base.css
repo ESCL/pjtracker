@@ -7,15 +7,6 @@
     src: url('../fonts/Roboto-Regular.ttf') format('truetype');
 }
 
-.light-blue {
-    color: #44BBEE;
-}
-
-.user-support-link {
-    position: fixed;
-    bottom: 0px;
-    right: 2px;
-}
 
 /** Body and container **/
 
@@ -28,12 +19,24 @@ body {
     font-size: 0.9em;
 }
 
+
 /** Links **/
 
 a {
     text-decoration: none;
     color: #488;
 }
+
+.light-blue {
+    color: #44BBEE;
+}
+
+.user-support-link {
+    position: fixed;
+    bottom: 0;
+    right: 2px;
+}
+
 
 /** Buttons **/
 
@@ -57,6 +60,7 @@ button {
     background: #fff;
 }
 
+
 /** Labels **/
 
 .label {
@@ -76,13 +80,15 @@ button {
     background: #488;
 }
 
+
 /** Definition lists */
 
 dt {
     font-weight: bold;
 }
 
-/** Table elements **/
+
+/** Tables **/
 
 table {
     padding: 0;
@@ -94,14 +100,14 @@ table .actions {
     width: auto;
 }
 
-.even {
-    background-color: #F8F8F8;
-}
-
 thead th {
     text-transform: uppercase;
     padding-left: 16px;
     color: #488;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f8f8;
 }
 
 tbody td {
@@ -131,6 +137,7 @@ td.actions a:last-of-type {
 td.subtotal {
     font-weight: bold;
 }
+
 
 /** Forms **/
 
@@ -170,7 +177,10 @@ select[multiple] {
     margin-top: 10em;
 }
 
+
+/** Graphics? **/
+
 .graph_div {
-    padding: 0px;
+    padding: 0;
     height: 300px;
 }
