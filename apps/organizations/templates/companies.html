@@ -12,26 +12,32 @@
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for c in companies %}
+{% include 'apps/search-form.html' %}
+
+{% if companies %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ c.name }}</td>
-                <td>{{ c.code }}</td>
-                <td class="actions">
-                    <a href="{% url 'company' pk=c.id %}">view</a>
-                    <a href="{% url 'company' pk=c.id action='edit' %}">edit</a>
-                </td>
+                <th>Name</th>
+                <th>Code</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for c in companies %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.code }}</td>
+                    <td class="actions">
+                        <a href="{% url 'company' pk=c.id %}">view</a>
+                        <a href="{% url 'company' pk=c.id action='edit' %}">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No campanies found matching the current search criteria.</p>
+{% endif %}
 
 {% endblock %}

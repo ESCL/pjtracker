@@ -91,18 +91,17 @@ dt {
 /** Tables **/
 
 table {
-    padding: 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #ddd;
 }
 
 table .actions {
-    border: 1px solid #eee;
+    border: 0;
     background: #eee;
-    width: auto;
 }
 
 thead th {
     text-transform: uppercase;
-    padding-left: 16px;
     color: #488;
 }
 
@@ -111,11 +110,14 @@ tbody tr:nth-child(even) {
 }
 
 tbody td {
-    padding: 4px 12px;
+    padding-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 td.actions {
-    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 td.actions a {
@@ -175,6 +177,11 @@ select[multiple] {
 
 .multiselect-button {
     margin-top: 10em;
+}
+
+.search-form {
+    margin-top: 24px;
+    margin-bottom: 8px;
 }
 
 

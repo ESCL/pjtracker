@@ -58,12 +58,22 @@ class ReadOnlyResourceView(SafeView):
     list_template = None
     detail_template = None
     error_template = 'apps/error.html'
+    search_form = None
 
     # Helper class methods
 
     @classmethod
     def build_filters(cls, qs, *args, **kwargs):
-        return {k: qs.get(k) for k in qs.keys()}
+        filters = {}
+        for k in qs:
+            if k.endswith('__in') or k.endswith('__range'):
+                v = qs.getlist(k)
+            else:
+                v = qs.get(k)
+            if v:
+                filters[k] = v
+
+        return filters
 
     @classmethod
     def filter_objects(cls, user, qs, **kwargs):
@@ -87,6 +97,9 @@ class ReadOnlyResourceView(SafeView):
     def show_list(self, request, status=200, **kwargs):
         objs = self.filter_objects(request.user, request.GET, **kwargs)
         context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs}
+        if self.search_form:
+            search_form = self.search_form(request.GET)
+            context['search_form'] = search_form
         return render(request, self.list_template, context, status=status)
 
     def show_instance(self, request, pk, **kwargs):

@@ -4,42 +4,46 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><a href="{% url 'projects' %}">projects</a></li>
-<li><a href="{% url 'project' pk=project.id %}">{{ project }}</a></li>
 <li>wbs</li>
-<li><a href="{% url 'activity' pj_pk=project.id action='add' %}">+</a></li>
+<li><a href="{% url 'activity' action='add' %}">+</a></li>
 
 {% endblock %}
 
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Labour</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for a in activities %}
+{% include 'apps/search-form.html' %}
+
+{% if activities %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ a.wbs_code }}</td>
-                <td>{{ a.name }}</td>
-                <td>
-                    <span class="label {% if a.managerial_labour %}enabled{% else %}disabled{% endif %}">MGT</span>
-                    <span class="label {% if a.indirect_labour %}enabled{% else %}disabled{% endif %}">IND</span>
-                    <span class="label {% if a.direct_labour %}enabled{% else %}disabled{% endif %}">DIR</span>
-                </td>
-                <td class="actions">
-                    <a href="{% url 'activity' pj_pk=a.project_id pk=a.id %}">view</a>
-                    <a href="{% url 'activity' pj_pk=a.project_id pk=a.id action='edit' %}">edit</a>
-                </td>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Labour</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for a in activities %}
+                <tr>
+                    <td>{{ a.wbs_code }}</td>
+                    <td>{{ a.name }}</td>
+                    <td>
+                        <span class="label {% if a.managerial_labour %}enabled{% else %}disabled{% endif %}">MGT</span>
+                        <span class="label {% if a.indirect_labour %}enabled{% else %}disabled{% endif %}">IND</span>
+                        <span class="label {% if a.direct_labour %}enabled{% else %}disabled{% endif %}">DIR</span>
+                    </td>
+                    <td class="actions">
+                        <a href="{% url 'activity' pk=a.id %}">view</a>
+                        <a href="{% url 'activity' pk=a.id action='edit' %}">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No activities found matching the current search criteria</p>
+{% endif %}
 
 {% endblock %}

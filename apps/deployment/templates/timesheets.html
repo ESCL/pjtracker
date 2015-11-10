@@ -14,35 +14,41 @@
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Team</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for t in timesheets %}
+{% include 'apps/search-form.html' %}
+
+{% if timesheets %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ t.code }}</td>
-                <td>{{ t.team }}</td>
-                <td>{{ t.date }}</td>
-                <td>{{ t.get_status_display }}</td>
-                <td class="actions">
-                    <a href="{% url 'timesheet' pk=t.id %}" class="action">view</a>
-                    {% if t.is_editable %}
-                        <a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a>
-                        <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">issue</a>
-                    {% elif t.is_reviewable %}
-                        <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">review</a>
-                    {% endif %}
-                </td>
+                <th>Code</th>
+                <th>Team</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for t in timesheets %}
+                <tr>
+                    <td>{{ t.code }}</td>
+                    <td>{{ t.team }}</td>
+                    <td>{{ t.date }}</td>
+                    <td>{{ t.get_status_display }}</td>
+                    <td class="actions">
+                        <a href="{% url 'timesheet' pk=t.id %}" class="action">view</a>
+                        {% if t.is_editable %}
+                            <a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a>
+                            <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">issue</a>
+                        {% elif t.is_reviewable %}
+                            <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">review</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No time-sheets found matching the current search criteria.</p>
+{% endif %}
 
 {% endblock %}

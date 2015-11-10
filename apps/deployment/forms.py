@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm
+from ..common.forms import OwnedEntityForm, ModernForm
 from .models import TimeSheet, WorkLog
 
 
@@ -19,6 +19,12 @@ class TimeSheetForm(OwnedEntityForm):
         # can't have people changing this)
         if instance:
             self.fields.pop('team')
+
+
+class TimeSheetSearchForm(ModernForm):
+    team__code__icontains = forms.CharField(max_length=32, required=False, label='Team code')
+    date__gte = forms.DateField(label='From date')
+    date__lte = forms.DateField(label='Until date')
 
 
 class TimeSheetActionForm(forms.Form):

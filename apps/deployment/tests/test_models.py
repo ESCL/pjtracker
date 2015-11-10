@@ -1,13 +1,13 @@
 
 from django.test import TestCase
 
-from ...accounts.factories import AccountFactory, UserFactory
+from ...accounts.factories import UserFactory
 from ...notifications.models import Notification
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet, TimeSheetAction, WorkLog, LabourType
+from ..models import TimeSheet, TimeSheetAction, WorkLog, LabourType, AuthorizationError
 
 
 class TimeSheetTest(TestCase):
@@ -63,7 +63,7 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.status, TimeSheet.STATUS_PREPARING)
 
         # Try to issue with supervisor, error
-        self.assertRaises(TypeError, self.ts.issue, self.supervisor1)
+        self.assertRaises(AuthorizationError, self.ts.issue, self.supervisor1)
 
         # Issue the timesheet
         n_count = Notification.objects.count()
@@ -92,7 +92,7 @@ class TimeSheetTest(TestCase):
         self.ts.issue(self.timekeeper)
 
         # Try to reject with worker, error
-        self.assertRaises(TypeError, self.ts.reject, self.timekeeper)
+        self.assertRaises(AuthorizationError, self.ts.reject, self.timekeeper)
 
         # Reject the timesheet
         n_count = Notification.objects.count()
@@ -121,7 +121,7 @@ class TimeSheetTest(TestCase):
         self.ts.issue(self.timekeeper)
 
         # Try to approve with worker, error
-        self.assertRaises(TypeError, self.ts.approve, self.timekeeper)
+        self.assertRaises(AuthorizationError, self.ts.approve, self.timekeeper)
 
         # Approve the timesheet
         n_count = Notification.objects.count()

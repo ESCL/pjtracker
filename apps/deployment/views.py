@@ -1,7 +1,7 @@
 
 from ..common.views.base import StandardResourceView
 from .models import TimeSheet
-from .forms import TimeSheetForm, TimeSheetActionForm, WorkLogsForm
+from .forms import TimeSheetForm, TimeSheetActionForm, WorkLogsForm, TimeSheetSearchForm
 
 
 class TimeSheetView(StandardResourceView):
@@ -11,6 +11,7 @@ class TimeSheetView(StandardResourceView):
     edit_template = 'timesheet-edit.html'
     main_form = TimeSheetForm
     sub_form = WorkLogsForm
+    search_form = TimeSheetSearchForm
 
 
 class TimeSheetActionView(StandardResourceView):

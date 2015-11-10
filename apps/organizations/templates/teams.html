@@ -12,34 +12,40 @@
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Company</th>
-            <th>Employees</th>
-            <th>Equipment</th>
-            <th>Activities</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for t in teams %}
+{% include 'apps/search-form.html' %}
+
+{% if teams %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ t.code }}</td>
-                <td>{{ t.name }}</td>
-                <td>{{ t.company }}</td>
-                <td>{{ t.employees_resources.count }}</td>
-                <td>{{ t.equipment_resources.count }}</td>
-                <td>{{ t.activities.count }}</td>
-                <td class="actions">
-                    <a href="{% url 'team' pk=t.id %}">view</a>
-                    <a href="{% url 'team' pk=t.id action='edit' %}">edit</a>
-                </td>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Employees</th>
+                <th>Equipment</th>
+                <th>Activities</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for t in teams %}
+                <tr>
+                    <td>{{ t.code }}</td>
+                    <td>{{ t.name }}</td>
+                    <td>{{ t.company }}</td>
+                    <td>{{ t.employees_resources.count }}</td>
+                    <td>{{ t.equipment_resources.count }}</td>
+                    <td>{{ t.activities.count }}</td>
+                    <td class="actions">
+                        <a href="{% url 'team' pk=t.id %}">view</a>
+                        <a href="{% url 'team' pk=t.id action='edit' %}">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No teams found matching the current search criteria.</p>
+{% endif %}
 
 {% endblock %}

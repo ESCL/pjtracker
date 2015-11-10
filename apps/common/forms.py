@@ -6,12 +6,23 @@ from django import forms
 class ModernizeFieldsMixin(object):
 
     def modernize_fields(self):
-        for field in self.fields.values():
+        for k, field in self.fields.items():
+            label = field.label or k.replace('_', '').title()
             if isinstance(field, forms.DateField):
+                field.widget.attrs['title'] = label
                 field.widget.input_type = 'date'
+            else:
+                field.widget.attrs['placeholder'] = label
 
 
-class OwnedEntityForm(forms.ModelForm, ModernizeFieldsMixin):
+class ModernForm(ModernizeFieldsMixin, forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(ModernForm, self).__init__(*args, **kwargs)
+        self.modernize_fields()
+
+
+class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')

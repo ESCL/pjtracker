@@ -12,28 +12,34 @@
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Activities</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for p in projects %}
+{% include 'apps/search-form.html' %}
+
+{% if projects %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ p.code }}</td>
-                <td>{{ p.name }}</td>
-                <td><a href="{% url 'activities' pj_pk=p.id %}">{{ p.activity_set.count }} activities</a></td>
-                <td class="actions">
-                    <a href="{% url 'project' pk=p.id %}">view</a>
-                    <a href="{% url 'project' pk=p.id action='edit' %}">edit</a>
-                </td>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Activities</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+                <tr>
+                    <td>{{ p.code }}</td>
+                    <td>{{ p.name }}</td>
+                    <td><a href="{% url 'activities' %}?project_id={{ p.id }}">{{ p.activity_set.count }} activities</a></td>
+                    <td class="actions">
+                        <a href="{% url 'project' pk=p.id %}">view</a>
+                        <a href="{% url 'project' pk=p.id action='edit' %}">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No projects found matching the current search criteria.</p>
+{% endif %}
 
 {% endblock %}

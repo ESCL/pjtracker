@@ -1,6 +1,7 @@
 from django.db import models
 
 from ..common.db.models import OwnedEntity, History, AllowedLabourMixin
+from .query import EmployeeQuerySet, EquipmentQuerySet
 
 
 class EquipmentType(OwnedEntity, AllowedLabourMixin):
@@ -57,6 +58,8 @@ class Resource(OwnedEntity):
 
 class Employee(Resource):
 
+    objects = EmployeeQuerySet.as_manager()
+
     first_name = models.CharField(
         max_length=64
     )
@@ -98,6 +101,8 @@ class Equipment(Resource):
 
     class Meta:
         verbose_name_plural = 'equipment'
+
+    objects = EquipmentQuerySet.as_manager()
 
     type = models.ForeignKey(
         'EquipmentType'

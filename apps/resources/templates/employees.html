@@ -12,34 +12,40 @@
 
 {% block body %}
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Company</th>
-            <th>Team</th>
-            <th>Position</th>
-            <th>Project</th>
-            <th class="actions">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for e in employees %}
+{% include 'apps/search-form.html' %}
+
+{% if employees %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ e.identifier }}</td>
-                <td>{{ e.full_name }}</td>
-                <td>{{ e.company }}</td>
-                <td>{{ e.team }}</td>
-                <td>{{ e.position }}</td>
-                <td>{{ e.project }}</td>
-                <td class="two actions">
-                    <a href="{% url 'employee' pk=e.id %}" class="action">view</a>
-                    <a href="{% url 'employee' pk=e.id action='edit' %}" class="action">edit</a>
-                </td>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Team</th>
+                <th>Position</th>
+                <th>Project</th>
+                <th class="actions">Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for e in employees %}
+                <tr>
+                    <td>{{ e.identifier }}</td>
+                    <td>{{ e.full_name }}</td>
+                    <td>{{ e.company }}</td>
+                    <td>{{ e.team }}</td>
+                    <td>{{ e.position }}</td>
+                    <td>{{ e.project }}</td>
+                    <td class="two actions">
+                        <a href="{% url 'employee' pk=e.id %}" class="action">view</a>
+                        <a href="{% url 'employee' pk=e.id action='edit' %}" class="action">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No employees found matching the current search criteria.</p>
+{% endif %}
 
 {% endblock %}
