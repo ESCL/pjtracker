@@ -11,7 +11,7 @@ class EmployeeQuerySet(OwnedEntityQuerySet):
         args = list(args)
         name = kwargs.pop('name', None)
         if name:
-            args.append(Q(Q(first_name__iexact=name)|Q(last_name__iexact=name)))
+            args.append(Q(Q(first_name__icontains=name)|Q(last_name__icontains=name)))
 
         return super(EmployeeQuerySet, self).filter(*args, **kwargs)
 
@@ -22,6 +22,6 @@ class EquipmentQuerySet(OwnedEntityQuerySet):
         args = list(args)
         type = kwargs.pop('type', None)
         if type:
-            args.append(Q(Q(type__name__iexact=type)|Q(type__parent__name__iexact=type)))
+            args.append(Q(Q(type__name__icontains=type)|Q(type__parent__name__icontains=type)))
 
         return super(EquipmentQuerySet, self).filter(*args, **kwargs)
