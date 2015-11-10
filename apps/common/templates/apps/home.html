@@ -32,10 +32,6 @@
         {% include 'apps/notifications.html' %}
     </div>
 
-    <div id="chartWBS" class="graph_div four columns"></div>
-
-    <div id="chartWBS1" class="graph_div four columns"></div>
-
 </div>
 
 {% endblock %}
@@ -46,16 +42,13 @@
 <script src="{% static 'libs/canvas/js/canvasjs.min.js' %}"></script>
 <script src="{% static 'js/extended.js' %}"></script>
 <script>
-    /** Graph types
-     *
-     * column
-     * area
-     * bar
-     * doughnut
-     *
-     */
+    generate_graph("/resources/api/v0/employees/?format=json", "Resources", "column");
 
-    generate_graph("chartWBS", "/resources/api/v0/employees/?format=json", "Resources", "column"); 
-    generate_graph("chartWBS1", "/resources/api/v0/employees/?format=json", "Resources 2", "doughnut"); 
+    generate_graph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
+
+    generate_graph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
+
+    generate_graph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
+
 </script>
 {% endblock %}
