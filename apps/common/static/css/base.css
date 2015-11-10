@@ -43,6 +43,10 @@ button {
 
 .button {
     background: linear-gradient(#fff, #eee);
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
 }
 
 .button-primary {
@@ -164,4 +168,9 @@ select[multiple] {
 
 .multiselect-button {
     margin-top: 10em;
+}
+
+.graph_div {
+    padding: 0px;
+    height: 240px;
 }
