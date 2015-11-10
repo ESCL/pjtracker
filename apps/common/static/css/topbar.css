@@ -43,7 +43,7 @@
 
 nav {
     position: absolute;
-    right: 8px;
+    right: 2px;
     top: 2px;
 }
 
@@ -57,9 +57,4 @@ nav a.button {
 nav a.button img {
     height: 24px;
 }
-
-nav a.button .icon-text {
-    display: none;
-}
-
 

@@ -43,7 +43,7 @@ class ActivityGroup(OwnedEntity):
     )
 
     def __str__(self):
-        return self.code
+        return self.name
 
 
 class Activity(OwnedEntity, AllowedLabourMixin):

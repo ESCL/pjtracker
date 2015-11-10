@@ -1,13 +1,13 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
 
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><a href="{% url 'projects' %}">projects</a></li>
-<li><a href="{% url 'project' pk=activity.project_id %}">{{ activity.project }}</a></li>
-<li><a href="{% url 'activities' pj_pk=activity.project_id %}">wbs</a></li>
-<li><a href="{% url 'activity' pj_pk=activity.project_id pk=activity.id %}">{{ activity }}</a></li>
+<li><a href="{% url 'activities' %}">wbs</a></li>
+<li><a href="{% url 'activity' pk=activity.id %}">{{ activity.wbs_code }}</a></li>
 <li>edit</li>
 
 {% endblock %}
@@ -26,5 +26,18 @@
     </div>
 
 </form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="{% static 'js/filter-multi-select.js' %}"></script>
+    <script>
+        // Use FilterMultiSelect to turn multi-select into something usable
+        var groups = document.querySelector('#id_main-groups');
+        var groupsSelect = new FilterMultiSelect(groups);
+        groupsSelect.start();
+    </script>
 
 {% endblock %}
