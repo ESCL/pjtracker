@@ -2,12 +2,14 @@
 
 {% load staticfiles %}
 
+
 {% block styles %}
 
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
 
 {% endblock %}
+
 
 {% block breadcrumbs %}
 
@@ -16,6 +18,7 @@
 </li>
 
 {% endblock %}
+
 
 {% block body %}
 
@@ -36,6 +39,7 @@
 
 {% endblock %}
 
+
 {% block scripts %}
 
 <script src="{% static 'libs/jquery/js/jquery.min.js' %}"></script>
@@ -43,12 +47,8 @@
 <script src="{% static 'js/extended.js' %}"></script>
 <script>
     generate_graph("/resources/api/v0/employees/?format=json", "Resources", "column");
-
     generate_graph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
-
     generate_graph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
-
     generate_graph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
-
 </script>
 {% endblock %}
