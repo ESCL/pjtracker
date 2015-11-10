@@ -24,17 +24,17 @@
 
 <div class="row">
 
-    <div class="eight columns">
-        <h1>Welcome to <span class="light-blue">pjtracker&copy;</span>!</h1>
-        <div id="graphs"></div>
+    <h1>Welcome to <span class="light-blue">pjtracker&copy;</span>!</h1>
+
+    <div id="notifications">
+        {% include 'apps/notifications.html' %}
+    </div>
+
+    <div id="graphs">
     </div>
 
     <div class="user-support-link">
         <span class="light-blue">User support?</span>&nbsp;<a href="http://support.pjtracker.com/" target="_blank">here's where you launch a ticket</a>
-    </div>
-
-    <div class="four columns">
-        {% include 'apps/notifications.html' %}
     </div>
 
 </div>

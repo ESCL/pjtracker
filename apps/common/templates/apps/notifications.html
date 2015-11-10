@@ -1,4 +1,4 @@
-<h4 class="light-blue">Notifications</h4>
+<h4 class="light-blue title">Notifications</h4>
 
 {% for notification in notifications %}
     <div class="row notification">
@@ -7,5 +7,5 @@
         {{ notification.message }}
     </div>
 {% empty %}
-    <p>No notifications available.</p>
+    <div class="row notification">No notifications available!</div>
 {% endfor %}

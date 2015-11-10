@@ -1,21 +1,24 @@
 /*** Styles used by notifications widgets. ***/
 
+#notifications {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+#notifications .title {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin-bottom: 0;
+    padding: 4px 12px;
+}
+
 .notification {
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
     padding: 10px 15px;
 }
 
 .notification:first-of-type {
     border-top: 1px solid #ddd;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.notification:last-of-type {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
 }
 
 .notification .title {
