@@ -21,49 +21,49 @@
 
     <nav>
         <a href="{% url 'companies' %}" class="button">
-            <img src="{% static 'img/menu/companies.png' %}"><br>
+            <img src="{% static 'img/menu/companies.png' %}" title="Companies"><br>
             <span class="icon-text">Companies</span>
         </a>
 
         <a href="{% url 'teams' %}" class="button">
-            <img src="{% static 'img/menu/teams.png' %}"><br>
+            <img src="{% static 'img/menu/teams.png' %}" title="Teams"><br>
             <span class="icon-text">Teams</span>
         </a>
 
         <a href="{% url 'employees' %}" class="button">
-            <img src="{% static 'img/menu/employees.png' %}"><br>
+            <img src="{% static 'img/menu/employees.png' %}" title="Employees"><br>
             <span class="icon-text">Employees</span>
         </a>
 
         <a href="{% url 'equipments' %}" class="button">
-            <img src="{% static 'img/menu/equipment.png' %}"><br>
+            <img src="{% static 'img/menu/equipment.png' %}" title="Equipment"><br>
             <span class="icon-text">Equipment</span>
         </a>
 
         <a href="{% url 'projects' %}" class="button">
-            <img src="{% static 'img/menu/projects.png' %}"><br>
+            <img src="{% static 'img/menu/projects.png' %}" title="Projects"><br>
             <span class="icon-text">Projects</span>
         </a>
 
         <a href="{% url 'activities' %}" class="button">
-            <img src="{% static 'img/menu/wbs.png' %}"><br>
+            <img src="{% static 'img/menu/wbs.png' %}" title="WBS"><br>
             <span class="icon-text">WBS</span>
         </a>
 
         <a href="{% url 'timesheets' %}" class="button">
-            <img src="{% static 'img/menu/timesheets.png' %}"><br>
+            <img src="{% static 'img/menu/timesheets.png' %}" title="Time-Sheets"><br>
             <span class="icon-text">Time-Sheets</span>
         </a>
 
         {% if user.is_staff %}
             <a href="/admin/" class="button">
-                <img src="{% static 'img/menu/admin.png' %}"><br>
+                <img src="{% static 'img/menu/admin.png' %}" title="Admin"><br>
                 <span class="icon-text">Admin</span>
             </a>
         {% endif %}
 
         <a href="{% url 'logout' %}" class="button">
-            <img src="{% static 'img/menu/logout.png' %}"><br>
+            <img src="{% static 'img/menu/logout.png' %}" title="Log out"><br>
             <span class="icon-text">Log out</span>
         </a>
 

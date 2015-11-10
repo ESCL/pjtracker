@@ -5,7 +5,7 @@
     padding: 0;
     background: #ddd;
     position: relative;
-    height: 48px;
+    height: 38px;
 }
 
 
@@ -13,8 +13,8 @@
 
 .breadcrumbs {
     position: absolute;
-    left: 6px;
-    top: 13px;
+    left: 3px;
+    top: 8px;
     vertical-align: middle;
     height: 32px;
     font-size: 0.9em;
@@ -59,9 +59,7 @@ nav a.button img {
 }
 
 nav a.button .icon-text {
+    display: none;
 }
 
-nav a.button:hover .icon-text {
-    display: block;
-}
 
