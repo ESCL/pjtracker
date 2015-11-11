@@ -48,4 +48,6 @@
     <p>No equipment found matching the current search criteria.</p>
 {% endif %}
 
+{% include 'apps/paginator.html' with list=equipment %}
+
 {% endblock %}

@@ -50,4 +50,6 @@
     <p>No employees found matching the current search criteria.</p>
 {% endif %}
 
+{% include 'apps/paginator.html' with list=employees %}
+
 {% endblock %}

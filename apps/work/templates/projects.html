@@ -44,4 +44,6 @@
     <p>No projects found matching the current search criteria.</p>
 {% endif %}
 
+{% include 'apps/paginator.html' with list=projects %}
+
 {% endblock %}

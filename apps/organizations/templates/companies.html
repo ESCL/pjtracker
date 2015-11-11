@@ -42,4 +42,6 @@
     <p>No campanies found matching the current search criteria.</p>
 {% endif %}
 
+{% include 'apps/paginator.html' with list=companies %}
+
 {% endblock %}
