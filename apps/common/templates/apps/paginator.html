@@ -1,0 +1,24 @@
+<ul class="paginator action-group">
+
+    <li><a href="?page=1" title="First page">&lt;&lt;</a></li>
+    <li>
+        {% if list.has_previous %}
+            <a href="?page={{ list.previous_page_number }}" title="Previous page">&lt;</a>
+        {% else %}
+            <span>&lt;</span>
+        {% endif %}
+    </li>
+
+
+    <li><span>{{ list.number }} of {{ list.paginator.num_pages }}</span></li>
+
+    <li>
+        {% if list.has_next %}
+            <a href="?page={{ list.next_page_number }}" title="Next page">&gt;</a>
+        {% else %}
+            <span>&gt;</span>
+        {% endif %}
+    </li>
+    <li><a href="?page={{ list.paginator.num_pages }}" title="Last page">&gt;&gt;</a></li>
+
+</ul>

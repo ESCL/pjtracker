@@ -5,7 +5,7 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'companies' %}">companies</a></li>
-<li>{{ company }}</li>
+<li><span>{{ company }}</span></li>
 <li><a href="{% url 'company' pk=company.id action='edit' %}">edit</a></li>
 
 {% endblock %}

@@ -6,10 +6,10 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'companies' %}">companies</a></li>
 {% if company %}
-<li><a href="{% url 'company' pk=company.id %}">{{ company }}</a></li>
-<li>edit</li>
+    <li><a href="{% url 'company' pk=company.id %}">{{ company }}</a></li>
+    <li><span>edit</span></li>
 {% else %}
-<li>add</li>
+    <li><span>add</span></li>
 {% endif %}
 
 {% endblock %}

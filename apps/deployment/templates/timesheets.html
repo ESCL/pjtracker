@@ -6,7 +6,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li>time-sheets</li>
+<li><span>time-sheets</span></li>
 <li><a href="{% url 'timesheet' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
@@ -35,13 +35,15 @@
                     <td>{{ t.date }}</td>
                     <td>{{ t.get_status_display }}</td>
                     <td class="actions">
-                        <a href="{% url 'timesheet' pk=t.id %}" class="action">view</a>
-                        {% if t.is_editable %}
-                            <a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a>
-                            <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">issue</a>
-                        {% elif t.is_reviewable %}
-                            <a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">review</a>
-                        {% endif %}
+                        <ul class="action-group">
+                            <li><a href="{% url 'timesheet' pk=t.id %}" class="action">view</a></li>
+                            {% if t.is_editable %}
+                                <li><a href="{% url 'timesheet' pk=t.id action='edit' %}" class="action">edit</a></li>
+                                <li><a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">issue</a></li>
+                            {% elif t.is_reviewable %}
+                                <li><a href="{% url 'timesheet-action' pk=t.id action='add' %}" class="action">review</a></li>
+                            {% endif %}
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}
@@ -50,5 +52,7 @@
 {% else %}
     <p>No time-sheets found matching the current search criteria.</p>
 {% endif %}
+
+{% include 'apps/paginator.html' with list=timesheets %}
 
 {% endblock %}

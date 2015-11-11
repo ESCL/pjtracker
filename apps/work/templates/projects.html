@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li>projects</li>
+<li><span>projects</span></li>
 <li><a href="{% url 'project' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
@@ -31,8 +31,10 @@
                     <td>{{ p.name }}</td>
                     <td><a href="{% url 'activities' %}?project_id={{ p.id }}">{{ p.activity_set.count }} activities</a></td>
                     <td class="actions">
-                        <a href="{% url 'project' pk=p.id %}">view</a>
-                        <a href="{% url 'project' pk=p.id action='edit' %}">edit</a>
+                        <ul class="action-group">
+                            <li><a href="{% url 'project' pk=p.id %}">view</a></li>
+                            <li><a href="{% url 'project' pk=p.id action='edit' %}">edit</a></li>
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}
@@ -41,5 +43,7 @@
 {% else %}
     <p>No projects found matching the current search criteria.</p>
 {% endif %}
+
+{% include 'apps/paginator.html' with list=projects %}
 
 {% endblock %}

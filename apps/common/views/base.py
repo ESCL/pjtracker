@@ -1,6 +1,7 @@
 __author__ = 'kako'
 
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
@@ -66,7 +67,9 @@ class ReadOnlyResourceView(SafeView):
     def build_filters(cls, qs, *args, **kwargs):
         filters = {}
         for k in qs:
-            if k.endswith('__in') or k.endswith('__range'):
+            if k in ('page', 'page_size',):
+                continue
+            elif k.endswith('__in') or k.endswith('__range'):
                 v = qs.getlist(k)
             else:
                 v = qs.get(k)
@@ -95,11 +98,27 @@ class ReadOnlyResourceView(SafeView):
     # Worker methods
 
     def show_list(self, request, status=200, **kwargs):
+        # First get the filtered objects
         objs = self.filter_objects(request.user, request.GET, **kwargs)
+
+        # Now get the paginated subset of objects
+        page_size = request.GET.get('page_size', 20)
+        page_num = request.GET.get('page', 1)
+        p = Paginator(objs, page_size)
+        try:
+            objs = p.page(page_num)
+        except PageNotAnInteger:
+            objs = p.page(1)
+        except EmptyPage:
+            objs = p.page(p.num_pages)
+
+        # Build the context (include form if required)
         context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs}
         if self.search_form:
             search_form = self.search_form(request.GET)
             context['search_form'] = search_form
+
+        # Finally, render the context
         return render(request, self.list_template, context, status=status)
 
     def show_instance(self, request, pk, **kwargs):

@@ -17,9 +17,9 @@
 <li><a href="{% url 'timesheets' %}">time-sheets</a></li>
 {% if timesheet %}
     <li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet }}</a></li>
-    <li>edit</li>
+    <li><span>edit</span></li>
 {% else %}
-    <li>new</li>
+    <li><span>add</span></li>
 {% endif %}
 
 {% endblock %}
