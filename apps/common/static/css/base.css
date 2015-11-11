@@ -91,6 +91,8 @@ dt {
 /** Tables **/
 
 table {
+    margin-left: auto;
+    margin-right: auto;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #ddd;
 }
@@ -98,6 +100,7 @@ table {
 table .actions {
     border: 0;
     background: #eee;
+    padding: 0 6px;
 }
 
 thead th {
@@ -110,30 +113,7 @@ tbody tr:nth-child(even) {
 }
 
 tbody td {
-    padding-right: 2px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-
-td.actions {
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-td.actions a {
-    border: 1px solid #ddd;
-    padding: 4px 8px;
-    background: linear-gradient(#fff, #eee);
-}
-
-td.actions a:first-of-type {
-    border-bottom-left-radius: 8px;
-    border-top-left-radius: 8px;
-}
-
-td.actions a:last-of-type {
-    border-bottom-right-radius: 8px;
-    border-top-right-radius: 8px;
+    padding: 4px 6px;
 }
 
 td.subtotal {
@@ -180,6 +160,7 @@ select[multiple] {
 }
 
 .search-form {
+    text-align: center;
     margin-top: 16px;
     margin-bottom: 0;
 }
@@ -191,4 +172,45 @@ select[multiple] {
     margin: 0;
     padding: 0;
     height: 240px;
+}
+
+
+/** Action group **/
+
+.action-group {
+    margin: 0;
+    padding: 0;
+}
+
+.action-group li {
+    background: linear-gradient(#fff, #eee);
+    border: 1px solid #ddd;
+    display: inline-block;
+    margin: 0 -2px;
+    padding: 0;
+}
+
+.action-group li:first-of-type {
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.action-group li:last-of-type {
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.action-group a,.action-group span {
+    display: inline-block;
+    padding: 2px 8px;
+}
+
+
+/** Paginator **/
+
+.paginator {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
 }

@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li>equipment</li>
+<li><span>equipment</span></li>
 <li><a href="{% url 'equipment' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
@@ -35,8 +35,10 @@
                     <td>{{ e.team }}</td>
                     <td>{{ e.project }}</td>
                     <td class="actions">
-                        <a href="{% url 'equipment' pk=e.id %}" class="action">view</a>
-                        <a href="{% url 'equipment' pk=e.id action='edit' %}" class="action">edit</a>
+                        <ul class="action-group">
+                            <li><a href="{% url 'equipment' pk=e.id %}" class="action">view</a></li>
+                            <li><a href="{% url 'equipment' pk=e.id action='edit' %}" class="action">edit</a></li>
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}

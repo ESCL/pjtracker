@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li>companies</li>
+<li><span>companies</span></li>
 <li><a href="{% url 'company' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
@@ -29,8 +29,10 @@
                     <td>{{ c.name }}</td>
                     <td>{{ c.code }}</td>
                     <td class="actions">
-                        <a href="{% url 'company' pk=c.id %}">view</a>
-                        <a href="{% url 'company' pk=c.id action='edit' %}">edit</a>
+                        <ul class="action-group">
+                            <li><a href="{% url 'company' pk=c.id %}">view</a></li>
+                            <li><a href="{% url 'company' pk=c.id action='edit' %}">edit</a></li>
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}

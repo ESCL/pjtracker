@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li>wbs</li>
+<li><span>wbs</span></li>
 <li><a href="{% url 'activity' action='add' %}">+</a></li>
 
 {% endblock %}
@@ -35,8 +35,10 @@
                         <span class="label {% if a.direct_labour %}enabled{% else %}disabled{% endif %}">DIR</span>
                     </td>
                     <td class="actions">
-                        <a href="{% url 'activity' pk=a.id %}">view</a>
-                        <a href="{% url 'activity' pk=a.id action='edit' %}">edit</a>
+                        <ul class="action-group">
+                            <li><a href="{% url 'activity' pk=a.id %}">view</a></li>
+                            <li><a href="{% url 'activity' pk=a.id action='edit' %}">edit</a></li>
+                        </ul>
                     </td>
                 </tr>
             {% endfor %}
@@ -45,5 +47,7 @@
 {% else %}
     <p>No activities found matching the current search criteria</p>
 {% endif %}
+
+{% include 'apps/paginator.html' with list=activities %}
 
 {% endblock %}

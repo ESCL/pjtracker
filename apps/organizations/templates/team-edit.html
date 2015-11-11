@@ -8,10 +8,10 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'teams' %}">teams</a></li>
 {% if team %}
-<li><a href="{% url 'team' pk=team.id %}">{{ team }}</a></li>
-<li>edit</li>
+    <li><a href="{% url 'team' pk=team.id %}">{{ team }}</a></li>
+    <li><span>edit</span></li>
 {% else %}
-<li>add</li>
+    <li><span>add</span></li>
 {% endif %}
 
 {% endblock %}
