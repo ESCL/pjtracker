@@ -12,14 +12,18 @@ class ModernizeFieldsMixin(object):
                 field.widget.attrs['title'] = label
                 field.widget.input_type = 'date'
             else:
+                field.widget.attrs['title'] = label
                 field.widget.attrs['placeholder'] = label
 
 
 class ModernForm(ModernizeFieldsMixin, forms.Form):
+    page_size = forms.IntegerField(required=False, label='Page size',
+                                   min_value=10, max_value=50)
 
     def __init__(self, *args, **kwargs):
         super(ModernForm, self).__init__(*args, **kwargs)
         self.modernize_fields()
+        self.fields['page_size'].widget.attrs['step'] = 10
 
 
 class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):

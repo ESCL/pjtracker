@@ -1,5 +1,7 @@
 __author__ = 'kako'
 
+import re
+
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
@@ -102,7 +104,7 @@ class ReadOnlyResourceView(SafeView):
         objs = self.filter_objects(request.user, request.GET, **kwargs)
 
         # Now get the paginated subset of objects
-        page_size = request.GET.get('page_size', 20)
+        page_size = request.GET.get('page_size') or 20
         page_num = request.GET.get('page', 1)
         p = Paginator(objs, page_size)
         try:
@@ -113,7 +115,8 @@ class ReadOnlyResourceView(SafeView):
             objs = p.page(p.num_pages)
 
         # Build the context (include form if required)
-        context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs}
+        context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs,
+                   'qs': re.sub(r'[&]?page=\d+', '', request.GET.urlencode())}
         if self.search_form:
             search_form = self.search_form(request.GET)
             context['search_form'] = search_form

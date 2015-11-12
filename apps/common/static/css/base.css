@@ -165,6 +165,11 @@ select[multiple] {
     margin-bottom: 0;
 }
 
+.search-form input[name=page_size] {
+    width: 7em;
+    padding-right: 1px;
+}
+
 
 /** Graphics? **/
 
