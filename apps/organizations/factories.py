@@ -36,6 +36,11 @@ class TeamFactory(DjangoModelFactory):
         if create and values:
             self.supervisors.add(*values)
 
+    @post_generation
+    def activities(self, create, values):
+        if create and values:
+            self.activities.add(*values)
+
 
 class PositionFactory(DjangoModelFactory):
 

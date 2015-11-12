@@ -16,7 +16,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'timesheets' %}">time-sheets</a></li>
 {% if timesheet %}
-    <li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet }}</a></li>
+    <li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet.code }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>
