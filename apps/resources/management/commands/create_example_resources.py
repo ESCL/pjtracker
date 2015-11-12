@@ -2,8 +2,9 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
+from ....accounts.models import User
 from ....organizations.models import Team
-from ....work.models import Project
+from ....work.models import Project, LabourType
 from ...factories import EmployeeFactory, EquipmentFactory
 
 
@@ -12,6 +13,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Creating example resources...")
         pj = Project.objects.get()
+        hr = User.objects.get(username='hr')
+        pcon = User.objects.get(username='pcon')
+        ind = LabourType.objects.get(code='IN')
+        dir = LabourType.objects.get(code='DI')
         res = []
 
         # Fetch teams
@@ -20,13 +25,17 @@ class Command(BaseCommand):
         # Create resources for eng team
         res.append(EmployeeFactory.create(team=eng_team, project=pj))
         res.append(EmployeeFactory.create(team=eng_team, project=pj))
+        for e in eng_team.employees:
+            e.position.add_labour_type(ind, hr)
 
         # Create resources for cst team
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EquipmentFactory.create(team=cst_team, project=pj))
+        for e in eng_team.employees:
+            e.position.add_labour_type(dir, hr)
+        for e in eng_team.equipment:
+            e.position.add_labour_type(dir, pcon)
 
         # Done, print resources
         print("Created resources {}.".format(res))
-
-

@@ -12,6 +12,8 @@ from ..models import Team
 class TeamFormTest(TestCase):
 
     def setUp(self):
+        super(TeamFormTest, self).setUp()
+
         self.user = UserFactory.create()
         self.account = self.user.owner
 

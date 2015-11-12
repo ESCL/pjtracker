@@ -1,7 +1,7 @@
 
 from django.db import models
 
-from ..common.db.models import OwnedEntity, AllowedLabourMixin
+from ..common.db.models import OwnedEntity
 from .query import ActivityQuerySet
 
 
@@ -46,7 +46,7 @@ class ActivityGroup(OwnedEntity):
         return self.name
 
 
-class Activity(OwnedEntity, AllowedLabourMixin):
+class Activity(OwnedEntity):
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -70,6 +70,9 @@ class Activity(OwnedEntity, AllowedLabourMixin):
     groups = models.ManyToManyField(
         'ActivityGroup'
     )
+    labour_types = models.ManyToManyField(
+        'LabourType',
+    )
 
     @property
     def wbs_code_parent_path(self):
@@ -85,3 +88,16 @@ class Activity(OwnedEntity, AllowedLabourMixin):
 
     def __str__(self):
         return '{}. {}'.format(self.wbs_code, self.name)
+
+
+class LabourType(OwnedEntity):
+
+    name = models.CharField(
+        max_length=32
+    )
+    code = models.CharField(
+        max_length=2
+    )
+
+    def __str__(self):
+        return self.name

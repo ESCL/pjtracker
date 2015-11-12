@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute
 
-from .models import Project, Activity, ActivityGroup, ActivityGroupType
+from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 
 
 class ProjectFactory(DjangoModelFactory):
@@ -43,6 +43,29 @@ class ActivityFactory(DjangoModelFactory):
     project = SubFactory(ProjectFactory)
 
     @post_generation
-    def groups(self, create, groups, **kwargs):
-        if create and groups:
-            self.groups.add(*groups)
+    def groups(self, create, values):
+        if create and values:
+            self.groups.add(*values)
+
+    @post_generation
+    def labour_types(self, create, values):
+        if create and values:
+            self.labour_types.add(*values)
+
+
+class IndirectLabourFactory(DjangoModelFactory):
+
+    class Meta:
+        model = LabourType
+
+    name = 'Indirect Labour'
+    code = 'IN'
+
+
+class DirectLabourFactory(DjangoModelFactory):
+
+    class Meta:
+        model = LabourType
+
+    name = 'Direct Labour'
+    code = 'DI'

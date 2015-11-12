@@ -1,10 +1,10 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity, History, AllowedLabourMixin
+from ..common.db.models import OwnedEntity, History
 from .query import EmployeeQuerySet, EquipmentQuerySet
 
 
-class EquipmentType(OwnedEntity, AllowedLabourMixin):
+class EquipmentType(OwnedEntity):
 
     name = models.CharField(
         max_length=128
@@ -14,9 +14,36 @@ class EquipmentType(OwnedEntity, AllowedLabourMixin):
         null=True,
         related_name='subtypes'
     )
+    labour_types = models.ManyToManyField(
+        'work.LabourType',
+        through='EquipmentTypeLabourType'
+    )
 
     def __str__(self):
         return self.name
+
+    def add_labour_type(self, labour_type, user=None):
+        EquipmentTypeLabourType.objects.create(
+            owner=user and user.owner, equipment_type=self,
+            labour_type=labour_type
+        )
+
+    def get_labour_types_for(self, user):
+        through = EquipmentTypeLabourType.objects.for_user(user)
+        return self.labour_types.filter(equipmenttypelabourtype__in=through)
+
+
+class EquipmentTypeLabourType(OwnedEntity):
+
+    equipment_type = models.ForeignKey(
+        'EquipmentType',
+    )
+    labour_type = models.ForeignKey(
+        'work.LabourType',
+    )
+
+    def __str__(self):
+        return self.labour_type
 
 
 class Resource(OwnedEntity):
