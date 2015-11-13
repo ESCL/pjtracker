@@ -81,7 +81,6 @@ class WorkLogsForm(forms.Form):
                 )
                 res_lt = resource.get_labour_types_for(self.user)
                 act_lt = activity.labour_types.all()
-                print('res lt: {}, act lt: {}'.format(res_lt, act_lt))
                 if not set(res_lt).intersection(act_lt):
                     self.fields[name].widget.attrs.update({'disabled': 'disabled',
                                                            'readonly': True})
@@ -120,7 +119,7 @@ class WorkLogsForm(forms.Form):
 
                     if not es:
                         es.append("{} can charge hours as {}, activity {} only allows {}.".format(
-                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in act_lt))
+                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in a_labour))
                         )
 
         if es:
