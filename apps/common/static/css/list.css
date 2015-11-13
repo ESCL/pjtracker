@@ -1,0 +1,47 @@
+/*** Collection list view ***/
+
+/** Search form **/
+
+.search-form {
+    text-align: center;
+    margin: 12px 0;
+    padding-bottom: 0;
+}
+
+.search-form button,.search-form input {
+    margin-bottom: 0;
+}
+
+.search-form input[name=page_size] {
+    width: 7em;
+    padding-right: 1px;
+}
+
+
+/** Paginator **/
+
+.paginator {
+    text-align: center;
+    margin: 12px 0;
+}
+
+.paginator span.disabled {
+    color: #888;
+}
+
+
+/** Results, table or message **/
+
+table {
+    margin: 12px auto;
+}
+
+table .actions {
+    border: 0;
+    background: #eee;
+    padding: 0 6px;
+}
+
+p {
+    text-align: center;
+}

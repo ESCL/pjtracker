@@ -1,5 +1,15 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
@@ -13,6 +23,7 @@
 {% block body %}
 
 {% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=projects %}
 
 {% if projects %}
     <table>
@@ -43,7 +54,5 @@
 {% else %}
     <p>No projects found matching the current search criteria.</p>
 {% endif %}
-
-{% include 'apps/paginator.html' with list=projects %}
 
 {% endblock %}

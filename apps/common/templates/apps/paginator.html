@@ -4,14 +4,14 @@
         {% if list.previous_page_number != 1 %}
             <a href="?{{ qs }}&page=1" title="First page">&lt;&lt;</a>
         {% else %}
-            <span>&lt;&lt;</span>
+            <span class="disabled">&lt;&lt;</span>
         {% endif %}
     </li>
     <li>
         {% if list.has_previous %}
             <a href="?{{ qs }}&page={{ list.previous_page_number }}" title="Previous page">&lt;</a>
         {% else %}
-            <span>&lt;</span>
+            <span class="disabled">&lt;</span>
         {% endif %}
     </li>
 
@@ -22,14 +22,14 @@
         {% if list.has_next %}
             <a href="?{{ qs }}&page={{ list.next_page_number }}" title="Next page">&gt;</a>
         {% else %}
-            <span>&gt;</span>
+            <span class="disabled">&gt;</span>
         {% endif %}
     </li>
     <li>
         {% if list.next_page_number != list.paginator.num_pages %}
             <a href="?{{ qs }}&page={{ list.paginator.num_pages }}" title="Last page">&gt;&gt;</a>
         {% else %}
-            <span>&gt;&gt;</span>
+            <span class="disabled">&gt;&gt;</span>
         {% endif %}
     </li>
 
