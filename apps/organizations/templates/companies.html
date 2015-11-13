@@ -1,5 +1,15 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
@@ -13,8 +23,8 @@
 {% block body %}
 
 {% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=companies %}
 
-<div class="list">
 {% if companies %}
     <table>
         <thead>
@@ -42,9 +52,5 @@
 {% else %}
     <p>No campanies found matching the current search criteria.</p>
 {% endif %}
-
-{% include 'apps/paginator.html' with list=companies %}
-
-</div>
 
 {% endblock %}

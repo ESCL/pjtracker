@@ -1,5 +1,15 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
@@ -13,6 +23,7 @@
 {% block body %}
 
 {% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=activities %}
 
 {% if activities %}
     <table>
@@ -31,7 +42,7 @@
                     <td>{{ a.name }}</td>
                     <td>
                         {% for lt in a.labour_types.all %}
-                            <span class="label enabled" title="{{ lt.name }}">{{ lt.code }}</span>
+                            <span class="label" title="{{ lt.name }}">{{ lt.code }}</span>
                         {% endfor %}
                     </td>
                     <td class="actions">
@@ -47,7 +58,5 @@
 {% else %}
     <p>No activities found matching the current search criteria</p>
 {% endif %}
-
-{% include 'apps/paginator.html' with list=activities %}
 
 {% endblock %}

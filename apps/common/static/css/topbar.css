@@ -14,10 +14,8 @@
 .breadcrumbs {
     position: absolute;
     left: 6px;
-    top: 5px;
-    height: 32px;
-    font-size: 0.9em;
-    font-weight: bold;
+    top: 6px;
+    font-size: 0.95em;
 }
 
 .breadcrumbs li {

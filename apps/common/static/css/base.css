@@ -17,6 +17,7 @@ body {
 
 .container {
     font-size: 0.9em;
+    padding: 12px 0;
 }
 
 
@@ -42,6 +43,10 @@ a {
 
 button {
     background: linear-gradient(#fff, #eee);
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
 }
 
 .button {
@@ -68,7 +73,7 @@ button {
     border-radius: 10px;
     color: #fff;
     font-weight: bold;
-    padding: 4px;
+    padding: 2px 4px;
 }
 
 .label.disabled {
@@ -81,30 +86,11 @@ button {
 }
 
 
-/** Definition lists */
-
-dt {
-    font-weight: bold;
-}
-
-
-/** List o items **/
-
-div.list p {
-    text-align: center;
-}
+/** Tables **/
 
 table {
     border-top: 1px solid #eee;
     border-bottom: 1px solid #ddd;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-table .actions {
-    border: 0;
-    background: #eee;
-    padding: 0 6px;
 }
 
 thead th {
@@ -117,11 +103,7 @@ tbody tr:nth-child(even) {
 }
 
 tbody td {
-    padding: 4px 6px;
-}
-
-td.subtotal {
-    font-weight: bold;
+    padding: 2px 6px;
 }
 
 
@@ -139,7 +121,7 @@ form .buttons button {
     margin: 5px;
 }
 
-/* Fix for input date, missing in Skeleton */
+/* Input date, missing in Skeleton */
 input[type=date] {
     height: 38px;
     padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
@@ -156,22 +138,13 @@ form ul.errorlist {
 }
 
 select[multiple] {
-    height: 12em;
+    min-height: 4em;
+    max-height: 10em;
 }
 
+/* FilterMultiSelect widget button */
 .multiselect-button {
     margin-top: 10em;
-}
-
-.search-form {
-    text-align: center;
-    margin-top: 16px;
-    margin-bottom: 0;
-}
-
-.search-form input[name=page_size] {
-    width: 7em;
-    padding-right: 1px;
 }
 
 
@@ -193,10 +166,12 @@ select[multiple] {
 
 .action-group li {
     background: linear-gradient(#fff, #eee);
-    border: 1px solid #ddd;
+    line-height: 1.5em;
+    border: 1px solid #bbb;
     display: inline-block;
     margin: 0 -2px;
     padding: 0;
+    font-size: 0.95em;
 }
 
 .action-group li:first-of-type {
@@ -210,16 +185,7 @@ select[multiple] {
 }
 
 .action-group a,.action-group span {
+    font-weight: bold;
     display: inline-block;
     padding: 2px 8px;
-}
-
-
-/** Paginator **/
-
-.paginator {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
 }
