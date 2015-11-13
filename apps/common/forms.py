@@ -70,5 +70,4 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
         # Make user account owner if object is new
         if not self.instance.id:
             self.instance.owner = self.user.owner
-
         return super(OwnedEntityForm, self).save(*args, **kwargs)
