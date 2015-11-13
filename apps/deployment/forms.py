@@ -24,8 +24,13 @@ class TimeSheetForm(OwnedEntityForm):
         cleaned_data = super(TimeSheetForm, self).clean()
         team = cleaned_data['team']
         date = cleaned_data['date']
+
+        # Ensure this is not a duplicate (team:date)
         if TimeSheet.objects.filter(team=team, date=date).exists():
+            cleaned_data.pop('team')
+            cleaned_data.pop('date')
             raise forms.ValidationError('TimeSheet for team {} and date {} already exists.'.format(team, date))
+
         return cleaned_data
 
 
