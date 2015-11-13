@@ -41,15 +41,7 @@ a {
 
 /** Buttons **/
 
-button {
-    background: linear-gradient(#fff, #eee);
-    transition-duration: 0.5s;
-    -webkit-transition-duration: 0.5s;
-    -moz-transition-duration: 0.5s;
-    -o-transition-duration: 0.5s;
-}
-
-.button {
+button, .button {
     background: linear-gradient(#fff, #eee);
     transition-duration: 0.5s;
     -webkit-transition-duration: 0.5s;
@@ -172,6 +164,10 @@ select[multiple] {
     margin: 0 -2px;
     padding: 0;
     font-size: 0.95em;
+}
+
+.action-group li:hover {
+    background: #fff;
 }
 
 .action-group li:first-of-type {
