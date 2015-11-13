@@ -5,8 +5,12 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'equipments' %}">equipments</a></li>
-<li><a href="{% url 'equipment' pk=equipment.id %}">{{ equipment }}</a></li>
-<li><span>edit</span></li>
+{% if equipment %}
+    <li><a href="{% url 'equipment' pk=equipment.id %}">{{ equipment }}</a></li>
+    <li><span>edit</span></li>
+{% else %}
+    <li><span>add</span></li>
+{% endif %}
 
 {% endblock %}
 

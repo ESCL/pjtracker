@@ -1,8 +1,8 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, post_generation
 
-from ..organizations.factories import CompanyFactory, PositionFactory, TeamFactory
+from ..organizations.factories import PositionFactory, TeamFactory
 from ..work.factories import ProjectFactory
 from .models import Employee, Equipment, EquipmentType
 
@@ -12,7 +12,7 @@ class EquipmentTypeFactory(DjangoModelFactory):
     class Meta:
         model = EquipmentType
 
-    name = 'Excavator'
+    name = 'Earthworks'
 
 
 class EquipmentSubTypeFactory(DjangoModelFactory):

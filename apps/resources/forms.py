@@ -10,14 +10,14 @@ class EmployeeForm(OwnedEntityForm):
 
     class Meta:
         model = Employee
-        exclude = ('owner',)
+        exclude = ('owner', 'resource_type',)
 
 
 class EquipmentForm(OwnedEntityForm):
 
     class Meta:
         model = Equipment
-        exclude = ('owner',)
+        exclude = ('owner', 'resource_type',)
 
 
 class EmployeeSearchForm(ModernForm):

@@ -5,7 +5,7 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'timesheets' %}">time-sheets</a></li>
-<li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet }}</a></li>
+<li><a href="{%url 'timesheet' pk=timesheet.id %}">{{ timesheet.code }}</a></li>
 <li><span>action</span></li>
 
 {% endblock %}

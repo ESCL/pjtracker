@@ -58,6 +58,7 @@ class ReadOnlyResourceView(SafeView):
     and the templates.
     """
     model = None
+    select_related = ()
     list_template = None
     detail_template = None
     error_template = 'apps/error.html'
@@ -83,7 +84,10 @@ class ReadOnlyResourceView(SafeView):
     @classmethod
     def filter_objects(cls, user, qs, **kwargs):
         filters = cls.build_filters(qs, **kwargs)
-        return cls.model.objects.filter(**filters).for_user(user)
+        qs = cls.model.objects.filter(**filters).for_user(user)
+        if cls.select_related:
+            qs = qs.select_related(*cls.select_related)
+        return qs
 
     @classmethod
     def get_object(cls, user, pk):
@@ -163,9 +167,10 @@ class StandardResourceView(ReadOnlyResourceView):
             return
         else:
             # Check if user is allowed to execute the action
-            for a in request.user.get_allowed_actions_for(cls.model):
-                if a[0] in cls.permissions[action]:
-                    return
+            if request.user.is_authenticated():
+                for a in request.user.get_allowed_actions_for(cls.model):
+                    if a[0] in cls.permissions[action]:
+                        return
 
         # If we got th  is far user is not authorized, raise error
         raise AuthorizationError(

@@ -7,8 +7,12 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'activities' %}">wbs</a></li>
-<li><a href="{% url 'activity' pk=activity.id %}">{{ activity.wbs_code }}</a></li>
-<li><span>edit</span></li>
+{% if activity %}
+    <li><a href="{% url 'activity' pk=activity.id %}">{{ activity.wbs_code }}</a></li>
+    <li><span>edit</span></li>
+{% else %}
+    <li><span>add</span></li>
+{% endif %}
 
 {% endblock %}
 
@@ -36,8 +40,11 @@
     <script>
         // Use FilterMultiSelect to turn multi-select into something usable
         var groups = document.querySelector('#id_main-groups');
+        var labourTypes = document.querySelector('#id_main-labour_types');
         var groupsSelect = new FilterMultiSelect(groups);
+        var labourTypesSelect = new FilterMultiSelect(labourTypes);
         groupsSelect.start();
+        labourTypesSelect.start();
     </script>
 
 {% endblock %}

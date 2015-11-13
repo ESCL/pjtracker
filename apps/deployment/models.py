@@ -5,7 +5,7 @@ from django.db import models
 from django.dispatch import Signal
 from django.utils.functional import cached_property
 
-from ..common.db.models import OwnedEntity, LabourType
+from ..common.db.models import OwnedEntity
 from ..common.exceptions import AuthorizationError
 from ..common.signals import SignalsMixin
 
@@ -225,9 +225,8 @@ class WorkLog(OwnedEntity):
         null=True,
         blank=True
     )
-    labour_type = models.CharField(
-        max_length=1,
-        choices=LabourType.CHOICES
+    labour_type = models.ForeignKey(
+        'work.LabourType',
     )
     hours = models.DecimalField(
         decimal_places=2,

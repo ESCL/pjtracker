@@ -13,7 +13,7 @@ class CompanyFactory(DjangoModelFactory):
 
     owner = SubFactory(AccountFactory)
     name = Faker('company')
-    code = Faker('word')
+    code = LazyAttribute(lambda obj: ''.join(x[0] for x in obj.name.split()).upper())
 
 
 class TeamFactory(DjangoModelFactory):
@@ -48,3 +48,5 @@ class PositionFactory(DjangoModelFactory):
         model = Position
 
     name = Faker('job')
+    code = LazyAttribute(lambda obj: obj.name[:3].upper())
+

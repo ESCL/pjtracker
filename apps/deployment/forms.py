@@ -62,10 +62,11 @@ class TimeSheetActionForm(forms.Form):
 
 class WorkLogsForm(forms.Form):
 
-    def __init__(self, post_data=None, instance=None, **kwargs):
+    def __init__(self, post_data=None, instance=None, user=None, **kwargs):
         super(WorkLogsForm, self).__init__(post_data)
         self.timesheet = instance
         self.rows = []
+        self.user = user
 
         for pk, resource in self.timesheet.resources.items():
             logs = []
@@ -78,7 +79,9 @@ class WorkLogsForm(forms.Form):
                 self.fields[name] = forms.DecimalField(
                     initial=log.hours, required=False, max_value=12,
                 )
-                if not set(resource.allowed_labour_types).intersection(activity.allowed_labour_types):
+                res_lt = resource.get_labour_types_for(self.user)
+                act_lt = activity.labour_types.all()
+                if not set(res_lt).intersection(act_lt):
                     self.fields[name].widget.attrs.update({'disabled': 'disabled',
                                                            'readonly': True})
                 log.field = self[name]
@@ -106,17 +109,17 @@ class WorkLogsForm(forms.Form):
         for resource, activity, value in self._iter_fields_values(cleaned_data):
             if value:
                 # Check that labour types match
-                r_labour = resource.allowed_labour_types
-                a_labour = activity.allowed_labour_types
-                if not set(r_labour).intersection(a_labour):
-                    if not r_labour:
+                res_lt = resource.get_labour_types_for(self.user)
+                act_lt = activity.labour_types.all()
+                if not set(res_lt).intersection(act_lt):
+                    if not res_lt.exists():
                         es.append("{} cannot charge hours.".format(resource.instance))
-                    if not a_labour:
+                    if not act_lt.exists():
                         es.append("Activity {} does not allow charging hours for any labour types.".format(activity))
 
                     if not es:
                         es.append("{} can charge hours as {}, activity {} only allows {}.".format(
-                            resource, ', '.join(str(l) for l in r_labour), activity, ', '.join(str(l) for l in a_labour))
+                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in a_labour))
                         )
 
         if es:
@@ -134,7 +137,9 @@ class WorkLogsForm(forms.Form):
 
                 # Use the first allowed labour type (we'll fix that later)
                 # TODO: Allow setting labour type in timesheet
-                log.labour_type = list(set(resource.allowed_labour_types).intersection(activity.allowed_labour_types))[0].value
+                res_lt = resource.get_labour_types_for(self.user)
+                act_lt = activity.labour_types.all()
+                log.labour_type = list(set(res_lt).intersection(act_lt))[0]
 
                 # Save the log
                 log.save()

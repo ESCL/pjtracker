@@ -5,17 +5,23 @@ from ...accounts.factories import UserFactory
 from ...notifications.models import Notification
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
-from ...work.factories import ActivityFactory
+from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet, TimeSheetAction, WorkLog, LabourType, AuthorizationError
+from ..models import TimeSheet, TimeSheetAction, WorkLog, AuthorizationError
 
 
 class TimeSheetTest(TestCase):
 
     def setUp(self):
         super(TimeSheetTest, self).setUp()
+
+        # Main setup
         self.account = UserFactory.create().owner
         self.ts_settings = self.account.timesheet_settings
+        self.dir = DirectLabourFactory.create()
+        self.ind = IndirectLabourFactory.create()
+
+        # Setup teama and create timesheet
         self.timekeeper = UserFactory.create(owner=self.account)
         self.supervisor1 = UserFactory.create(owner=self.account)
         self.supervisor2 = UserFactory.create(owner=self.account)
@@ -173,12 +179,12 @@ class TimeSheetTest(TestCase):
                                       resource=e2.resource_ptr,
                                       activity=a2,
                                       hours=3,
-                                      labour_type=LabourType.INDIRECT)
+                                      labour_type=self.ind)
         log2 = WorkLog.objects.create(timesheet=self.ts,
                                       resource=e2.resource_ptr,
                                       activity=a3,
                                       hours=5,
-                                      labour_type=LabourType.INDIRECT)
+                                      labour_type=self.dir)
 
         # Fetch again, everything updated (and what belongs to team is first)
         self.ts = TimeSheet.objects.get(id=self.ts.id)

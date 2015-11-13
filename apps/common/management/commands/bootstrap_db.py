@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
         # Set up default global objects
         call_command('create_default_groups')
+        call_command('create_default_labour_types')
         call_command('create_default_positions')
         call_command('create_default_equipment_types')
         call_command('create_default_activity_groups')

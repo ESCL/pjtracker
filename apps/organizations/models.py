@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from ..common.db.models import OwnedEntity, AllowedLabourMixin
+from ..common.db.models import OwnedEntity
 
 
 class Company(OwnedEntity):
@@ -69,12 +69,40 @@ class Team(OwnedEntity):
         return self.code
 
 
-class Position(OwnedEntity, AllowedLabourMixin):
+class Position(OwnedEntity):
 
     name = models.CharField(
         max_length=128
+    )
+    code = models.CharField(
+        max_length=3,
+        null=True
+    )
+    labour_types = models.ManyToManyField(
+        'work.LabourType',
+        through='PositionLabourType'
     )
 
     def __str__(self):
         return self.name
 
+    def add_labour_type(self, labour_type, user=None):
+        PositionLabourType.objects.create(owner=user and user.owner, position=self,
+                                          labour_type=labour_type)
+
+    def get_labour_types_for(self, user):
+        through = PositionLabourType.objects.for_user(user)
+        return self.labour_types.filter(positionlabourtype__in=through)
+
+
+class PositionLabourType(OwnedEntity):
+
+    position = models.ForeignKey(
+        'Position',
+    )
+    labour_type = models.ForeignKey(
+        'work.LabourType',
+    )
+
+    def __str__(self):
+        return self.labour_type
