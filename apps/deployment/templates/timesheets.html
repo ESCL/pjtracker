@@ -16,6 +16,7 @@
 
 {% include 'apps/search-form.html' %}
 
+<div class="list">
 {% if timesheets %}
     <table>
         <thead>
@@ -52,6 +53,7 @@
 {% else %}
     <p>No time-sheets found matching the current search criteria.</p>
 {% endif %}
+</div>
 
 {% include 'apps/paginator.html' with list=timesheets %}
 

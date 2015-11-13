@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 from ..common.views.base import StandardResourceView
 from .forms import ProjectForm, ActivityForm, ProjectSearchForm, ActivitySearchForm

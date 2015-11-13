@@ -27,7 +27,5 @@ class OwnedEntityQuerySet(QuerySet):
             raise AuthenticationError('OwnedEntity filters require a user with an account.')
 
         else:
-            # Note: it seems like the __in lookup does not work in SQLite
-            # return self.filter(owner__in=(account, None))
             return self.filter(Q(owner=account)| Q(owner=None))
 

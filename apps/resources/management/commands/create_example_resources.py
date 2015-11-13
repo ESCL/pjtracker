@@ -32,10 +32,10 @@ class Command(BaseCommand):
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EquipmentFactory.create(team=cst_team, project=pj))
-        for e in eng_team.employees:
+        for e in cst_team.employees:
             e.position.add_labour_type(dir, hr)
-        for e in eng_team.equipment:
-            e.position.add_labour_type(dir, pcon)
+        for e in cst_team.equipment:
+            e.type.add_labour_type(dir, pcon)
 
         # Done, print resources
         print("Created resources {}.".format(res))

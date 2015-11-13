@@ -64,9 +64,8 @@ class Resource(OwnedEntity):
         max_length=32,
     )
 
-    @property
-    def allowed_labour_types(self):
-        return self.instance.allowed_labour_types
+    def get_labour_types_for(self, user):
+        return self.instance.get_labour_types_for(user)
 
     @property
     def instance(self):
@@ -108,9 +107,8 @@ class Employee(Resource):
         'organizations.Position'
     )
 
-    @property
-    def allowed_labour_types(self):
-        return self.position.allowed_labour_types
+    def get_labour_types_for(self, user):
+        return self.position.get_labour_types_for(user)
 
     @property
     def full_name(self):
@@ -135,9 +133,8 @@ class Equipment(Resource):
         'EquipmentType'
     )
 
-    @property
-    def allowed_labour_types(self):
-        return self.type.allowed_labour_types
+    def get_labour_types_for(self, user):
+        return self.type.get_labour_types_for(user)
 
     def complete_work_log(self, work_log):
         super(Equipment, self).complete_work_log(work_log)
