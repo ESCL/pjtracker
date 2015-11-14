@@ -1,0 +1,39 @@
+<h5>Work Breakdown Structure</h5>
+
+{{ sub_forms.management_form }}
+
+<div class="project-wbs">
+
+    <div class="row head">
+        <div class="three columns">Code</div>
+        <div class="four columns">Description</div>
+        <div class="two columns">Labour Types</div>
+        <div class="three columns">Groups</div>
+    </div>
+
+    {% for sub_form in sub_forms %}
+        {{ sub_form.id }}
+        <div class="row body" data-wbs-code="{{ sub_form.instance.wbs_code }}">
+            <div class="three columns wbs-code {% if sub_form.code.errors %}invalid{% endif %}">
+                <span class="parent-wbs">{{ sub_form.instance.parent_wbs_code }}</span>
+                {{ sub_form.code }}
+                <span class="field-errors">{{ sub_form.code.errors }}</span>
+            </div>
+            <div class="four columns {% if sub_form.name.errors %}invalid{% endif %}">
+                {{ sub_form.name }}
+                <span class="field-errors">{{ sub_form.name.errors }}</span>
+            </div>
+            <div class="two columns">
+                {{ sub_form.labour_types }}
+            </div>
+            <div class="three columns">
+                {{ sub_form.groups }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+</div>
