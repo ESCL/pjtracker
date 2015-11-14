@@ -20,6 +20,14 @@ class ActivityForm(OwnedEntityForm):
         exclude = ('owner',)
 
 
+class ActivityInlineForm(forms.ModelForm):
+
+    class Meta:
+        model = Activity
+        fields = ('code', 'name', 'labour_types', 'groups',)
+
+
+
 class ProjectSearchForm(ModernForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Project name')

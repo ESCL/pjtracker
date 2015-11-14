@@ -134,6 +134,11 @@ select[multiple] {
     margin-top: 10em;
 }
 
+.invalid input,input.invalid {
+    border: 1px solid #f00;
+    box-shadow: 0 0 2px #f00;
+}
+
 
 /** Graphics? **/
 

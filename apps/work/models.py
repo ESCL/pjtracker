@@ -68,23 +68,41 @@ class Activity(OwnedEntity):
         blank=True
     )
     groups = models.ManyToManyField(
-        'ActivityGroup'
+        'ActivityGroup',
+        blank=True
     )
     labour_types = models.ManyToManyField(
         'LabourType',
+        blank=True
     )
 
     @property
-    def wbs_code_parent_path(self):
-        return self.parent and self.parent.wbs_code_path or [self.project.code]
+    def full_wbs_path(self):
+        return [self.project.code] + self.wbs_path
 
     @property
-    def wbs_code_path(self):
-        return self.wbs_code_parent_path + [self.code]
+    def full_wbs_code(self):
+        return '.'.join(self.full_wbs_path)
+
+    @property
+    def parent_wbs_path(self):
+        return self.parent and self.parent.wbs_path or []
+
+    @property
+    def parent_wbs_code(self):
+        return '.'.join(self.parent_wbs_path)
+
+    @property
+    def wbs_path(self):
+        return self.parent_wbs_path + [self.code]
 
     @property
     def wbs_code(self):
-        return '.'.join(self.wbs_code_path)
+        return '.'.join(self.wbs_path)
+
+    @property
+    def level(self):
+        return len(self.wbs_path)
 
     def __str__(self):
         return '{}. {}'.format(self.wbs_code, self.name)
