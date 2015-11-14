@@ -20,6 +20,19 @@ class TimeSheetForm(OwnedEntityForm):
         if instance:
             self.fields.pop('team')
 
+    def clean(self):
+        cleaned_data = super(TimeSheetForm, self).clean()
+        team = cleaned_data['team']
+        date = cleaned_data['date']
+
+        # Ensure this is not a duplicate (team:date)
+        if TimeSheet.objects.filter(team=team, date=date).exists():
+            cleaned_data.pop('team')
+            cleaned_data.pop('date')
+            raise forms.ValidationError('TimeSheet for team {} and date {} already exists.'.format(team, date))
+
+        return cleaned_data
+
 
 class TimeSheetSearchForm(ModernForm):
     team__code__icontains = forms.CharField(max_length=32, required=False, label='Team code')
