@@ -8,6 +8,7 @@
 
         btn = dismissButtons[i];
         btn.addEventListener('click', function (ev) {
+            ev.preventDefault();
             var id = ev.target.dataset.id;
             var url = "/notifications/api/v0/notifications/" + id + '/actions/';
             var posted = post(url, {'name': 'dismiss'}, 'json');

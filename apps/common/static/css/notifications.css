@@ -6,7 +6,8 @@
     margin-bottom: 20px;
 }
 
-#notifications .title {
+#notifications > .title {
+    background: #f4f4ff;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     margin-bottom: 0;
@@ -14,15 +15,21 @@
 }
 
 .notification {
-    padding: 12px 12px;
-}
-
-.notification:first-of-type {
     border-top: 1px solid #ddd;
+    padding: 8px 8px;
 }
 
-.notification .title,.notification .action {
+.notification p {
+    margin-bottom: 0;
+    margin-top: 4px;
+}
+
+.notification .title {
+    background: #5bd;
+    border-radius: 12px;
+    color: #fff;
     font-weight: bold;
+    padding: 4px 8px;
 }
 
 .notification .timestamp {
@@ -31,8 +38,11 @@
 }
 
 .notification .action {
+    background: #f4f4ff;
     border: 1px solid #bbb;
     border-radius: 10px;
+    font-weight: bold;
+    margin: 0;
     padding: 2px 8px;
 }
 
@@ -44,4 +54,9 @@
 
 .notification.disabled .action {
     display: none;
+}
+
+.notification.disabled .title {
+    background: #aaa;
+    color: #eee;
 }

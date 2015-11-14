@@ -12,7 +12,7 @@
 
 body {
     font-family: 'Roboto', 'Segoe UI', 'Lucida Grande', 'Ubuntu', sans-serif;
-    min-width: 720px;
+    min-width: 600px;
 }
 
 .container {
@@ -29,13 +29,18 @@ a {
 }
 
 .light-blue {
-    color: #44BBEE;
+    color: #4be;
 }
 
 .user-support-link {
-    position: fixed;
+    background: #f4f4ff;
     bottom: 0;
-    right: 2px;
+    right: 0;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-top-left-radius: 6px;
+    padding: 4px;
+    position: fixed;
 }
 
 
@@ -121,8 +126,7 @@ form ul.errorlist {
 }
 
 select[multiple] {
-    min-height: 4em;
-    max-height: 10em;
+    height: 10em;
 }
 
 /* FilterMultiSelect widget button */

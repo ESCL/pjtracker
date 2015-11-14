@@ -38,18 +38,20 @@
 
     <script src="{% static 'js/filter-multi-select.js' %}"></script>
     <script>
-        // Use FilterMultiSelect to turn multi-select into something usable
-        var timekeepers = document.querySelector('#id_main-timekeepers');
-        var supervisors = document.querySelector('#id_main-supervisors');
-        var activities = document.querySelector('#id_main-activities');
+        (function() {
+            // Use FilterMultiSelect to turn multi-select into something usable
+            var timekeepers = document.querySelector('#id_main-timekeepers');
+            var supervisors = document.querySelector('#id_main-supervisors');
+            var activities = document.querySelector('#id_main-activities');
 
-        var timekeepersSelect = new FilterMultiSelect(timekeepers);
-        var supervisorsSelect = new FilterMultiSelect(supervisors);
-        var activitiesSelect = new FilterMultiSelect(activities);
+            var timekeepersSelect = new FilterMultiSelect(timekeepers);
+            var supervisorsSelect = new FilterMultiSelect(supervisors);
+            var activitiesSelect = new FilterMultiSelect(activities);
 
-        timekeepersSelect.start();
-        supervisorsSelect.start();
-        activitiesSelect.start();
+            timekeepersSelect.start();
+            supervisorsSelect.start();
+            activitiesSelect.start();
+        })();
     </script>
 
 {% endblock %}
