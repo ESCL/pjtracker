@@ -2,8 +2,12 @@
 
 {% for notification in notifications %}
     <div class="row notification">
+
+        <a class="u-pull-right action" data-action="dismiss" data-id="{{ notification.id }}" href="#" title="Dismiss">X</a>
+        <span class="label">{{ notification.title }}</span>
         <span class="timestamp">{{ notification.timestamp }}</span>
-        <span class="title">{{ notification.title }}</span><br>
+        <br>
+
         {{ notification.message }}
     </div>
 {% empty %}

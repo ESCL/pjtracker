@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^resources/', include('apps.resources.urls')),
     url(r'^work/', include('apps.work.urls')),
     url(r'^deployment/', include('apps.deployment.urls')),
+    url(r'^notifications/', include('apps.notifications.urls')),
 
     # Admin dashboard
     url(r'^admin/', include(admin.site.urls)),

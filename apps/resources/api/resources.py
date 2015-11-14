@@ -17,3 +17,4 @@ class EquipmentResource(ModelResource):
     class Meta:
         queryset = Equipment.objects.all()
         resource_name = 'equipment'
+

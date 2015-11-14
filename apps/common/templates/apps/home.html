@@ -42,13 +42,22 @@
 
 {% block scripts %}
 
-<script src="{% static 'js/ajax.js' %}"></script>
+<!-- Standard libraries -->
 <script src="{% static 'libs/canvas/js/canvasjs.min.js' %}"></script>
+
+<!-- Custom libraries -->
+<script src="{% static 'js/ajax.js' %}"></script>
 <script src="{% static 'js/graphs.js' %}"></script>
+
+<!-- Specific functionality -->
+<script src="{% static 'js/notifications.js' %}"></script>
 <script>
-    generateGraph("/resources/api/v0/employees/?format=json", "Resources", "column");
-    generateGraph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
-    generateGraph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
-    generateGraph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
+    (function() {
+        generateGraph("/resources/api/v0/employees/?format=json", "Resources", "column");
+        generateGraph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
+        generateGraph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
+        generateGraph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
+    })();
 </script>
+
 {% endblock %}

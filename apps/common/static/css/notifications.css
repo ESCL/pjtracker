@@ -14,17 +14,34 @@
 }
 
 .notification {
-    padding: 10px 15px;
+    padding: 12px 12px;
 }
 
 .notification:first-of-type {
     border-top: 1px solid #ddd;
 }
 
-.notification .title {
+.notification .title,.notification .action {
     font-weight: bold;
 }
 
-.notification .timestamp  {
-    float: right;
+.notification .timestamp {
+    border: 1px;
+    margin-left: 4px;
+}
+
+.notification .action {
+    border: 1px solid #bbb;
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+
+/* Disabled notifs, make them dark and hide action buttons */
+
+.notification.disabled {
+    background: #eee;
+}
+
+.notification.disabled .action {
+    display: none;
 }

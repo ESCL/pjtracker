@@ -18,6 +18,9 @@ class Notification(models.Model, SignalsMixin):
         'read': Signal(providing_args=['target'])
     }
 
+    STATUS_ENABLED = 'E'
+    STATUS_DISMISSED = 'D'
+
     objects = NotificationQuerySet.as_manager()
 
     recipient = models.ForeignKey(
@@ -43,6 +46,16 @@ class Notification(models.Model, SignalsMixin):
     timestamp = models.DateTimeField(
         default=datetime.utcnow
     )
+    status = models.CharField(
+        max_length=1,
+        choices=((STATUS_ENABLED, 'Active'),
+                 (STATUS_DISMISSED, 'Dismissed')),
+        default=STATUS_ENABLED
+    )
+
+    @property
+    def is_enabled(self):
+        return self.status == self.STATUS_ENABLED
 
     @property
     def message(self):
@@ -50,3 +63,6 @@ class Notification(models.Model, SignalsMixin):
             {'target': self.event_target, 'event': self.event_type}
         ))
 
+    def dismiss(self):
+        self.status = self.STATUS_DISMISSED
+        self.save()

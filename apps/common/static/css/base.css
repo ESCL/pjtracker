@@ -65,16 +65,7 @@ button, .button {
     border-radius: 10px;
     color: #fff;
     font-weight: bold;
-    padding: 2px 4px;
-}
-
-.label.disabled {
-    color: #ddd;
-}
-
-.label.enabled {
-    color: #fff;
-    background: #488;
+    padding: 2px 8px;
 }
 
 

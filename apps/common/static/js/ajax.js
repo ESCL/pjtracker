@@ -45,13 +45,22 @@ function get(url, querystring) {
     });
 }
 
-function post(url, data) {
+function post(url, data, format, safe) {
     return new Promise(function(resolve, reject) {
         // Open xhr and set headers
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+
+        // Set headers and format data if needed
+        if (format == 'json') {
+            xhr.setRequestHeader("Content-Type", "application/json");
+            data = JSON.stringify(data);
+        } else {
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        }
+        if (safe) {
+            xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+        }
 
         // Handle onload, resolve on status 201, reject on others
         xhr.onload = function() {

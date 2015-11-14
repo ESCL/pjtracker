@@ -13,7 +13,9 @@ class HomeView(View):
         if not request.user.is_authenticated():
             return redirect('public', page='home')
 
+        notifs = Notification.objects.for_user(request.user)
+        notifs = notifs.filter(status=Notification.STATUS_ENABLED)
         context = {'user': request.user,
-                   'notifications': Notification.objects.for_user(request.user)}
+                   'notifications': notifs}
         return render(request, self.template_name, context)
 
