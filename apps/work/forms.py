@@ -46,11 +46,6 @@ class ActivityInlineFormSet(forms.BaseInlineFormSet):
         self._new_start = 1000000
         self._new_objs = {}
 
-    def _get_parent(self, parent_id):
-        if not parent_id:
-            return None
-        return self._objects[parent_id]
-
     def save_new(self, form, commit=True):
         form_n = int(form.prefix.split('-')[-1])
         self._new_start = min(form_n, self._new_start)
