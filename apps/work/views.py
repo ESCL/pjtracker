@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.forms import inlineformset_factory
 
 from ..common.views.base import StandardResourceView
-from .forms import ProjectForm, ActivityForm, ProjectSearchForm, ActivitySearchForm, ActivityInlineForm
+from .forms import ProjectForm, ActivityForm, ProjectSearchForm, ActivitySearchForm, ActivityInlineForm, ActivityInlineFormSet
 from .models import Project, Activity
 
 
@@ -22,7 +22,7 @@ class ActivityView(StandardResourceView):
     detail_template = 'activity.html'
     edit_template = 'activity-edit.html'
     search_form = ActivitySearchForm
-    edit_form = ActivityForm
+    main_form = ActivityForm
 
 
 class ProjectWBSView(StandardResourceView):
@@ -31,7 +31,8 @@ class ProjectWBSView(StandardResourceView):
     """
     model = Project
     edit_template = 'wbs-edit.html'
-    formset = inlineformset_factory(Project, Activity, form=ActivityInlineForm, extra=0)
+    formset = inlineformset_factory(Project, Activity, formset=ActivityInlineFormSet,
+                                    form=ActivityInlineForm, extra=1)
 
     def show_forms(self, request, pk):
         """
@@ -54,6 +55,7 @@ class ProjectWBSView(StandardResourceView):
         if fs.is_valid():
             # If all defined forms are valid, save them
             instances = fs.save()
+            fs.save_parents()
             Activity.objects.filter(id__in=[a.id for a in instances]).update(project=proj, owner=proj.owner)
 
             # Now redirect to collection view, passing kwargs (subresources work too)

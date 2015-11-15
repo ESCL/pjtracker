@@ -45,7 +45,8 @@
 
             <div class="row body"
                  data-parent-wbs="{{ form.instance.parent_wbs_code }}"
-                 data-wbs="{{ form.instance.wbs_code }}">
+                 data-wbs="{{ form.instance.wbs_code }}"
+                 data-id="{{ form.instance.id|default:'new-0' }}">
 
                 <div class="three columns wbs-code {% if form.code.errors %}invalid{% endif %}">
                     <span class="parent-wbs">{{ form.instance.parent_wbs_code }}</span>
@@ -83,7 +84,7 @@
             </div>
         {% endfor %}
 
-        <button type="button" data-action="add-activity">Add Main Activity</button>
+        <button type="button" data-action="add-activity">Add More</button>
 
         <div class="buttons">
             <button type="submit" class="button-primary">Save</button>

@@ -10,23 +10,30 @@
         ev.preventDefault();
         var prevSibling;
         var parentWbs;
+        var parentInput;
         var oldNum;
-        var newNum = allRows.length + 1;
-        var row = allRows[0].cloneNode(true);
+        var rows = document.querySelectorAll('.body.row');
+        var newNum = rows.length;
+        var row = rows[0].cloneNode(true);
 
         // Update field names and reset their values
         var inputs = Array.prototype.slice.call(row.getElementsByTagName('input'));
         inputs = inputs.concat(Array.prototype.slice.call(row.getElementsByTagName('select')));
         inputs.forEach(function(input) {
-            oldNum = input.name.split('-')[1];
+            var nameParts = input.name.split('-');
+            oldNum = nameParts[1];
             input.id = input.id.replace(oldNum, newNum);
             input.name = input.name.replace(oldNum, newNum);
             input.value = '';
+            if (nameParts[2] == 'parent_id') {
+                parentInput = input;
+            }
         });
 
         // Determine wbs and location to append
         if (ev.target.dataset.action == 'add-sub-activity') {
             var parentRow = getRow(ev.target);
+            parentInput.value = parentRow.dataset.id;
             var children = toggleChildren(null, parentRow, false);
             parentWbs = parentRow.dataset.wbs;
             if (children.length) {
@@ -46,10 +53,13 @@
         var code = row.getElementsByTagName('input')[0].value;
         row.dataset.wbs = [row.dataset.parentWbs, code].filter(function(part){return !!part}).join('.');
         row.dataset.new = true;
+        row.dataset.id = 'new-' + newNum;
 
-        // Init and append to its siblings
+        // Init, append to its siblings and update formset value
         initRow(row);
         prevSibling.parentNode.insertBefore(row, prevSibling.nextSibling);
+        var totalForms = document.querySelector('#id_activity_set-TOTAL_FORMS');
+        totalForms.value = parseInt(totalForms.value) + 1;
     }
 
     function getRow(el) {
@@ -64,7 +74,7 @@
     function selectChildren(wbs, excludeRow) {
         // Select all the children rows using their parent WBS
 
-        var qs ='div[data-parent-wbs="' + wbs + '"]';
+        var qs ='.row[data-parent-wbs="' + wbs + '"]';
         return Array.prototype.slice.call(document.querySelectorAll(qs));
     }
 
@@ -88,14 +98,17 @@
         // Enable toggle button if row has children, disable otherwise
 
         var btn = row.querySelector('a[data-action="toggle-children"]');
-        var children = selectChildren(row.dataset.wbs, true);
-        if (children.length == 0) {
-            btn.removeEventListener('click', toggleChildren);
-            btn.classList.add('disabled');
-        } else {
-            btn.addEventListener('click', toggleChildren);
-            btn.classList.remove('disabled');
+        if (row.dataset.wbs != row.dataset.parentWbs) {
+            var children = selectChildren(row.dataset.wbs, true);
+            if (children.length) {
+                btn.addEventListener('click', toggleChildren);
+                btn.classList.remove('disabled');
+                return;
+            }
         }
+
+        btn.removeEventListener('click', toggleChildren);
+        btn.classList.add('disabled');
     }
 
     function setRowVisibility(row) {
@@ -181,17 +194,13 @@
         setAddSubAction(row);
     }
 
-    // Get main elements to attach listeners
     var addButton = document.querySelector('button[data-action="add-activity"]');
-    var allRows = document.querySelectorAll('.project-wbs .body.row');
-    var row, i;
-
-    // Attach form reset and submit listener
     addButton.addEventListener('click', addActivity);
 
     // Attach toggle children event listeners
-    for (i = 0; i < allRows.length; i++) {
-        row = allRows[i];
+    var rows = document.querySelectorAll('.body.row'), row;
+    for (var i = 0; i < rows.length; i++) {
+        row = rows[i];
         initRow(row);
         setRowVisibility(row);
     }
