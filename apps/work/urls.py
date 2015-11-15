@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django.conf.urls import url
 
-from .views import ProjectView, ActivityView
+from .views import ProjectView, ActivityView, ProjectWBSView
 
 
 urlpatterns = [
@@ -16,6 +16,8 @@ urlpatterns = [
     url(r'^wbs/$', ActivityView.as_view(), name='activities'),
     url(r'^wbs/(?P<action>add)/$', ActivityView.as_view(), name='activity'),
     url(r'^wbs/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
-    url(r'^wbs/(?P<pk>\d+)/(?P<action>edit)/$', ActivityView.as_view(), name='activity')
+    url(r'^wbs/(?P<pk>\d+)/(?P<action>edit)/$', ActivityView.as_view(), name='activity'),
 
+    # Experimental wbs view
+    url(r'^projects/(?P<pk>\d+)/wbs/(?P<action>edit)/$', ProjectWBSView.as_view(), name='wbs-edit'),
 ]

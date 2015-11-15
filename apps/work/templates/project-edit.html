@@ -3,14 +3,6 @@
 {% load staticfiles %}
 
 
-{% block styles %}
-
-    {{ block.super }}
-    <link href="{% static 'css/project-edit.css' %}" rel="stylesheet">
-
-{% endblock %}
-
-
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
@@ -33,16 +25,6 @@
 
     {{ main_form }}
 
-    {% include 'wbs-form.html' %}
-
 </form>
-
-{% endblock %}
-
-
-{% block scripts %}
-
-    {{ block.super }}
-    <script src="{% static 'js/wbs-edit.js' %}"></script>
 
 {% endblock %}

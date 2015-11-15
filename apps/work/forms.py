@@ -24,8 +24,20 @@ class ActivityInlineForm(forms.ModelForm):
 
     class Meta:
         model = Activity
-        fields = ('code', 'name', 'labour_types', 'groups',)
+        fields = ('code', 'name', 'labour_types', 'groups', 'parent_id',)
+        extra = 0
 
+    parent_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityInlineForm, self).__init__(*args, **kwargs)
+
+        if self.instance:
+            for key, field in self.fields.items():
+                field.initial = getattr(self.instance, key)
+
+            if not self.is_bound and self.instance.parent:
+                self.fields['parent_id'].widget.attrs['value'] = self.instance.parent_id
 
 
 class ProjectSearchForm(ModernForm):

@@ -10,8 +10,8 @@
     margin: 0;
 }
 
-.project-wbs .body select {
-    height: 38px;
+.project-wbs .body select,.project-wbs .body input {
+    height: 32px;
 }
 
 .project-wbs .body input,.project-wbs .body select {
@@ -23,10 +23,30 @@
     display: inline;
 }
 
+.project-wbs .body .wbs-code input {
+    width: 60px;
+}
+
 .errorlist, .errorlist li {
     margin-bottom: 0;
 }
 
-.project-wbs .body .wbs-code input {
-    width: 60px;
+.project-wbs .body .action-group {
+    display: inline;
+}
+
+.project-wbs .body .actions {
+    padding-top: 4px;
+}
+
+.wbs-code input {
+    margin-right: 6px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+a.disabled {
+    color: #888;
 }

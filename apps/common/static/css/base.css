@@ -185,3 +185,24 @@ select[multiple] {
     display: inline-block;
     padding: 2px 8px;
 }
+
+
+/** Tight columns (with smaller margins)
+    Formula: (100 - ((12 / n_col) - 1) * margin_pct) / 12 * n_col
+**/
+
+.tight-columns .columns {
+    margin-left: 1%;
+    margin-right: 0;
+}
+
+.tight-columns .columns:first-of-type {
+    margin-left: 0;
+}
+
+.tight-columns .one.column, .tight-columns .one.columns { width: 7.41666667%; }
+.tight-columns .two.columns { width: 15.8333333%; }
+.tight-columns .three.columns { width: 24.25%;}
+.tight-columns .four.columns { width: 32.6666667%; }
+.tight-columns .five.columns { width: 41.0833333%; }
+.tight-columns .six.columns { width: 49.5%;}

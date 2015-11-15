@@ -1,0 +1,104 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link href="{% static 'css/wbs-edit.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'projects' %}">projects</a></li>
+<li><a href="{% url 'project' pk=project.id %}">{{ project.code }}</a></li>
+<li><span>wbs</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ forms.management_form }}
+
+    <div class="project-wbs tight-columns">
+
+        <div class="row head">
+            <div class="three columns">Code</div>
+            <div class="three columns">Description</div>
+            <div class="two columns">Labour Types</div>
+            <div class="three columns">Groups</div>
+            <div class="one columns">Actions</div>
+        </div>
+
+        {% for form in forms %}
+
+            {{ form.errors }}
+
+            <div class="row body"
+                 data-parent-wbs="{{ form.instance.parent_wbs_code }}"
+                 data-wbs="{{ form.instance.wbs_code }}">
+
+                <div class="three columns wbs-code {% if form.code.errors %}invalid{% endif %}">
+                    <span class="parent-wbs">{{ form.instance.parent_wbs_code }}</span>
+                    {{ form.code }}
+                    <span class="field-errors">{{ form.code.errors }}</span>
+
+                    <ul class="action-group">
+                        <li><a href="#" data-action="toggle-children" title="Expand/collapse sub-activities">+</a></li>
+                    </ul>
+                </div>
+
+                <div class="three columns {% if form.name.errors %}invalid{% endif %}">
+                    {{ form.name }}
+                    <span class="field-errors">{{ form.name.errors }}</span>
+                </div>
+
+                <div class="two columns">
+                    {{ form.labour_types }}
+                </div>
+
+                <div class="three columns">
+                    {{ form.groups }}
+                </div>
+
+                <div class="one columns actions">
+                    <ul class="action-group">
+                        <li><a href="#" data-action='add-sub-activity' title="Add sub-activity">+</a></li>
+                        <li><a href="#" data-action='delete' title="Remove activity">x</a></li>
+                    </ul>
+                </div>
+
+                {{ form.id }}
+                {{ form.parent_id }}
+
+            </div>
+        {% endfor %}
+
+        <button type="button" data-action="add-activity">Add Main Activity</button>
+
+        <div class="buttons">
+            <button type="submit" class="button-primary">Save</button>
+        </div>
+    </div>
+
+
+</form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script src="{% static 'js/wbs-edit.js' %}"></script>
+
+{% endblock %}
