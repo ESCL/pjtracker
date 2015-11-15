@@ -57,7 +57,7 @@ class ProjectWBSView(StandardResourceView):
             Activity.objects.filter(id__in=[a.id for a in instances]).update(project=proj, owner=proj.owner)
 
             # Now redirect to collection view, passing kwargs (subresources work too)
-            return redirect('project', **kwargs)
+            return redirect('project', pk=pk, **kwargs)
 
         else:
             # Invalid, render forms again with errors
