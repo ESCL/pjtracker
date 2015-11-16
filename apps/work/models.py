@@ -17,7 +17,7 @@ class Project(OwnedEntity):
     )
 
     def __str__(self):
-        return self.code
+        return '{} ({})'.format(self.code, self.name)
 
 
 class ActivityGroupType(OwnedEntity):
@@ -43,7 +43,7 @@ class ActivityGroup(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return '{} ({})'.format(self.code, self.name)
 
 
 class Activity(OwnedEntity):
@@ -105,7 +105,7 @@ class Activity(OwnedEntity):
         return len(self.wbs_path)
 
     def __str__(self):
-        return '{}. {}'.format(self.wbs_code, self.name)
+        return '{} ({})'.format(self.code, self.name)
 
 
 class LabourType(OwnedEntity):

@@ -132,6 +132,13 @@ class Equipment(Resource):
     type = models.ForeignKey(
         'EquipmentType'
     )
+    model = models.CharField(
+        max_length=128,
+        help_text="Manufacturer brand and model."
+    )
+    year = models.PositiveIntegerField(
+        help_text="Year of manufacture."
+    )
 
     def get_labour_types_for(self, user):
         return self.type.get_labour_types_for(user)

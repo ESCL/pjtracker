@@ -31,9 +31,9 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Position</th>
                 <th>Company</th>
                 <th>Team</th>
-                <th>Position</th>
                 <th>Project</th>
                 <th class="actions">Actions</th>
             </tr>
@@ -43,10 +43,10 @@
                 <tr>
                     <td>{{ e.identifier }}</td>
                     <td>{{ e.full_name }}</td>
-                    <td>{{ e.company }}</td>
-                    <td>{{ e.team }}</td>
-                    <td>{{ e.position }}</td>
-                    <td>{{ e.project }}</td>
+                    <td>{{ e.position.name }}</td>
+                    <td title="{{ e.company.name }}">{{ e.company.code }}</td>
+                    <td title="{{ e.team.name }}">{{ e.team.code }}</td>
+                    <td title="{{ e.project.name }}">{{ e.project.code }}</td>
                     <td class="actions">
                         <ul class="action-group">
                             <li><a href="{% url 'employee' pk=e.id %}" class="action">view</a></li>

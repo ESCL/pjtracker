@@ -17,7 +17,7 @@ class Company(OwnedEntity):
     )
 
     def __str__(self):
-        return self.code
+        return '{} ({})'.format(self.code, self.name)
 
 
 class Team(OwnedEntity):
@@ -66,7 +66,7 @@ class Team(OwnedEntity):
             yield r.equipment
 
     def __str__(self):
-        return self.code
+        return '{} ({})'.format(self.code, self.name)
 
 
 class Position(OwnedEntity):
@@ -84,7 +84,7 @@ class Position(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return '{} ({})'.format(self.code, self.name)
 
     def add_labour_type(self, labour_type, user=None):
         PositionLabourType.objects.create(owner=user and user.owner, position=self,

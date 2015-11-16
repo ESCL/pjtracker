@@ -31,6 +31,8 @@ class EquipmentFactory(DjangoModelFactory):
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
+    model = 'Komatsu WB140'
+    year = 2005
     company = LazyAttribute(lambda obj: obj.team.company)
     team = SubFactory(TeamFactory)
     project = SubFactory(ProjectFactory)
