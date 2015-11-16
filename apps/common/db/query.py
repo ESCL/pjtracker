@@ -17,15 +17,13 @@ class OwnedEntityQuerySet(QuerySet):
         obj = model.objects.filter(pk=pk).for_user(user).get()
     """
     def for_user(self, user):
-        if user.is_staff or user.is_superuser:
+        try:
+            account = user.domain
+        except AttributeError:
+            raise AuthenticationError('A user with account is required to view owned objects.')
+        else:
+            if account:
+                return self.filter(Q(owner=account)|Q(owner=None))
             return self
 
-        try:
-            account = user.owner
-
-        except AttributeError:
-            raise AuthenticationError('OwnedEntity filters require a user with an account.')
-
-        else:
-            return self.filter(Q(owner=account)| Q(owner=None))
 

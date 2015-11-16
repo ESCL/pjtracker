@@ -85,6 +85,18 @@ class Activity(OwnedEntity):
         return '.'.join(self.full_wbs_path)
 
     @property
+    def groups_codes(self):
+        return ','.join(g.code for g in self.groups.all())
+
+    @property
+    def labour_types_codes(self):
+        return ','.join(lt.code for lt in self.labour_types.all())
+
+    @property
+    def level(self):
+        return len(self.wbs_path)
+
+    @property
     def parent_wbs_path(self):
         return self.parent and self.parent.wbs_path or []
 
@@ -99,10 +111,6 @@ class Activity(OwnedEntity):
     @property
     def wbs_code(self):
         return '.'.join(self.wbs_path)
-
-    @property
-    def level(self):
-        return len(self.wbs_path)
 
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)

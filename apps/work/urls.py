@@ -1,8 +1,14 @@
 __author__ = 'kako'
 
-from django.conf.urls import url
+from django.conf.urls import url, include
+from tastypie.api import Api
 
 from .views import ProjectView, ActivityView, ProjectWBSView
+from .api.resources import ActivityResource
+
+
+api_v0 = Api(api_name='v0')
+api_v0.register(ActivityResource())
 
 
 urlpatterns = [
@@ -20,4 +26,7 @@ urlpatterns = [
 
     # Experimental wbs view
     url(r'^projects/(?P<pk>\d+)/wbs/(?P<action>edit)/$', ProjectWBSView.as_view(), name='wbs-edit'),
+
+    # APIs
+    url(r'^api/', include(api_v0.urls))
 ]
