@@ -12,7 +12,6 @@ class JsonCsvSerializer(Serializer):
                      'csv': 'text/csv'}
 
     def to_csv(self, data, options=None):
-        import pdb; pdb.set_trace()
         options = options or {}
         data = self.to_simple(data, options)
         raw_data = io.StringIO()
