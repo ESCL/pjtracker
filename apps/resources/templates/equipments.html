@@ -31,6 +31,8 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Model</th>
+                <th>Year</th>
                 <th>Type</th>
                 <th>Company</th>
                 <th>Team</th>
@@ -42,10 +44,12 @@
             {% for e in equipment %}
                 <tr>
                     <td>{{ e.identifier }}</td>
-                    <td>{{ e.type }} ({{e.type.parent}})</td>
-                    <td>{{ e.company }}</td>
-                    <td>{{ e.team }}</td>
-                    <td>{{ e.project }}</td>
+                    <td>{{ e.model }}</td>
+                    <td>{{ e.year }}</td>
+                    <td>{{ e.type }} ({{ e.type.parent }})</td>
+                    <td title="{{ e.company.name }}">{{ e.company.code }}</td>
+                    <td title="{{ e.team.name }}">{{ e.team.code }}</td>
+                    <td title="{{ e.project.name }}">{{ e.project.code }}</td>
                     <td class="actions">
                         <ul class="action-group">
                             <li><a href="{% url 'equipment' pk=e.id %}" class="action">view</a></li>

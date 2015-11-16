@@ -43,7 +43,7 @@
                 <tr>
                     <td>{{ t.code }}</td>
                     <td>{{ t.name }}</td>
-                    <td>{{ t.company }}</td>
+                    <td title="{{ t.company.name }}">{{ t.company.code }}</td>
                     <td>{{ t.employees_resources.count }}</td>
                     <td>{{ t.equipment_resources.count }}</td>
                     <td>{{ t.activities.count }}</td>
