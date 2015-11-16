@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from tastypie import authorization, resources, utils, fields
+from tastypie import resources, fields
 
 
 class Action(object):

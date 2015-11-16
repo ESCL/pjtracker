@@ -30,6 +30,12 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @property
+    def domain(self):
+        if self.is_staff or self.is_superuser:
+            return None
+        return self.owner
+
     def get_allowed_actions_for(self, obj):
         """
         Return a list of actions that can be executed by the user, which
