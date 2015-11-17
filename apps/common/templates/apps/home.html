@@ -53,10 +53,12 @@
 <script src="{% static 'js/notifications.js' %}"></script>
 <script>
     (function() {
-        generateGraph("/resources/api/v0/employees/?format=json", "Resources", "column");
-        generateGraph("/resources/api/v0/employees/?format=json", "Resources 2", "doughnut");
-        generateGraph("/resources/api/v0/employees/?format=json", "Otro grafico", "pie");
-        generateGraph("/resources/api/v0/employees/?format=json", "Grafico choto", "bar");
+        generateSimpleGraph({
+            title: 'Hours per activity', type: 'bar',
+            url: '/deployment/api/v0/hours/?format=json',
+            labelField: 'wbs_code', dataField: 'total_hours',
+            animate: true
+        });
     })();
 </script>
 

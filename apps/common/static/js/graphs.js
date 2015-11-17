@@ -17,14 +17,21 @@
 var currentDiv = 0;
 
 /**
- * Graphic chart generator
+ * Generate a simple graph, with one value per item
  *
- * api: "/resources/api/v0/employees/?format=json"
- * title: "Hours per activity"
- * type: "column" [valid types: column, pie, area, bar, doughnut]
+ * options:
+ *   - title: main title of the graph
+ *   - type: type of graph [column, pie, area, bar, doughnut]
+ *   - url: data endpoint, including querystring
+ *   - labelField: name of the instance field that contains the label (x)
+ *   - dataField: name of the instance field that contains the value (y)
+ *   - theme (opt): theme to use (default to "theme1")
+ *   - animate (opt): animate the graph? (default to false)
+ *   - export (opt): allow exporting as file? (default to false)
  */
 
-generateGraph = function(api, title, type) {
+function generateSimpleGraph(options) {
+    // Create graph container
     var divId = "div" + currentDiv;
     var graphs = document.createElement('div');
     graphs.id = divId;
@@ -32,42 +39,36 @@ generateGraph = function(api, title, type) {
     document.querySelector('#graphs').appendChild(graphs);
     currentDiv++;
 
-    get(api).then(function(data) {
+    get(options.url).then(function(data) {
+        // Parse response and generate data
         data = JSON.parse(data);
-        var graphData = [];
-        var l = data.meta.total_count;
-        var record = data.objects;
-
-        for (var i = 0; i < l; i++) {
-            $this = record[i];
-            var value = $this.id,
-                label = $this.first_name;
-            graphData.push({
-                y : value,
-                label : label
-            });
-        }
-
-        var chart = new CanvasJS.Chart(divId, {
-            theme: "theme1",
-            title: {
-                text: title
-            },
-            animationEnabled: true, // change to true
-            exportEnabled: false, // If true a button will allow to export
-
-            // graph to JPG file
-            exportFileName: title,
-            data: [{
-                type : type,
-                dataPoints : graphData
-            }]
+        var graphData = data.objects.map(function(obj) {
+            return {label: obj[options.labelField], y: parseInt(obj[options.dataField])}
         });
 
+        // Create graph and attach to container
+        var chart = new CanvasJS.Chart(
+            divId,
+            {
+                title: {
+                    text: options.title
+                },
+                theme: options.theme || "theme1",
+                animationEnabled: options.animate || false,
+                exportEnabled: options.export || false,
+                exportFileName: options.title,
+                data: [{
+                    type : options.type,
+                    dataPoints : graphData
+                }]
+            }
+        );
+
+        // Render the graph
         chart.render();
 
     }).catch(function(error) {
+        // Something failed, we don't care, just log it
         console.log(error)
     });
-
-};
+}
