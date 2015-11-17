@@ -148,7 +148,7 @@ class Equipment(Resource):
         work_log.equipment_type = self.type
 
     def __str__(self):
-        return '{} ({})'.format(self.type, self.identifier)
+        return '{} {} ({})'.format(self.model, self.type, self.identifier)
 
 
 class ResourceHistory(History):

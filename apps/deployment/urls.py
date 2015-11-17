@@ -1,8 +1,14 @@
 __author__ = 'kako'
 
-from django.conf.urls import url
+from django.conf.urls import url, include
+from tastypie.api import Api
 
 from .views import TimeSheetView, TimeSheetActionView
+from .api.resources import WorkLogResource
+
+
+api = Api(api_name='v0')
+api.register(WorkLogResource())
 
 
 urlpatterns = [
@@ -14,4 +20,7 @@ urlpatterns = [
 
     # Timesheet action view
     url(r'^timesheets/(?P<pk>\d+)/actions/$', TimeSheetActionView.as_view(), {'action': 'add'}, name='timesheet-action'),
+
+    # APIs
+    url(r'^api/', include(api.urls)),
 ]

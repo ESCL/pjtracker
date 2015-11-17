@@ -15,7 +15,7 @@
     <div class="nine columns">
         {% for activity in timesheet.activities.values %}
             <div class="grid-column activity" title="{{ activity.name }}">
-                {{ activity.wbs_code_path|join:'<br>' }}
+                {{ activity.full_wbs_path|join:'<br>' }}
             </div>
         {% endfor %}
     </div>
@@ -34,7 +34,10 @@
                     </span>
                 {% else %}
                     <span>{{ row.resource.identifier }}</span><br>
-                    <span>{{ row.resource.equipment.type }}</span>
+                    <span>
+                        {{ row.resource.equipment.model }}<br>
+                        {{ row.resource.equipment.type }}
+                    </span>
                 {% endif %}
             </div>
 

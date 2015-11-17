@@ -15,21 +15,22 @@ class TimeSheetForm(OwnedEntityForm):
     def __init__(self, *args, instance=None, **kwargs):
         super(TimeSheetForm, self).__init__(*args, instance=instance, **kwargs)
 
-        # Remove team field for existing timesheets (logs depend on this, so we
-        # can't have people changing this)
+        # Remove team field for existing timesheets (resources depend on this so
+        # we can't have people changing it)
         if instance:
             self.fields.pop('team')
 
     def clean(self):
         cleaned_data = super(TimeSheetForm, self).clean()
-        team = cleaned_data['team']
-        date = cleaned_data['date']
+        if not self.instance.id:
+            # New timesheet, ensure it is not a duplicate (team:date)
+            team = cleaned_data.get('team')
+            date = cleaned_data['date']
 
-        # Ensure this is not a duplicate (team:date)
-        if TimeSheet.objects.filter(team=team, date=date).exists():
-            cleaned_data.pop('team')
-            cleaned_data.pop('date')
-            raise forms.ValidationError('TimeSheet for team {} and date {} already exists.'.format(team, date))
+            if TimeSheet.objects.filter(team=team, date=date).exists():
+                cleaned_data.pop('team')
+                cleaned_data.pop('date')
+                raise forms.ValidationError('TimeSheet for team {} and date {} already exists.'.format(team, date))
 
         return cleaned_data
 
