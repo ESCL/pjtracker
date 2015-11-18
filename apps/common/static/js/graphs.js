@@ -43,7 +43,6 @@ function generateGraph(options) {
         // Parse response and setup order
         data = JSON.parse(data);
         var graphData = [], currentData;
-        var order = options.order;
 
         // Generate data
         options.dataFields.forEach(function(dataField) {
@@ -55,9 +54,11 @@ function generateGraph(options) {
             });
 
             // Reverse if required
-            if (order == -1 || order == 'desc') {
+            if (options.order == -1 || options.order == 'desc') {
                 currentData = currentData.reverse();
             }
+
+            // Attach data setting name (and legend if enabled)
             graphData.push({
                 type: options.type,
                 name: dataField.label,
@@ -76,7 +77,7 @@ function generateGraph(options) {
                     text: options.title
                 },
                 toolTip: {
-                    // Display shared tooltip if we have several several fields
+                    // Display shared tooltip if we have several fields
                     shared: (options.dataFields.length > 1)
                 },
                 theme: options.theme || "theme1",
