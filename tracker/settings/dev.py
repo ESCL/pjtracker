@@ -4,3 +4,5 @@ from .base import *
 
 
 BOOTSTRAP_EXAMPLE = True
+
+TASTYPIE_FULL_DEBUG = True

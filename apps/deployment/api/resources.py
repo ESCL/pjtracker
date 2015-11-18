@@ -3,68 +3,33 @@ __author__ = 'kako'
 from datetime import datetime
 
 from django.db.models import Sum
-from tastypie import fields
+from tastypie import fields, bundle
 
 from ...common.api.resources import OwnedResource
 from ...common.api.serializers import JsonCsvSerializer
+from ...common.db.models import ValuesObject
 from ...work.models import Activity, LabourType
 from ..models import WorkLog, TimeSheet
-
-
-class SummaryWorkLogQuerySet(list):
-
-    def __init__(self, values_data):
-        self.values_data = values_data
-        self.activities_ids = set()
-        self.labour_types_ids = set()
-        self.activities = {}
-        self.labour_types = {}
-        self._populate_ids()
-        self._fetch_objects()
-        super(SummaryWorkLogQuerySet, self).__init__(self._generate_instances())
-
-    def _populate_ids(self):
-        for d in self.values_data:
-            self.activities_ids.add(d.get('activity'))
-            self.labour_types_ids.add(d.get('labour_type'))
-
-    def _fetch_objects(self):
-        self.activities.update({a.id: a for a in Activity.objects.filter(id__in=list(self.activities_ids))})
-        self.labour_types.update({a.id: a for a in LabourType.objects.filter(id__in=list(self.labour_types_ids))})
-
-    def _generate_instances(self):
-        for pk, d in enumerate(self.values_data, 1):
-            act = self.activities.get(d.get('activity'))
-            lt = self.labour_types.get(d.get('labour_type'))
-            yield SummaryWorklog(pk, act, lt, d['total_hours'])
-
-
-class SummaryWorklog(object):
-
-    def __init__(self, pk, activity, labour_type, total_hours):
-        self.pk = pk
-        self.activity = activity
-        self.labour_type = labour_type
-        self.total_hours = total_hours
 
 
 class WorkLogResource(OwnedResource):
 
     class Meta:
         queryset = WorkLog.objects.all()
-        fields = ('wbs_code', 'activity', 'labour', 'total_hours',)
+        fields = ('activity_code', 'activity_name', 'labour', 'hours',)
         resource_name = 'hours'
         include_resource_uri = False
         serializer = JsonCsvSerializer(formats=('json', 'csv',))
+        ordering = ('activity', 'hours',)
 
-    wbs_code = fields.CharField(attribute='activity__full_wbs_code')
-    activity = fields.CharField(attribute='activity__name', null=True)
-    labour = fields.CharField(attribute='labour_type__code', null=True)
-    total_hours = fields.DecimalField(readonly=True, attribute='total_hours')
+    activity_code = fields.CharField(attribute='activity__full_wbs_code')
+    activity_name = fields.CharField(attribute='activity__name', null=True)
+    labour_type_code = fields.CharField(attribute='labour_type__code', null=True)
+    hours = fields.DecimalField(readonly=True, attribute='total_hours')
 
     def apply_filters(self, request, applicable_filters):
         qs = super(WorkLogResource, self).apply_filters(request, applicable_filters)
-        values = {'activity'}
+        values = {'activity__id', 'activity__parent_id', 'activity__code', 'activity__project_id'}
 
         # Add status filter if specified
         status = request.GET.get('status')
@@ -81,11 +46,17 @@ class WorkLogResource(OwnedResource):
         if date_end:
             qs = qs.filter(timesheet__date__lte=datetime.strptime(date_end, '%Y-%m-%d').date())
 
+        # Include labour type if requested
         include = request.GET.getlist('include')
-        for field in include:
-            values.add(field)
+        if 'labour_type' in include:
+            values.update({'labour_type__id', 'labour_type__code'})
 
         # Group by values and return
-        return SummaryWorkLogQuerySet(qs.values(*values).annotate(total_hours=Sum('hours')))
+        return qs.values(*values).annotate(total_hours=Sum('hours'))
 
+    def build_bundle(self, obj=None, data=None, request=None, objects_saved=None):
+        if obj:
+            obj = ValuesObject(obj, activity=Activity, labour_type=LabourType)
+        return bundle.Bundle(obj=obj, data=data, request=request,
+                             objects_saved=objects_saved)
 
