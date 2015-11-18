@@ -19,6 +19,12 @@ class Project(OwnedEntity):
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
 
+    def employees_count(self):
+        return self.resource_set.filter(resource_type='employee').count()
+
+    def equipment_count(self):
+        return self.resource_set.filter(resource_type='equipment').count()
+
 
 class ActivityGroupType(OwnedEntity):
 
