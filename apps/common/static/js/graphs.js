@@ -30,7 +30,7 @@ var currentDiv = 0;
  *   - export (opt): allow exporting as file? (default to false)
  */
 
-function generateSimpleGraph(options) {
+function generateGraph(options) {
     // Create graph container
     var divId = "div" + currentDiv;
     var graphs = document.createElement('div');
@@ -40,18 +40,34 @@ function generateSimpleGraph(options) {
     currentDiv++;
 
     get(options.url).then(function(data) {
-        // Parse response and generate data
+        // Parse response and setup order
         data = JSON.parse(data);
-        var graphData = data.objects.map(function(obj) {
-            return {
-                label: obj[options.labelField],
-                y: parseInt(obj[options.dataField])
+        var graphData = [], currentData;
+
+        // Generate data
+        options.dataFields.forEach(function(dataField) {
+            currentData = data.objects.map(function(obj) {
+                return {
+                    label: obj[options.labelField],
+                    y: parseInt(obj[dataField.value])
+                };
+            });
+
+            // Reverse if required
+            if (options.order == -1 || options.order == 'desc') {
+                currentData = currentData.reverse();
             }
+
+            // Attach data setting name (and legend if enabled)
+            graphData.push({
+                type: options.type,
+                name: dataField.label,
+                legendText: dataField.label,
+                showInLegend: !!dataField.label,
+                dataPoints: currentData
+            });
         });
-        var order = options.order || -1;
-        if (order == -1) {
-            graphData = graphData.reverse();
-        }
+
 
         // Create graph and attach to container
         var chart = new CanvasJS.Chart(
@@ -60,14 +76,15 @@ function generateSimpleGraph(options) {
                 title: {
                     text: options.title
                 },
+                toolTip: {
+                    // Display shared tooltip if we have several fields
+                    shared: (options.dataFields.length > 1)
+                },
                 theme: options.theme || "theme1",
                 animationEnabled: options.animate || false,
                 exportEnabled: options.export || false,
                 exportFileName: options.title,
-                data: [{
-                    type : options.type,
-                    dataPoints : graphData
-                }]
+                data: graphData
             }
         );
 

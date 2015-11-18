@@ -16,20 +16,22 @@ class WorkLogResource(OwnedResource):
 
     class Meta:
         queryset = WorkLog.objects.all()
-        fields = ('activity_code', 'activity_name', 'labour', 'hours',)
+        fields = ('project_code', 'activity_code', 'activity_name', 'labour_type_code', 'labour_type_name', 'hours',)
         resource_name = 'hours'
         include_resource_uri = False
         serializer = JsonCsvSerializer(formats=('json', 'csv',))
         ordering = ('activity', 'hours',)
 
-    activity_code = fields.CharField(attribute='activity__full_wbs_code')
+    project_code = fields.CharField(attribute='activity__project__code', null=True)
+    activity_code = fields.CharField(attribute='activity__full_wbs_code', null=True)
     activity_name = fields.CharField(attribute='activity__name', null=True)
     labour_type_code = fields.CharField(attribute='labour_type__code', null=True)
+    labour_type_name = fields.CharField(attribute='labour_type__name', null=True)
     hours = fields.DecimalField(readonly=True, attribute='total_hours')
 
     def apply_filters(self, request, applicable_filters):
         qs = super(WorkLogResource, self).apply_filters(request, applicable_filters)
-        values = {'activity__id', 'activity__parent_id', 'activity__code', 'activity__project_id'}
+        values = set()
 
         # Add status filter if specified
         status = request.GET.get('status')
@@ -47,9 +49,13 @@ class WorkLogResource(OwnedResource):
             qs = qs.filter(timesheet__date__lte=datetime.strptime(date_end, '%Y-%m-%d').date())
 
         # Include labour type if requested
-        include = request.GET.getlist('include')
-        if 'labour_type' in include:
-            values.update({'labour_type__id', 'labour_type__code'})
+        group_by = request.GET.getlist('group_by')
+        if 'project' in group_by or not group_by:
+            values.add('activity__project_id')
+        if 'activity' in group_by:
+            values.update({'activity__id', 'activity__parent_id', 'activity__code', 'activity__project_id'})
+        if 'labour_type' in group_by:
+            values.update({'labour_type__id', 'labour_type__code', 'labour_type__name'})
 
         # Group by values and return
         return qs.values(*values).annotate(total_hours=Sum('hours'))

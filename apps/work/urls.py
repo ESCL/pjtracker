@@ -4,11 +4,12 @@ from django.conf.urls import url, include
 from tastypie.api import Api
 
 from .views import ProjectView, ActivityView, ProjectWBSView
-from .api.resources import ActivityResource
+from .api.resources import ActivityResource, ProjectResource
 
 
 api_v0 = Api(api_name='v0')
 api_v0.register(ActivityResource())
+api_v0.register(ProjectResource())
 
 
 urlpatterns = [
