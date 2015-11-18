@@ -43,8 +43,15 @@ function generateSimpleGraph(options) {
         // Parse response and generate data
         data = JSON.parse(data);
         var graphData = data.objects.map(function(obj) {
-            return {label: obj[options.labelField], y: parseInt(obj[options.dataField])}
+            return {
+                label: obj[options.labelField],
+                y: parseInt(obj[options.dataField])
+            }
         });
+        var order = options.order || -1;
+        if (order == -1) {
+            graphData = graphData.reverse();
+        }
 
         // Create graph and attach to container
         var chart = new CanvasJS.Chart(

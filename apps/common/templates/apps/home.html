@@ -54,9 +54,9 @@
 <script>
     (function() {
         generateSimpleGraph({
-            title: 'Hours per activity', type: 'bar',
-            url: '/deployment/api/v0/hours/?format=json',
-            labelField: 'wbs_code', dataField: 'total_hours',
+            title: 'Top activities by hours', type: 'bar',
+            url: '/deployment/api/v0/hours/?format=json&order_by=-hours&limit=10',
+            labelField: 'activity_code', dataField: 'hours',
             animate: true
         });
     })();

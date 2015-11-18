@@ -24,7 +24,10 @@ function get(url, querystring) {
     return new Promise(function(resolve, reject) {
         // Open xhr and set headers
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", url + "?" + querystring, true);
+        if (querystring) {
+            url += querystring;
+        }
+        xhr.open("GET", url, true);
 
         // Handle onload, resolve on status 201, reject on others
         xhr.onload = function() {
