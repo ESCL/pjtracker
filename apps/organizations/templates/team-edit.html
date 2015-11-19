@@ -8,7 +8,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'teams' %}">teams</a></li>
 {% if team %}
-    <li><a href="{% url 'team' pk=team.id %}">{{ team }}</a></li>
+    <li><a href="{% url 'team' pk=team.id %}">{{ team.code }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>
@@ -40,14 +40,20 @@
     <script>
         (function() {
             // Use FilterMultiSelect to turn multi-select into something usable
+            var employees = document.querySelector('#id_main-employees');
+            var equipment = document.querySelector('#id_main-equipment');
             var timekeepers = document.querySelector('#id_main-timekeepers');
             var supervisors = document.querySelector('#id_main-supervisors');
             var activities = document.querySelector('#id_main-activities');
 
+            var employeesSelect = new FilterMultiSelect(employees);
+            var equipmentSelect = new FilterMultiSelect(equipment);
             var timekeepersSelect = new FilterMultiSelect(timekeepers);
             var supervisorsSelect = new FilterMultiSelect(supervisors);
             var activitiesSelect = new FilterMultiSelect(activities);
 
+            employeesSelect.start();
+            equipmentSelect.start();
             timekeepersSelect.start();
             supervisorsSelect.start();
             activitiesSelect.start();

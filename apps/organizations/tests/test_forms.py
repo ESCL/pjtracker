@@ -28,16 +28,20 @@ class TeamFormTest(TestCase):
 
     def test_limited_permissions(self):
         # Add permissions to edit team activities
+        self.user = User.objects.get(id=self.user.id)
         self.user.user_permissions.add(*create_permissions(Team, ['change activities']))
 
-        # In form only activities field is editable
-        self.user = User.objects.get(id=self.user.id)
+        # Init the form and calculate what fields should be editable
         form = TeamForm(user=self.user)
-        field = form.fields['activities']
-        self.assertFalse('disabled' in field.widget.attrs)
-        self.assertFalse('readonly' in field.widget.attrs)
-        readonly = set(form.fields.keys())
-        readonly.remove('activities')
+        # Note: Employees and equipment are also editable
+        editable = ('activities', 'employees', 'equipment')
+        for k in editable:
+            field = form.fields[k]
+            self.assertFalse('disabled' in field.widget.attrs)
+            self.assertFalse('readonly' in field.widget.attrs)
+
+        # Check that other fields are not editable
+        readonly = set(form.fields.keys()).difference(editable)
         for k in readonly:
             field = form.fields[k]
             self.assertEqual(field.widget.attrs['disabled'], 'disabled')

@@ -27,7 +27,15 @@ class ModernForm(ModernizeFieldsMixin, forms.Form):
 
 
 class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
+    """
+    Base model form for OwnedEntity subclasses, providing automatic disabled
+    fields based on permissions, filters for choice fields based on user account
+    (owner of instances) and HTML5 widgets.
 
+    IMPORTANT: Only fields belonging to the model are disabled by default,
+    so any extra fields added to the form MUST BE handled by the form itself,
+    since they have no side effects by default anyway.
+    """
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
@@ -43,19 +51,20 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
         modify.
         """
         # Note: instance is always set, even if it's new
-        allowed_fields = set(self.user.get_allowed_fields_for(self.instance))
+        disallowed_fields = self.user.get_disallowed_fields_for(self.instance)
 
         if self.is_bound:
             # Bound form, remove fields to allow submitting partial data
-            for k in list(self.fields.keys()):
-                if k not in allowed_fields:
-                    self.fields.pop(k)
+            for k in disallowed_fields:
+                self.fields.pop(k, None)
 
         else:
             # Unbound form, disable them only but render them
-            for k, field in self.fields.items():
-                if k not in allowed_fields:
-                    field.widget.attrs.update({'disabled': 'disabled', 'readonly': True})
+            for k in disallowed_fields:
+                f = self.fields.get(k)
+                if f:
+                    f.widget.attrs.update({'disabled': 'disabled',
+                                           'readonly': True})
 
     def restrict_querysets(self):
         """

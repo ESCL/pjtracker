@@ -42,7 +42,7 @@ class UserTest(TestCase):
         self.assertEqual(qs[0], user2)
         self.assertEqual(qs[1], user3)
 
-    def test_get_allowed(self):
+    def test_get_allowed_actions(self):
         # Create an admin that can change anything
         user = UserFactory.create()
         user.user_permissions.add(*create_permissions(User, ['add', 'change']))
@@ -50,10 +50,6 @@ class UserTest(TestCase):
         # Actions should be simple
         actions = user.get_allowed_actions_for(User)
         self.assertEqual(set(actions), {('add',), ('change',)})
-
-        # Check fields, all
-        fields = user.get_allowed_fields_for(User)
-        self.assertEqual(fields, User._meta.get_all_field_names())
 
         # Create one that can only change usernames
         user = UserFactory.create()
@@ -63,6 +59,19 @@ class UserTest(TestCase):
         actions = user.get_allowed_actions_for(User)
         self.assertEqual(actions, [('change', 'username')])
 
-        # Check fields, only username
-        fields = user.get_allowed_fields_for(User)
-        self.assertEqual(fields, ['username'])
+    def test_get_disallowed_fields(self):
+        # Create an admin that can change anything
+        user = UserFactory.create()
+        user.user_permissions.add(*create_permissions(User, ['add', 'change']))
+
+        # Actions should be simple
+        fields = user.get_disallowed_fields_for(User)
+        self.assertEqual(fields, set())
+
+        # Create one that can only change usernames
+        user = UserFactory.create()
+        user.user_permissions.add(*create_permissions(User, ['change username']))
+
+        # Check fields, only username is removed
+        fields = user.get_disallowed_fields_for(User)
+        self.assertEqual(fields, set(User._meta.get_all_field_names()).difference({'username'}))
