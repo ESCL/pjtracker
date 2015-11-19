@@ -46,8 +46,9 @@ class EmployeeFactory(DjangoModelFactory):
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
-    first_name = Faker('first_name')
+    first_name = Faker('first_name_male')
     last_name = Faker('last_name')
+    gender = 'M'
     company = LazyAttribute(lambda obj: obj.team.company)
     project = SubFactory(ProjectFactory)
     position = SubFactory(PositionFactory)

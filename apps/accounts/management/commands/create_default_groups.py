@@ -30,9 +30,15 @@ class Command(BaseCommand):
         print("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(Company, ['add', 'change']))
-        group.permissions.add(*create_permissions(Team, ['add', 'change']))
         group.permissions.add(*create_permissions(Position, ['add', 'change']))
         group.permissions.add(*create_permissions(Employee, ['add', 'change']))
+        print("Group {} created successfully.".format(group))
+
+        # Team management
+        name = 'Team Management'
+        print("Creating {} group...".format(name))
+        group = Group.objects.create(name=name)
+        group.permissions.add(*create_permissions(Team, ['add', 'change']))
         print("Group {} created successfully.".format(group))
 
         # PCON group

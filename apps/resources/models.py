@@ -55,10 +55,12 @@ class Resource(OwnedEntity):
         'organizations.Company'
     )
     team = models.ForeignKey(
-        'organizations.Team'
+        'organizations.Team',
+        null=True
     )
     project = models.ForeignKey(
-        'work.Project'
+        'work.Project',
+        null=True
     )
     resource_type = models.CharField(
         max_length=32,
@@ -92,17 +94,11 @@ class Employee(Resource):
     last_name = models.CharField(
         max_length=64
     )
-    birth_date = models.DateField(
-        null=True, blank=True
+    gender = models.CharField(
+        max_length=1,
+        choices=(('F', 'Female'),
+                 ('M', 'Male'))
     )
-    photo = models.FileField(
-        max_length=256, blank=True
-    )
-    home_address = models.CharField(
-        max_length=256, null=True, blank=True
-    )
-
-    # Organizational data (required)
     position = models.ForeignKey(
         'organizations.Position'
     )

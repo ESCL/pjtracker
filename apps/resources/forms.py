@@ -10,14 +10,16 @@ class EmployeeForm(OwnedEntityForm):
 
     class Meta:
         model = Employee
-        exclude = ('owner', 'resource_type',)
+        # Team assignment is managed in team form
+        exclude = ('owner', 'resource_type', 'team',)
 
 
 class EquipmentForm(OwnedEntityForm):
 
     class Meta:
         model = Equipment
-        exclude = ('owner', 'resource_type',)
+        # Team assignment is managed in team form
+        exclude = ('owner', 'resource_type', 'team',)
 
 
 class EmployeeSearchForm(ModernForm):
