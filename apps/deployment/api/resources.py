@@ -3,13 +3,10 @@ __author__ = 'kako'
 from datetime import datetime
 
 from django.db.models import Sum
-from tastypie import fields, bundle
+from tastypie import fields
 
 from ...common.api.resources import OwnedResource
 from ...common.api.serializers import JsonCsvSerializer
-from ...common.db.models import ValuesObject
-from ...work.models import Activity, LabourType
-from ...resources.models import Resource
 from ..models import WorkLog, TimeSheet
 
 
@@ -34,43 +31,54 @@ class WorkLogResource(OwnedResource):
     resource_description = fields.CharField(attribute='resource__description', null=True)
     hours = fields.DecimalField(readonly=True, attribute='total_hours')
 
-    def apply_filters(self, request, applicable_filters):
-        qs = super(WorkLogResource, self).apply_filters(request, applicable_filters)
-        values = set()
+    def _build_filters(self, querystring):
+        filters = {}
 
         # Add status filter if specified
-        status = request.GET.get('status')
+        status = querystring.get('status')
         if status == 'approved':
-            qs = qs.filter(timesheet__status=TimeSheet.STATUS_APPROVED)
+            filters['timesheet__status'] = TimeSheet.STATUS_APPROVED
         elif status == 'issued':
-            qs = qs.filter(timesheet__status=TimeSheet.STATUS_ISSUED)
+            filters['timesheet__status'] = TimeSheet.STATUS_ISSUED
 
         # Add date range filters if specified
-        date_start = request.GET.get('from_date')
-        date_end = request.GET.get('to_date')
+        date_start = querystring.get('from_date')
+        date_end = querystring.get('to_date')
         if date_start:
-            qs = qs.filter(timesheet__date__gte=datetime.strptime(date_start, '%Y-%m-%d').date())
+            filters['timesheet__date__gte'] = datetime.strptime(date_start, '%Y-%m-%d').date()
         if date_end:
-            qs = qs.filter(timesheet__date__lte=datetime.strptime(date_end, '%Y-%m-%d').date())
+            filters['timesheet__date__lte'] = datetime.strptime(date_end, '%Y-%m-%d').date()
 
-        # Include labour type if requested
-        group_by = request.GET.getlist('group_by')
+        return filters
+
+    def _build_groups(self, querystring):
+        groups = set()
+        group_by = querystring.getlist('group_by')
+
+        # Default to grouping by project if no grouping is defined
         if not group_by or 'project' in group_by:
-            values.add('activity__project_id')
+            groups.add('activity__project_id')
+
+        # Check other grouping options
         if 'activity' in group_by:
-            values.update({'activity__id', 'activity__parent_id', 'activity__code', 'activity__project_id'})
+            groups.update({'activity__id', 'activity__parent_id', 'activity__code',
+                           'activity__name', 'activity__project_id'})
         if 'labour_type' in group_by:
-            values.update({'labour_type__id', 'labour_type__code', 'labour_type__name'})
+            groups.update({'labour_type__id', 'labour_type__code',
+                           'labour_type__name'})
         if 'resource' in group_by:
-            values.update({'resource__id', 'resource__identifier', 'resource__resource_type'})
+            groups.update({'resource__id', 'resource__identifier',
+                           'resource__resource_type'})
 
-        # Group by values and return
-        return qs.values(*values).annotate(total_hours=Sum('hours'))
+        return groups
 
-    def build_bundle(self, obj=None, data=None, request=None, objects_saved=None):
-        if obj:
-            obj = ValuesObject(obj, activity=Activity, labour_type=LabourType,
-                               resource=Resource)
-        return bundle.Bundle(obj=obj, data=data, request=request,
-                             objects_saved=objects_saved)
+    def apply_filters(self, request, applicable_filters):
+        qs = super(WorkLogResource, self).apply_filters(request, applicable_filters)
+
+        # Get filters and grouping options
+        filters = self._build_filters(request.GET)
+        groups = self._build_groups(request.GET)
+
+        # Filter, group, annotate and return
+        return qs.filter(**filters).values(*groups).annotate(total_hours=Sum('hours'))
 

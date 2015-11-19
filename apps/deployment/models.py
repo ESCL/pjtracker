@@ -8,6 +8,7 @@ from django.utils.functional import cached_property
 from ..common.db.models import OwnedEntity
 from ..common.exceptions import AuthorizationError
 from ..common.signals import SignalsMixin
+from .query import WorkLogQuerySet
 
 
 class TimeSheet(OwnedEntity, SignalsMixin):
@@ -212,6 +213,8 @@ class TimeSheetAction(OwnedEntity):
 
 
 class WorkLog(OwnedEntity):
+
+    objects = WorkLogQuerySet.as_manager()
 
     timesheet = models.ForeignKey(
         'TimeSheet',
