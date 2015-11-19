@@ -70,6 +70,10 @@ class Resource(OwnedEntity):
         return self.instance.get_labour_types_for(user)
 
     @property
+    def description(self):
+        return self.instance.description
+
+    @property
     def instance(self):
         return getattr(self, self.resource_type)
 
@@ -103,8 +107,9 @@ class Employee(Resource):
         'organizations.Position'
     )
 
-    def get_labour_types_for(self, user):
-        return self.position.get_labour_types_for(user)
+    @property
+    def description(self):
+        return self.full_name
 
     @property
     def full_name(self):
@@ -113,6 +118,9 @@ class Employee(Resource):
     def complete_work_log(self, work_log):
         super(Employee, self).complete_work_log(work_log)
         work_log.position = self.position
+
+    def get_labour_types_for(self, user):
+        return self.position.get_labour_types_for(user)
 
     def __str__(self):
         return '{} ({})'.format(self.full_name, self.identifier)
@@ -135,6 +143,10 @@ class Equipment(Resource):
     year = models.PositiveIntegerField(
         help_text="Year of manufacture."
     )
+
+    @property
+    def description(self):
+        return '{} {}'.format(self.type, self.model)
 
     def get_labour_types_for(self, user):
         return self.type.get_labour_types_for(user)
