@@ -48,6 +48,10 @@
             <img src="{% static 'img/menu/timesheets.png' %}" title="Time-Sheets">
         </a>
 
+        <a href="{% url 'hours' %}" class="button">
+            <img src="{% static 'img/menu/hours.png' %}" title="Hours">
+        </a>
+
         {% if user.is_staff %}
             <a href="/admin/" class="button">
                 <img src="{% static 'img/menu/admin.png' %}" title="Admin">

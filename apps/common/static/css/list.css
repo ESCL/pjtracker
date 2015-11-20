@@ -17,6 +17,27 @@
     padding-right: 1px;
 }
 
+.search-form ul, .search-form li, .search-form label {
+    display: inline;
+}
+
+.search-form ul li label {
+    font-weight: normal;
+}
+
+.search-form .radio-group {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 6px 6px;
+    margin-bottom: 6px;
+}
+
+.search-form .radio-group input {
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
 
 /** Paginator **/
 
