@@ -1,0 +1,86 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>hours</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<form method="GET" class="row search-form">
+
+    {{ search_form.page_size }}
+    {{ search_form.from_date }}
+    {{ search_form.to_date }}
+    {{ search_form.status }}
+    <button type="submit">Re-fresh</button>
+    <br>
+    <div class="radio-group">
+        <label>Group by</label>
+        {{ search_form.group_by }}
+    </div>
+    <a class="button" href="/deployment/api/v0/hours/?{{ qs }}&format=csv">Download</a>
+    <br>
+
+</form>
+
+{% include 'apps/paginator.html' with list=worklogs %}
+
+{% if worklogs %}
+    <table>
+        <thead>
+            <tr>
+                {% if 'project' in groups %}
+                    <th>Project</th>
+                {% endif %}
+                {% if 'activity' in groups %}
+                    <th>Activity</th>
+                {% endif %}
+                {% if 'labour_type' in groups %}
+                    <th>Labour Type</th>
+                {% endif %}
+                {%  if 'resource' in groups %}
+                    <th>Resource</th>
+                {% endif %}
+                <th>Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wl in worklogs %}
+                <tr>
+                    {% if 'project' in groups %}
+                        <td>{{ wl.activity.project.code }}. {{ wl.activity.project.name }}</td>
+                    {% endif %}
+                    {% if 'activity' in groups %}
+                        <td>{{ wl.activity.full_wbs_code }}. {{ wl.activity.name }}</td>
+                    {% endif %}
+                    {% if 'labour_type' in groups %}
+                        <td>{{ wl.labour_type }}</td>
+                    {% endif %}
+                    {%  if 'resource' in groups %}
+                        <td>{{ wl.resource.instance }}</td>
+                    {% endif %}
+                    <td>{{ wl.total_hours }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hours found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}

@@ -3,12 +3,12 @@ __author__ = 'kako'
 from django.conf.urls import url, include
 from tastypie.api import Api
 
-from .views import TimeSheetView, TimeSheetActionView
-from .api.resources import WorkLogResource
+from .views import TimeSheetView, TimeSheetActionView, HoursView
+from .api.resources import HoursResource
 
 
 api = Api(api_name='v0')
-api.register(WorkLogResource())
+api.register(HoursResource())
 
 
 urlpatterns = [
@@ -20,6 +20,9 @@ urlpatterns = [
 
     # Timesheet action view
     url(r'^timesheets/(?P<pk>\d+)/actions/$', TimeSheetActionView.as_view(), {'action': 'add'}, name='timesheet-action'),
+
+    # Hours summary view
+    url(r'^hours/$', HoursView.as_view(), name='hours'),
 
     # APIs
     url(r'^api/', include(api.urls)),

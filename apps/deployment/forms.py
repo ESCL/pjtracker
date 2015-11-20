@@ -12,12 +12,12 @@ class TimeSheetForm(OwnedEntityForm):
         model = TimeSheet
         fields = ('team', 'date',)
 
-    def __init__(self, *args, instance=None, **kwargs):
-        super(TimeSheetForm, self).__init__(*args, instance=instance, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(TimeSheetForm, self).__init__(*args, **kwargs)
 
         # Remove team field for existing timesheets (resources depend on this so
         # we can't have people changing it)
-        if instance:
+        if kwargs.get('instance'):
             self.fields.pop('team')
 
     def clean(self):
@@ -46,15 +46,16 @@ class TimeSheetActionForm(forms.Form):
     action = forms.ChoiceField()
     feedback = forms.CharField(widget=forms.Textarea, required=False)
 
-    def __init__(self, *args, instance=None, user=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(TimeSheetActionForm, self).__init__(*args, **kwargs)
 
         # Add choices to actions based on current status
+        instance = kwargs.get('instance')
         self.fields['action'].choices = instance.allowed_actions
 
         # Store user and timesheet for future ref
         self.timesheet = instance
-        self.user = user
+        self.user = kwargs.get('user')
 
     def clean(self):
         cleaned_data = super(TimeSheetActionForm, self).clean()
@@ -133,7 +134,7 @@ class WorkLogsForm(forms.Form):
 
                     if not es:
                         es.append("{} can charge hours as {}, activity {} only allows {}.".format(
-                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in a_labour))
+                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in act_lt))
                         )
 
         if es:
@@ -162,3 +163,24 @@ class WorkLogsForm(forms.Form):
                 # No hours, remove if existing
                 if log.id:
                     log.delete()
+
+
+class HoursSearchForm(ModernForm):
+    from_date = forms.DateField(label='From date', required=False)
+    to_date = forms.DateField(label='To date', required=False)
+    status = forms.ChoiceField(
+        label='Time-sheet status', required=False,
+        choices=((None, 'All'),
+                 ('approved', 'Approved'),
+                 ('issued', 'Issued')),
+        initial=None
+    )
+    group_by = forms.ChoiceField(
+        label='Grouping options',
+        widget=forms.CheckboxSelectMultiple,
+        choices=(('project', 'Project'),
+                 ('activity', 'Activity'),
+                 ('labour_type', 'Labour type'),
+                 ('resource', 'Resource')),
+        initial=['project']
+    )

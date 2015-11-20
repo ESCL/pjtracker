@@ -58,13 +58,17 @@ class ReadOnlyResourceView(SafeView):
     and the templates.
     """
     model = None
-    select_related = ()
     list_template = None
     detail_template = None
     error_template = 'apps/error.html'
     search_form = None
 
     # Helper class methods
+
+    @classmethod
+    def get_list_context(cls, request, objs):
+        return {cls.model._meta.verbose_name_plural.replace(' ', ''): objs,
+                'qs': re.sub(r'[&]?page=\d+', '', request.GET.urlencode())}
 
     @classmethod
     def build_filters(cls, qs, *args, **kwargs):
@@ -84,10 +88,8 @@ class ReadOnlyResourceView(SafeView):
     @classmethod
     def filter_objects(cls, user, qs, **kwargs):
         filters = cls.build_filters(qs, **kwargs)
-        qs = cls.model.objects.filter(**filters).for_user(user)
-        if cls.select_related:
-            qs = qs.select_related(*cls.select_related)
-        return qs
+        objs = cls.model.objects.filter(**filters).for_user(user)
+        return objs
 
     @classmethod
     def get_object(cls, user, pk):
@@ -119,8 +121,7 @@ class ReadOnlyResourceView(SafeView):
             objs = p.page(p.num_pages)
 
         # Build the context (include form if required)
-        context = {self.model._meta.verbose_name_plural.replace(' ', ''): objs,
-                   'qs': re.sub(r'[&]?page=\d+', '', request.GET.urlencode())}
+        context = self.get_list_context(request, objs)
         if self.search_form:
             search_form = self.search_form(request.GET)
             context['search_form'] = search_form
@@ -179,9 +180,9 @@ class StandardResourceView(ReadOnlyResourceView):
         )
 
     @handle_exception
-    def dispatch(self, request, *args, action=None, **kwargs):
-        self.authorize(request, action)
-        return super(SafeView, self).dispatch(request, *args, action=action, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        self.authorize(request, kwargs.get('action'))
+        return super(SafeView, self).dispatch(request, *args, **kwargs)
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
