@@ -15,54 +15,63 @@
 
 <div class="topbar">
 
+    <nav>
+        <ul id="nav">
+            <li>
+                <a href="#">Organizations</a>
+                <ul>
+                    <li><a href="{% url 'teams' %}"><img src="{%  static 'img/menu/teams.png' %}"> Teams</a></li>
+                    <li><a href="{% url 'companies' %}"><img src="{%  static 'img/menu/companies.png' %}"> Companies</a></li>
+                    <li><a href="#">Positions</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">Resources</a>
+                <ul>
+                    <li><a href="{% url 'employees' %}"><img src="{%  static 'img/menu/employees.png' %}"> Employees</a></li>
+                    <li><a href="{% url 'equipments' %}"><img src="{%  static 'img/menu/equipment.png' %}"> Equipment</a></li>
+                    <li><a href="#">Equipment Types</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">Work</a>
+                <ul>
+                    <li><a href="{% url 'projects' %}"><img src="{%  static 'img/menu/projects.png' %}"> Projects</a></li>
+                    <li><a href="{% url 'activities' %}"><img src="{%  static 'img/menu/wbs.png' %}"> Activities</a></li>
+                    <li><a href="#">Labour Types</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">Deployment</a>
+                <ul>
+                    <li><a href="{% url 'timesheets' %}"><img src="{%  static 'img/menu/timesheets.png' %}"> Time-Sheets</a></li>
+                    <li><a href="{% url 'hours' %}"><img src="{%  static 'img/menu/hours.png' %}"> Hours</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <img src="{% static 'img/menu/user.png' %}">
+                    {{ request.user.username }}
+                </a>
+                <ul>
+                    <li><a href="#"><img src="{%  static 'img/menu/settings.png' %}"> Settings</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="/admin/"><img src="{%  static 'img/menu/admin.png' %}"> Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}"><img src="{%  static 'img/menu/logout.png' %}"> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
     <div class="breadcrumbs">
         <ul class="action-group">{% block breadcrumbs %}{% endblock %}</ul>
     </div>
 
-    <nav>
-        <a href="{% url 'companies' %}" class="button">
-            <img src="{% static 'img/menu/companies.png' %}" title="Companies">
-        </a>
-
-        <a href="{% url 'teams' %}" class="button">
-            <img src="{% static 'img/menu/teams.png' %}" title="Teams">
-        </a>
-
-        <a href="{% url 'employees' %}" class="button">
-            <img src="{% static 'img/menu/employees.png' %}" title="Employees">
-        </a>
-
-        <a href="{% url 'equipments' %}" class="button">
-            <img src="{% static 'img/menu/equipment.png' %}" title="Equipment">
-        </a>
-
-        <a href="{% url 'projects' %}" class="button">
-            <img src="{% static 'img/menu/projects.png' %}" title="Projects">
-        </a>
-
-        <a href="{% url 'activities' %}" class="button">
-            <img src="{% static 'img/menu/wbs.png' %}" title="WBS">
-        </a>
-
-        <a href="{% url 'timesheets' %}" class="button">
-            <img src="{% static 'img/menu/timesheets.png' %}" title="Time-Sheets">
-        </a>
-
-        <a href="{% url 'hours' %}" class="button">
-            <img src="{% static 'img/menu/hours.png' %}" title="Hours">
-        </a>
-
-        {% if user.is_staff %}
-            <a href="/admin/" class="button">
-                <img src="{% static 'img/menu/admin.png' %}" title="Admin">
-            </a>
-        {% endif %}
-
-        <a href="{% url 'logout' %}" class="button">
-            <img src="{% static 'img/menu/logout.png' %}" title="Log out">
-        </a>
-
-    </nav>
 </div>
 
 {% endblock %}
