@@ -17,8 +17,26 @@
     <h4>Main</h4>
 
     <dl>
+        <dt>Project</dt><dd>{{ activity.project }}</dd>
         <dt>WBS Code</dt><dd>{{ activity.wbs_code }}</dd>
         <dt>Name</dt><dd>{{ activity.name }}</dd>
+        <dt>Groups</dt>
+        <dd>
+            <ul>
+                {%  for g in activity.groups.all %}
+                    <li>{{ g }}</li>
+                {%  endfor %}
+            </ul>
+        </dd>
+        <dt>Labour Types</dt>
+        <dd>
+            <ul>
+                {%  for lt in activity.labour_types.all %}
+                    <li>{{ lt }}</li>
+                {%  endfor %}
+            </ul>
+
+        </dd>
     </dl>
 
 </div>
