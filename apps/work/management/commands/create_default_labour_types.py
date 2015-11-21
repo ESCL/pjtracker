@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
-from ....work.factories import DirectLabourFactory, IndirectLabourFactory
+from ....work.factories import DirectLabourFactory, IndirectLabourFactory, ManagementLabourFactory
 
 
 class Command(BaseCommand):
@@ -15,7 +15,8 @@ class Command(BaseCommand):
         print('Setting up labour types...')
 
         # Create standard labour types
-        types = [IndirectLabourFactory.create(),
+        types = [ManagementLabourFactory.create(),
+                 IndirectLabourFactory.create(),
                  DirectLabourFactory.create()]
 
         print('Created labour types: {}'.format(types))
