@@ -15,6 +15,7 @@ class Command(BaseCommand):
         pj = Project.objects.get()
         hr = User.objects.get(username='hr')
         pcon = User.objects.get(username='pcon')
+        mgt = LabourType.objects.get(code='MG')
         ind = LabourType.objects.get(code='IN')
         dir = LabourType.objects.get(code='DI')
         res = []
@@ -26,16 +27,16 @@ class Command(BaseCommand):
         res.append(EmployeeFactory.create(team=eng_team, project=pj))
         res.append(EmployeeFactory.create(team=eng_team, project=pj))
         for e in eng_team.employees:
-            e.position.add_labour_type(ind, hr)
+            e.position.add_labour_type(mgt, hr)
 
         # Create resources for cst team
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EmployeeFactory.create(team=cst_team, project=pj))
         res.append(EquipmentFactory.create(team=cst_team, project=pj))
         for e in cst_team.employees:
-            e.position.add_labour_type(dir, hr)
+            e.position.update_labour_types([dir, ind], hr)
         for e in cst_team.equipment:
-            e.type.add_labour_type(dir, pcon)
+            e.type.update_labour_types([dir, ind], pcon)
 
         # Done, print resources
         print("Created resources {}.".format(res))
