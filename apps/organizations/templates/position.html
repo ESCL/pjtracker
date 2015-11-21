@@ -1,0 +1,35 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'positions' %}">positions</a></li>
+<li><span>{{ position.code }}</span></li>
+<li><a href="{% url 'position' pk=position.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main</h4>
+    <dl>
+        <dt>Code</dt><dd>{{ position.code }}</dd>
+        <dt>Name</dt><dd>{{ position.name}}</dd>
+        <dt>Labour Types</dt>
+        <dd>
+            <ul>
+                {% get position 'labour_types_for' request.user as labour_types %}
+                {% for lt in labour_types %}
+                    <li>{{ lt }}</li>
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+{% endblock %}

@@ -65,7 +65,7 @@ class UserTest(TestCase):
         user.user_permissions.add(*create_permissions(User, ['add', 'change']))
 
         # Actions should be simple
-        fields = user.get_disallowed_fields_for(User)
+        fields = user.get_disallowed_fields_for(User(owner=user.owner))
         self.assertEqual(fields, set())
 
         # Create one that can only change usernames
@@ -73,5 +73,5 @@ class UserTest(TestCase):
         user.user_permissions.add(*create_permissions(User, ['change username']))
 
         # Check fields, only username is removed
-        fields = user.get_disallowed_fields_for(User)
+        fields = user.get_disallowed_fields_for(User(owner=user.owner))
         self.assertEqual(fields, set(User._meta.get_all_field_names()).difference({'username'}))

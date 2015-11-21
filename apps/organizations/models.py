@@ -68,6 +68,25 @@ class Team(OwnedEntity):
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
 
+    def update_resources(self, resources=None, employees=None, equipment=None):
+        """
+        Update the related resources from querysets of resources, employees
+        and or equipment.
+        """
+        # Build list of ids
+        if resources:
+            res_ids = list(resources.values_list('id', flat=True))
+        else:
+            res_ids = []
+            if employees:
+                res_ids.extend(employees.values_list('resource_ptr_id', flat=True))
+            if equipment:
+                res_ids.extend(equipment.values_list('resource_ptr_id', flat=True))
+
+        # Remove unselected and add selected resources
+        self.resource_set.exclude(id__in=res_ids).update(team=None)
+        self.resource_set.model.objects.filter(id__in=res_ids).update(team=self)
+
 
 class Position(OwnedEntity):
 
@@ -87,8 +106,13 @@ class Position(OwnedEntity):
         return '{} ({})'.format(self.code, self.name)
 
     def add_labour_type(self, labour_type, user=None):
-        PositionLabourType.objects.create(owner=user and user.owner, position=self,
-                                          labour_type=labour_type)
+        PositionLabourType.objects.get_or_create(owner=user and user.owner, position=self,
+                                                 labour_type=labour_type)
+
+    def update_labour_types(self, labour_types, user):
+        PositionLabourType.objects.filter(position=self).exclude(labour_type__in=labour_types).delete()
+        for lt in labour_types:
+            self.add_labour_type(lt, self.user)
 
     def get_labour_types_for(self, user):
         through = PositionLabourType.objects.for_user(user)
@@ -105,4 +129,4 @@ class PositionLabourType(OwnedEntity):
     )
 
     def __str__(self):
-        return self.labour_type
+        return self.labour_type.name

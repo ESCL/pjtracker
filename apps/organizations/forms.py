@@ -5,8 +5,9 @@ import itertools
 from django import forms
 
 from ..common.forms import OwnedEntityForm, ModernForm
-from ..resources.models import Employee, Equipment, Resource
-from .models import Company, Team
+from ..resources.models import Employee, Equipment
+from ..work.models import LabourType
+from .models import Company, Team, Position
 
 
 class CompanyForm(OwnedEntityForm):
@@ -14,6 +15,33 @@ class CompanyForm(OwnedEntityForm):
     class Meta:
         model = Company
         exclude = ('owner',)
+
+
+class PositionForm(OwnedEntityForm):
+
+    class Meta:
+        model = Position
+        exclude = ('owner', 'labour_types',)
+
+    pos_labour_types = forms.ModelMultipleChoiceField(queryset=LabourType.objects.all(),
+                                                      required=False, label='Labour types')
+
+    def __init__(self, *args, **kwargs):
+        super(PositionForm, self).__init__(*args, **kwargs)
+
+        if self.instance.id:
+            f = self.fields['pos_labour_types']
+            f.initial = self.instance.get_labour_types_for(self.user)
+
+    def save(self, *args, **kwargs):
+        pos = super(PositionForm, self).save(*args, **kwargs)
+
+        # Update labour types, first remove and then add
+        lts = self.cleaned_data['pos_labour_types']
+        pos.update_labour_types(lts)
+
+        # Return saved instance
+        return pos
 
 
 class TeamForm(OwnedEntityForm):
@@ -39,27 +67,25 @@ class TeamForm(OwnedEntityForm):
                 f.initial = f.queryset.filter(team=self.instance)
 
     def save(self, *args, **kwargs):
-        res = super(TeamForm, self).save(*args, **kwargs)
+        team = super(TeamForm, self).save(*args, **kwargs)
 
         # Fetch resource ids from employees and equipment
         employees = self.cleaned_data['employees']
         equipment = self.cleaned_data['equipment']
-        res_ids = list(itertools.chain(
-            employees.values_list('resource_ptr_id', flat=True),
-            equipment.values_list('resource_ptr_id', flat=True)
-        ))
-
-        # Remove unselected and add selected resources
-        self.instance.resource_set.exclude(id__in=res_ids).update(team=None)
-        Resource.objects.filter(id__in=res_ids).update(team=self.instance)
+        team.update_resources(employees=employees, equipment=equipment)
 
         # Return saved team instance
-        return res
+        return team
 
 
 class CompanySearchForm(ModernForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Company code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Company name')
+
+
+class PositionSearchForm(ModernForm):
+    code__iexact = forms.CharField(max_length=16, required=False, label='Position code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Position name')
 
 
 class TeamSearchForm(ModernForm):
