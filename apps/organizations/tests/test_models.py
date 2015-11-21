@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from ...accounts.factories import UserFactory
 from ...work.factories import DirectLabourFactory, IndirectLabourFactory
+from ..models import PositionLabourType
 from ..factories import PositionFactory
 
 
@@ -15,7 +16,7 @@ class PositionTest(TestCase):
         self.dir = DirectLabourFactory.create()
         self.ind = IndirectLabourFactory.create()
 
-    def test_labour_types(self):
+    def test_add_labour_type(self):
         # Create two users with diff. accounts
         self.user1 = UserFactory.create()
         self.user2 = UserFactory.create()
@@ -36,3 +37,40 @@ class PositionTest(TestCase):
         self.assertEqual(self.pos.get_labour_types_for(self.user1).count(), 2)
         self.assertEqual(self.pos.get_labour_types_for(self.user1)[1], self.ind)
         self.assertEqual(self.pos.get_labour_types_for(self.user2).count(), 1)
+
+        # Try to add the same again, nothing changed
+        self.pos.add_labour_type(self.ind, self.user1)
+        self.assertEqual(self.pos.get_labour_types_for(self.user1).count(), 2)
+        self.assertEqual(self.pos.get_labour_types_for(self.user1)[1], self.ind)
+        self.assertEqual(self.pos.get_labour_types_for(self.user2).count(), 1)
+
+    def test_update_labour_types(self):
+        self.user1 = UserFactory.create()
+
+        # Update type adding only direct, should have created one for account
+        self.pos.update_labour_types([self.dir], self.user1)
+        self.assertEqual(PositionLabourType.objects.count(), 1)
+        plt = PositionLabourType.objects.get()
+        self.assertEqual(plt.owner, self.user1.owner)
+        self.assertEqual(plt.position, self.pos)
+        self.assertEqual(plt.labour_type, self.dir)
+
+        # Update with indirect only, should exchange it
+        self.pos.update_labour_types([self.ind], self.user1)
+        self.assertEqual(PositionLabourType.objects.count(), 1)
+        plt = PositionLabourType.objects.get()
+        self.assertEqual(plt.owner, self.user1.owner)
+        self.assertEqual(plt.position, self.pos)
+        self.assertEqual(plt.labour_type, self.ind)
+
+        # Update with both, should add only direct
+        self.pos.update_labour_types([self.ind, self.dir], self.user1)
+        self.assertEqual(PositionLabourType.objects.count(), 2)
+        plt = PositionLabourType.objects.all()[1]
+        self.assertEqual(plt.owner, self.user1.owner)
+        self.assertEqual(plt.position, self.pos)
+        self.assertEqual(plt.labour_type, self.dir)
+
+        # Update with nothing, should remove it
+        self.pos.update_labour_types([], self.user1)
+        self.assertEqual(PositionLabourType.objects.count(), 0)

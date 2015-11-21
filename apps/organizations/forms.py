@@ -38,7 +38,7 @@ class PositionForm(OwnedEntityForm):
 
         # Update labour types, first remove and then add
         lts = self.cleaned_data['pos_labour_types']
-        pos.update_labour_types(lts)
+        pos.update_labour_types(lts, self.user)
 
         # Return saved instance
         return pos

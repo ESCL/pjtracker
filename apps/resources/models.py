@@ -12,7 +12,7 @@ class EquipmentType(OwnedEntity):
     parent = models.ForeignKey(
         'self',
         null=True,
-        related_name='subtypes'
+        related_name='subtypes',
     )
     labour_types = models.ManyToManyField(
         'work.LabourType',
@@ -23,7 +23,7 @@ class EquipmentType(OwnedEntity):
         return self.name
 
     def add_labour_type(self, labour_type, user=None):
-        EquipmentTypeLabourType.objects.create(
+        EquipmentTypeLabourType.objects.get_or_create(
             owner=user and user.owner, equipment_type=self,
             labour_type=labour_type
         )
@@ -31,6 +31,11 @@ class EquipmentType(OwnedEntity):
     def get_labour_types_for(self, user):
         through = EquipmentTypeLabourType.objects.for_user(user)
         return self.labour_types.filter(equipmenttypelabourtype__in=through)
+
+    def update_labour_types(self, labour_types, user):
+        EquipmentTypeLabourType.objects.filter(owner=user.owner, equipment_type=self).exclude(labour_type__in=labour_types).delete()
+        for lt in labour_types:
+            self.add_labour_type(lt, user)
 
 
 class EquipmentTypeLabourType(OwnedEntity):

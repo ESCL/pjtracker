@@ -4,15 +4,6 @@ from .forms import CompanyForm, TeamForm, CompanySearchForm, TeamSearchForm, Pos
 from .models import Company, Team, Position
 
 
-class PositionView(StandardResourceView):
-    model = Position
-    list_template = 'positions.html'
-    detail_template = 'position.html'
-    edit_template = 'position-edit.html'
-    main_form = PositionForm
-    search_form = PositionSearchForm
-
-
 class CompanyView(StandardResourceView):
     model = Company
     list_template = 'companies.html'
@@ -20,6 +11,15 @@ class CompanyView(StandardResourceView):
     edit_template = 'company-edit.html'
     main_form = CompanyForm
     search_form = CompanySearchForm
+
+
+class PositionView(StandardResourceView):
+    model = Position
+    list_template = 'positions.html'
+    detail_template = 'position.html'
+    edit_template = 'position-edit.html'
+    main_form = PositionForm
+    search_form = PositionSearchForm
 
 
 class TeamView(StandardResourceView):

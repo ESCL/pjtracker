@@ -39,8 +39,16 @@
     margin: 0;
 }
 
+#nav li.disabled a {
+    color: #aaa;
+}
+
 #nav li:hover {
     background: linear-gradient(#fff, #eee);
+}
+
+#nav li.disabled:hover {
+    background: #eee;
 }
 
 #nav a {

@@ -1,0 +1,35 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'equipment-types' %}">equipment types</a></li>
+<li><span>{{ equipmenttype.name }}</span></li>
+<li><a href="{% url 'equipment-type' pk=equipmenttype.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main</h4>
+    <dl>
+        <dt>Name</dt><dd>{{ equipmenttype.name}}</dd>
+        <dt>Parent</dt><dd>{{ equipmenttype.parent|default:'-' }}</dd>
+        <dt>Labour Types</dt>
+        <dd>
+            <ul>
+                {% get equipmenttype 'labour_types_for' request.user as labour_types %}
+                {% for lt in labour_types %}
+                    <li>{{ lt }}</li>
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+{% endblock %}

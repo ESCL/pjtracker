@@ -1,7 +1,7 @@
 
 from ..common.views.base import StandardResourceView
-from .models import Employee, Equipment
-from .forms import EmployeeForm, EmployeeSearchForm, EquipmentForm, EquipmentSearchForm
+from .models import Employee, Equipment, EquipmentType
+from .forms import EmployeeForm, EmployeeSearchForm, EquipmentForm, EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm
 
 
 class EmployeeView(StandardResourceView):
@@ -22,3 +22,14 @@ class EquipmentView(StandardResourceView):
     search_form = EquipmentSearchForm
     # Override collection view name to incorrect plural
     collection_view_name = 'equipments'
+
+
+class EquipmentTypeView(StandardResourceView):
+    model = EquipmentType
+    list_template = 'equipment-types.html'
+    detail_template = 'equipment-type.html'
+    edit_template = 'equipment-type-edit.html'
+    main_form = EquipmentTypeForm
+    search_form = EquipmentTypeSearchForm
+    # Override default to make it "sluggish"
+    collection_view_name = 'equipment-types'

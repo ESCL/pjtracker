@@ -20,35 +20,37 @@
             <li>
                 <a href="#">Organizations</a>
                 <ul>
-                    <li><a href="{% url 'teams' %}"><img src="{%  static 'img/menu/teams.png' %}"> Teams</a></li>
-                    <li><a href="{% url 'companies' %}"><img src="{%  static 'img/menu/companies.png' %}"> Companies</a></li>
-                    <li><a href="{% url 'positions' %}"><img src="{%  static 'img/menu/positions.png' %}"> Positions</a></li>
+                    <li><a href="{% url 'teams' %}">Teams</a></li>
+                    <li><a href="{% url 'companies' %}">Companies</a></li>
+                    <li><a href="{% url 'positions' %}">Positions</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="#">Resources</a>
                 <ul>
-                    <li><a href="{% url 'employees' %}"><img src="{%  static 'img/menu/employees.png' %}"> Employees</a></li>
-                    <li><a href="{% url 'equipments' %}"><img src="{%  static 'img/menu/equipment.png' %}"> Equipment</a></li>
-                    <li><a href="#">Equipment Types</a></li>
+                    <li><a href="{% url 'employees' %}">Employees</a></li>
+                    <li><a href="{% url 'equipments' %}">Equipment</a></li>
+                    <li><a href="{% url 'equipment-types' %}">Equipment Types</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="#">Work</a>
                 <ul>
-                    <li><a href="{% url 'projects' %}"><img src="{%  static 'img/menu/projects.png' %}"> Projects</a></li>
-                    <li><a href="{% url 'activities' %}"><img src="{%  static 'img/menu/wbs.png' %}"> Activities</a></li>
-                    <li><a href="#">Labour Types</a></li>
+                    <li><a href="{% url 'projects' %}">Projects</a></li>
+                    <li><a href="{% url 'activities' %}">Activities</a></li>
+                    <li class="disabled"><a href="#">Labour Types</a></li>
+                    <li class="disabled"><a href="#">Activity Groups</a></li>
+                    <li class="disabled"><a href="#">Activity Group Types</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="#">Deployment</a>
                 <ul>
-                    <li><a href="{% url 'timesheets' %}"><img src="{%  static 'img/menu/timesheets.png' %}"> Time-Sheets</a></li>
-                    <li><a href="{% url 'hours' %}"><img src="{%  static 'img/menu/hours.png' %}"> Hours</a></li>
+                    <li><a href="{% url 'timesheets' %}">Time-Sheets</a></li>
+                    <li><a href="{% url 'hours' %}">Hours</a></li>
                 </ul>
             </li>
 
@@ -58,11 +60,11 @@
                     {{ request.user.username }}
                 </a>
                 <ul>
-                    <li><a href="#"><img src="{%  static 'img/menu/settings.png' %}"> Settings</a></li>
+                    <li class="disabled"><a href="#">Settings</a></li>
                     {% if user.is_staff %}
-                        <li><a href="/admin/"><img src="{%  static 'img/menu/admin.png' %}"> Admin</a></li>
+                        <li><a href="/admin/">Admin</a></li>
                     {% endif %}
-                    <li><a href="{% url 'logout' %}"><img src="{%  static 'img/menu/logout.png' %}"> Logout</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </li>
         </ul>

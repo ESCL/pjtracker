@@ -20,10 +20,10 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/(?P<action>edit)/$', ProjectView.as_view(), name='project'),
 
     # Activity view
-    url(r'^wbs/$', ActivityView.as_view(), name='activities'),
-    url(r'^wbs/(?P<action>add)/$', ActivityView.as_view(), name='activity'),
-    url(r'^wbs/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
-    url(r'^wbs/(?P<pk>\d+)/(?P<action>edit)/$', ActivityView.as_view(), name='activity'),
+    url(r'^activities/$', ActivityView.as_view(), name='activities'),
+    url(r'^activities/(?P<action>add)/$', ActivityView.as_view(), name='activity'),
+    url(r'^activities/(?P<pk>\d+)/$', ActivityView.as_view(), name='activity'),
+    url(r'^activities/(?P<pk>\d+)/(?P<action>edit)/$', ActivityView.as_view(), name='activity'),
 
     # Experimental wbs view
     url(r'^projects/(?P<pk>\d+)/wbs/(?P<action>edit)/$', ProjectWBSView.as_view(), name='wbs-edit'),

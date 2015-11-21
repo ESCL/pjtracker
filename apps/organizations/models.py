@@ -109,14 +109,14 @@ class Position(OwnedEntity):
         PositionLabourType.objects.get_or_create(owner=user and user.owner, position=self,
                                                  labour_type=labour_type)
 
-    def update_labour_types(self, labour_types, user):
-        PositionLabourType.objects.filter(position=self).exclude(labour_type__in=labour_types).delete()
-        for lt in labour_types:
-            self.add_labour_type(lt, self.user)
-
     def get_labour_types_for(self, user):
         through = PositionLabourType.objects.for_user(user)
         return self.labour_types.filter(positionlabourtype__in=through)
+
+    def update_labour_types(self, labour_types, user):
+        PositionLabourType.objects.filter(owner=user.owner, position=self).exclude(labour_type__in=labour_types).delete()
+        for lt in labour_types:
+            self.add_labour_type(lt, user)
 
 
 class PositionLabourType(OwnedEntity):
