@@ -1,7 +1,16 @@
 
 from ..common.views.base import StandardResourceView
-from .forms import CompanyForm, TeamForm, CompanySearchForm, TeamSearchForm
-from .models import Company, Team
+from .forms import CompanyForm, TeamForm, CompanySearchForm, TeamSearchForm, PositionForm, PositionSearchForm
+from .models import Company, Team, Position
+
+
+class PositionView(StandardResourceView):
+    model = Position
+    list_template = 'positions.html'
+    detail_template = 'position.html'
+    edit_template = 'position-edit.html'
+    main_form = PositionForm
+    search_form = PositionSearchForm
 
 
 class CompanyView(StandardResourceView):

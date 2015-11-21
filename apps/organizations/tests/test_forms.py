@@ -5,8 +5,9 @@ from unittest.mock import patch, MagicMock
 
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import create_permissions
-from ..forms import TeamForm
-from ..models import Team
+from ..factories import PositionFactory
+from ..forms import TeamForm, PositionForm
+from ..models import Team, Position, PositionLabourType
 
 
 class TeamFormTest(TestCase):
@@ -28,7 +29,6 @@ class TeamFormTest(TestCase):
 
     def test_limited_permissions(self):
         # Add permissions to edit team activities
-        self.user = User.objects.get(id=self.user.id)
         self.user.user_permissions.add(*create_permissions(Team, ['change activities']))
 
         # Init the form and calculate what fields should be editable
@@ -56,3 +56,45 @@ class TeamFormTest(TestCase):
         for k, field in form.fields.items():
             self.assertFalse('disabled' in field.widget.attrs)
             self.assertFalse('readonly' in field.widget.attrs)
+
+
+class PositionFormTest(TestCase):
+
+    def setUp(self):
+        super(PositionFormTest, self).setUp()
+
+        self.user = UserFactory.create()
+        self.account = self.user.owner
+
+    def test_disabled_fields(self):
+        # Add permissions to edit position
+        self.user.user_permissions.add(*create_permissions(Position, ['change']))
+
+        # Render empty form, everything's editable
+        form = PositionForm(user=self.user)
+        for f in form.fields.values():
+            self.assertFalse('disabled' in f.widget.attrs)
+            self.assertFalse('readonly' in f.widget.attrs)
+
+        # Create account position and init form, everything's editable
+        pos_a = PositionFactory.create(owner=self.account)
+        form = PositionForm(user=self.user, instance=pos_a)
+        for f in form.fields.values():
+            self.assertFalse('disabled' in f.widget.attrs)
+            self.assertFalse('readonly' in f.widget.attrs)
+
+        # Create global position and init form
+        pos_g = PositionFactory.create()
+        form = PositionForm(user=self.user, instance=pos_g)
+
+        # Labour types are editable
+        self.assertFalse('disabled' in form.fields['pos_labour_types'].widget.attrs)
+        self.assertFalse('readonly' in form.fields['pos_labour_types'].widget.attrs)
+
+        # But nothing else is
+        readonly = set(form.fields.keys()).difference({'pos_labour_types'})
+        for k in readonly:
+            f = form.fields[k]
+            self.assertTrue('disabled' in f.widget.attrs)
+            self.assertTrue('readonly' in f.widget.attrs)
+

@@ -40,7 +40,11 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
         self.user = kwargs.pop('user')
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
 
-        # Execute all required field modifications
+        # First set the owner right away if it's a new instance
+        # Note: restrict_fields is simplifier if we set it here
+        if not self.instance.id:
+            self.instance.owner = self.user.owner
+
         self.restrict_fields()
         self.restrict_querysets()
         self.modernize_fields()
@@ -75,8 +79,3 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
                 if hasattr(field.queryset, 'for_user'):
                     field.queryset = field.queryset.for_user(self.user)
 
-    def save(self, *args, **kwargs):
-        # Make user account owner if object is new
-        if not self.instance.id:
-            self.instance.owner = self.user.owner
-        return super(OwnedEntityForm, self).save(*args, **kwargs)
