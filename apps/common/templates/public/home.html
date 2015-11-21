@@ -52,7 +52,7 @@
             <p>
                 You may handle multiple projects, on different locations and even group companies.
                 <br />
-                The same approach and a fine tuned setup will help your organization track the project progress and costs whit this user friendly tool
+                The same approach and a fine tuned setup will help your organization track the project progress and costs with this user friendly tool
             </p>
             <p>
                 This tool is customizable at the point that it'll surely fit your company structure and demands
@@ -67,7 +67,7 @@
                 Every collaborator in the company deserves to get paid correctly as per their conditions of service and on time
             </p>
             <p>
-                We provide interfaces for payroll from the timesheet module. This will ensure project progress as well as salary are based on the same source
+                We provide interfaces for payroll from the timesheet module. This will ensure project progress as well as salary are based on the same source of data
             </p>
         </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
@@ -89,12 +89,12 @@
             <img class="img-circle" src="{% static 'img/menu/projects.png' %}" alt="Generic placeholder image">
             <h2>Projects</h2>
             <p>
-                Scheduling software allows to split a project in different milestones, WBS, phases etc.
+                Scheduling software allows to split a project in different milestones, phases etc., through the WBS definition
                 A project can contain thousand of activities and all those activities will eventually receive man-hours or equipment hours.
                 So an accurate input of the activities inside the tool is crucial.
             </p>
             <p>
-                This tool allows you to import the list of WBS directly from task / project management software like Oracle Primavera P6 &reg; but also allows to manage the information with interfaces already available
+                This tool allows you to import the WBS directly from task / project management software like Oracle Primavera P6 &reg; but also allows to manage the information with interfaces already available
             </p>
         </div><!-- /.col-lg-4 -->
         <div class="col-lg-4">
@@ -102,7 +102,7 @@
             <h2>Teams</h2>
             <p>
                 Employees that work together in the same location and their activities are related are part of a team.
-                Per instance, welders, with grinders and also helpers.
+                Per instance, welders, with grinders and also helpers work as a team.
                 And those teams also make use of equipment.
                 Usually those teams report to a team leader, supervisor, head of department, etc.
             </p>
@@ -127,9 +127,9 @@
             <p class="lead">
                 The WBS can be imported from an interface or updated by authorized users.
                 When the list of activities has been loaded, is responsibility of Project Control to determine
-                if each activity can receive hours of management, direct or indirect type.
+                if each activity can receive hours of direct or indirect types.
                 This process is done only once because is very rare that an activity that is supposed to receive
-                direct hours can change later on to receive only management hours.
+                direct hours can change later on to receive only indirect hours.
                 So the definition of the type of hours is done at the beginning of the project only but the tool also allows to introduce changes later on if needed
             </p>
         </div>
@@ -144,12 +144,12 @@
         <div class="col-md-7 col-md-push-5">
             <h2 class="featurette-heading">2. Manpower <span class="text-muted">Resources</span></h2>
             <p class="lead">
-                The manpower can also be imported or updated by authorized users.
+                The manpower can also be imported or added manually by authorized users.
                 The source of data can be an HR or payroll database that will be able to produce the list of workers
                 currently active.
                 This list is updated manually or thorough the same interface in order to include new hired staff or to remove those that have been terminated.
                 After the updating of the manpower data the table of job titles shall be updated by
-                identifying on each job title which type of hours the position will be able to book worked time. The types are direct, indirect and management hours
+                identifying on each job title which type of hours the position will be able to book worked time
             </p>
         </div>
         <div class="col-md-5 col-md-pull-7">
@@ -164,10 +164,9 @@
             <h2 class="featurette-heading">3. Equipment <span class="text-muted">Resources</span></h2>
             <p class="lead">
                 The equipment can as well be imported or updated by authorized users.
-                The source is usually the assets table that exists in the Accounting or ERP system the company is using to support their business.
+                The source is usually the assets table that exists in the accounting or ERP system the company is using to support their business.
                 The import of equipment from the interface is usually done only once at the beginning of the project.
                 There is need to import the interface again only when there is new equipment being assigned to the project.
-                Equipment assigned to the project that is not being used will not register hours
 
             </p>
         </div>
@@ -182,7 +181,7 @@
         <div class="col-md-7 col-md-push-5">
             <h2 class="featurette-heading">4. Teams <span class="text-muted">Definition</span></h2>
             <p class="lead">
-                A team is a working unit. It is composed by staff and equipment. A team includes those workers and equipment that are usually assigned to activities that they must be together to perform. In a workshop there could be one or more teams involved in several activities. Per instance, a welding team. It will include a foreman or supervisor, some welders, grinders, helpers, etc. The staff working in HR and responsible for the payroll are also part of a team. The protocol staff are a team. The concept of team helps to normalize the input of data for timekeeping purposes. A team must have a timekeeper assigned and at least one approver for the timesheet. A team will be allowed to charge hours to specific project activities that are defined usually by the planner of the project. Inside this tool a team is a working unit that charges hours to predefined WBS only.
+                A team is a working unit. It is composed by staff and, sometimes, equipment. A team includes those workers and equipment that are usually assigned to activities that they must be together to perform. In a workshop there could be one or more teams involved in several activities. Per instance, a welding team. It will include a foreman or supervisor, some welders, grinders, helpers, etc. The staff working in HR and responsible for the payroll are also part of a team. The protocol staff in an organization are a team. The concept of team helps to normalize the input of data for timekeeping purposes. A team must have a timekeeper assigned and at least one approver for its timesheet. A team will be allowed to charge hours to specific project activities that are defined usually by the planner of the project. Inside this tool a team is a working unit that charges hours to predefined activities only.
             </p>
         </div>
         <div class="col-md-5 col-md-pull-7">
@@ -196,7 +195,7 @@
         <div class="col-md-7">
             <h2 class="featurette-heading">5. Timesheet <span class="text-muted">Entry and Approval</span></h2>
             <p class="lead">
-                The timekeeper assigned to input man and equipment hours for the team will do so in a daily basis. Once the timesheet has been completed the timekeeper will send it for review. This is done electronically and the user assigned to review that team will be notified immediately. If there are more than one approver/reviewer assigned to a team all of them will be notified at once so they can approve online when they consider it convenient. As the team is allowed to charge hours to specific WBS assigned by the project, is not possible for the timekeeper to enter hours in activities where the team is not supposed to work in. Once the timesheets are approved they are available for further consultation whenever is needed. The timesheet will save also the name and time of filling up by the timekeeper as well as the information of all the approvers that intervened in the workflow.
+                The timekeeper assigned to input man and equipment hours for the team will do so in a daily basis. Once the timesheet has been completed the timekeeper will send it for review. This is done electronically and the user assigned to review that team will be notified immediately. If there are more than one approver/reviewer assigned to a team all of them will be notified at once so they can approve online when they consider it convenient. As the team is allowed to charge hours to specific activities assigned by the project, is not possible for the timekeeper to enter hours in activities where the team is not supposed to work in. Once the timesheets are approved they are available for further consultation whenever is needed. The timesheet will track all the users that intervened from the creation until the final approval so it is easy to trace user actions performed in a particular timesheet
             </p>
         </div>
         <div class="col-md-5">
@@ -210,10 +209,10 @@
         <div class="col-md-7 col-md-push-5">
             <h2 class="featurette-heading">6. Payroll <span class="text-muted">Interfaces</span></h2>
             <p class="lead">
-                At the end of the payroll period authorized users linked to payroll activities will be able to download from this tool the total worked hours for the staff. The download tool will generate a file (csv, flat file, etc.) that can be imported into the payroll software for salary calculation. So you are going to pay salaries based on actual approved worked hours which helps preventing the existence of ghost workers and unauthorized worked hours.
+                At the end of the payroll period authorized users linked to payroll activities will be able to download from this tool the total worked hours for the staff. The download tool will generate a file (csv, flat file, etc.) that can be imported into the payroll software for salary calculation (payroll software permitting). So you are going to pay salaries based on actual approved worked hours which helps preventing the existence of ghost workers and unauthorized worked hours.
             </p>
             <p class="lead">
-                After processing the payroll calculation it will also be possible (payroll software permitting) to extract the actual labor cost per staff and then upload it into this tool in order to distribute actual cost by WBS. That information can then be downloaded from this tool and then uploaded into the ERP system the company is using. Thus to reduce error merging in the input of date related to Project and Job Costing.
+                After processing the payroll calculation it will also be possible (again, payroll software permitting) to extract the actual labor cost per staff and then upload it into this tool in order to distribute actual cost by activity. That information can then be downloaded from this tool and then uploaded into the ERP system the company is using. Thus to reduce error margin in the input of data related to Project and Job Costing.
             </p>
         </div>
         <div class="col-md-5 col-md-pull-7">
@@ -227,7 +226,7 @@
         <div class="col-md-7">
             <h2 class="featurette-heading">7. Scheduling Software <span class="text-muted">Interface</span></h2>
             <p class="lead">
-                As this tool helps collecting the actual worked time spent into the different WBS of the project, it also allows exporting the summary of working time by WBS that can later on be uploaded into your project scheduling software (i.e. : Oracle Primavera P6 &reg;) so you will have your progress automatically updated without having to worry about the accuracy of the info as all loaded hours were duly approved.
+                As this tool helps collecting the actual worked time spent into the different activities of the project, it also allows exporting the summary of working time per activity that can later on be uploaded into your project scheduling software (i.e. : Oracle Primavera P6 &reg;) so you will have your progress updated without having to worry about the accuracy of the info as all loaded hours were duly approved
             </p>
         </div>
         <div class="col-md-5">
