@@ -65,10 +65,17 @@ class User(AbstractUser):
         """
         Return a set of fields that the user cannot modify.
         """
+        # Start by assuming that all are disallowed
         disallowed = set(self._classify(obj)._meta.get_all_field_names())
-        for action in self.get_allowed_actions_for(obj):
-            try:
-                disallowed.remove(action[1])
-            except IndexError:
-                return set()
+
+        # Now if user has no domain or its domain matches obj owner allow
+        # whatever actions determine
+        if not self.domain or self.domain == obj.owner:
+            for action in self.get_allowed_actions_for(obj):
+                try:
+                    disallowed.remove(action[1])
+                except IndexError:
+                    return set()
+
+        # Return result
         return disallowed
