@@ -1,8 +1,11 @@
 __author__ = 'kako'
 
+import re
+
 from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute
 
 from ..accounts.factories import AccountFactory
+from ..common.utils import generate_code_from_name
 from .models import Company, Team, Position
 
 
@@ -13,7 +16,7 @@ class CompanyFactory(DjangoModelFactory):
 
     owner = SubFactory(AccountFactory)
     name = Faker('company')
-    code = LazyAttribute(lambda obj: ''.join(x[0] for x in obj.name.split()).upper())
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
 
 
 class TeamFactory(DjangoModelFactory):
@@ -23,7 +26,7 @@ class TeamFactory(DjangoModelFactory):
 
     owner = LazyAttribute(lambda obj: obj.company.owner)
     name = Faker('sentence', nb_words=2)
-    code = Faker('word')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
     company = SubFactory(CompanyFactory)
 
     @post_generation
@@ -46,7 +49,8 @@ class PositionFactory(DjangoModelFactory):
 
     class Meta:
         model = Position
+        django_get_or_create = ('name',)
 
     name = Faker('job')
-    code = LazyAttribute(lambda obj: obj.name[:3].upper())
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
 

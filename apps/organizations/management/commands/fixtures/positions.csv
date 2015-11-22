@@ -1,0 +1,234 @@
+190000,Architect,Construction
+190500,Bricklayer - Apprentice,Construction
+190510,Bricklayer - Journeyperson,Construction
+190600,Carpenter - Apprentice,Construction
+190610,Carpenter - Journeyperson,Construction
+190800,Concrete Finisher,Construction
+192000,Construction Manager,Construction
+191500,Construction Superintendent,Construction
+191510,Construction Superintendent - Assistant,Construction
+191000,Construction Supervisor,Construction
+191600,Crane Operator,Construction
+192110,Design & Construction Director,Construction
+191900,Electrician - Apprentice,Construction
+191910,Electrician - Journeyperson,Construction
+192300,Equipment Operator - Heavy,Construction
+192310,Equipment Operator - Light,Construction
+192400,Estimating Manager,Construction
+192500,Estimator I,Construction
+192510,Estimator II (Senior),Construction
+193000,General Construction Worker,Construction
+194490,Pipefitter - Apprentice,Construction
+194500,Pipefitter - Journeyperson,Construction
+195000,Project Engineer - Construction,Construction
+196000,Project Manager - Construction,Construction
+196500,Property & Land Acquisition Officer,Construction
+197000,Survey Chief,Construction
+197300,Surveyor,Construction
+030100,Applications Engineer I,Engineering
+030200,Applications Engineer II (Senior),Engineering
+030150,Applications Engineer III (Lead),Engineering
+030260,Applications Engineering Director,Engineering
+030250,Applications Engineering Manager,Engineering
+030290,Automation Director,Engineering
+031000,CAD Designer I,Engineering
+031200,CAD Designer II (Senior),Engineering
+030500,CAD Draftsperson,Engineering
+031350,CAD Manager,Engineering
+031300,CAD Supervisor,Engineering
+031500,Chemical Engineer I,Engineering
+031600,Chemical Engineer II (Senior),Engineering
+031700,Chemical Engineer III (Lead),Engineering
+031750,Chemical Engineering Manager,Engineering
+031900,Civil Engineer I,Engineering
+032000,Civil Engineer II (Senior),Engineering
+031910,Civil Engineer III (Lead),Engineering
+032010,Civil Engineering Manager,Engineering
+032100,Design Engineer I,Engineering
+032200,Design Engineer II (Senior),Engineering
+032250,Design Engineer III (Lead),Engineering
+032300,Design Manager,Engineering
+032400,Electrical Engineer I,Engineering
+032500,Electrical Engineer II (Senior),Engineering
+032600,Electrical Engineer III (Lead),Engineering
+032800,Electrical Engineering Manager,Engineering
+033500,Engineering Director,Engineering
+033600,Engineering Manager,Engineering
+033700,Engineering Supervisor,Engineering
+033800,Engineering Technician,Engineering
+036000,Industrial Engineer I,Engineering
+036200,Industrial Engineer II (Senior),Engineering
+036300,Industrial Engineer III (Lead),Engineering
+036250,Industrial Engineering Manager,Engineering
+037500,Manufacturing Engineer I,Engineering
+037600,Manufacturing Engineer II (Senior),Engineering
+037550,Manufacturing Engineer III (Lead),Engineering
+037650,Manufacturing Engineering Manager,Engineering
+037800,Mechanical Engineer I,Engineering
+038000,Mechanical Engineer II (Senior),Engineering
+038100,Mechanical Engineer III (Lead),Engineering
+038200,Mechanical Engineering Manager,Engineering
+038400,Packaging Engineer,Engineering
+038900,Plant Engineer,Engineering
+046500,Plant Engineering Manager,Engineering
+038600,Process Engineer I,Engineering
+038610,Process Engineer II (Senior),Engineering
+038620,Process Engineer III (Lead),Engineering
+038630,Process Engineering Manager,Engineering
+038640,Product Designer,Engineering
+038660,Product Engineering I,Engineering
+038670,Product Engineer II (Senior),Engineering
+038680,Product Engineer III (Lead),Engineering
+038800,Quality Control Engineer I,Engineering
+038810,Quality Control Engineer II (Senior),Engineering
+038820,Quality Control Engineer III (Lead),Engineering
+039800,Systems Engineer I,Engineering
+039820,Systems Engineer II (Senior),Engineering
+039810,Systems Engineer III (Lead),Engineering
+039830,Systems Engineering Manager,Engineering
+039850,Test Engineer I,Engineering
+039860,Test Engineer II (Senior),Engineering
+039870,Test Engineer III (Lead),Engineering
+039880,Test Engineering Manager,Engineering
+040500,Custodian I,Facilities Maintenance
+040510,Custodian II (Senior),Facilities Maintenance
+040600,Diesel Mechanic,Facilities Maintenance
+040610,Diesel Mechanic II (Senior),Facilities Maintenance
+040620,Diesel Mechanic III (Lead),Facilities Maintenance
+040640,Diesel Mechanic Manager,Facilities Maintenance
+040630,Diesel Mechanic Supervisor,Facilities Maintenance
+040920,Facilities Director,Facilities Maintenance
+040925,Facilities Manager,Facilities Maintenance
+040900,Facilities Planner,Facilities Maintenance
+040930,Facilities Supervisor,Facilities Maintenance
+041010,Floor Finisher,Facilities Maintenance
+041300,Groundskeeper,Facilities Maintenance
+215200,Housekeeper,Facilities Maintenance
+041500,HVAC Mechanic,Facilities Maintenance
+041710,Laborer,Facilities Maintenance
+041350,Landscaper,Facilities Maintenance
+042000,Maintenance Electrician I,Facilities Maintenance
+042200,Maintenance Electrician II (Senior),Facilities Maintenance
+043500,Maintenance Installer/Repairer,Facilities Maintenance
+045500,Maintenance Manager,Facilities Maintenance
+044000,Maintenance Mechanic I,Facilities Maintenance
+044500,Maintenance Mechanic II (Senior),Facilities Maintenance
+044800,Maintenance Mechanic Supervisor,Facilities Maintenance
+045000,Maintenance Supervisor I,Facilities Maintenance
+045300,Maintenance Supervisor II (Senior),Facilities Maintenance
+043000,Maintenance Worker I,Facilities Maintenance
+043010,Maintenance Worker II (Senior),Facilities Maintenance
+046000,Painter I,Facilities Maintenance
+046100,Painter II (Senior),Facilities Maintenance
+046300,Parking Facilities Attendant,Facilities Maintenance
+046350,Parking Facilities Manager,Facilities Maintenance
+047000,Plumber,Facilities Maintenance
+204500,Power Plant Operator,Facilities Maintenance
+227540,Sustainability Coordinator,Facilities Maintenance
+227530,Sustainability Director,Facilities Maintenance
+227550,Sustainability Manager,Facilities Maintenance
+015500,Accountant - Cost I,Finance
+015550,Accountant - Cost II (Senior),Finance
+015700,Accountant - Cost Manager,Finance
+018500,Accountant - Tax,Finance
+010100,Accountant I,Finance
+010500,Accountant II (Senior),Finance
+010600,Accounting Analyst I,Finance
+010610,Accounting Analyst II (Senior),Finance
+010620,Accounting Assistant,Finance
+011000,Accounting Clerk I,Finance
+011500,Accounting Clerk II (Senior),Finance
+012100,Accounting Director,Finance
+012000,Accounting Manager - General,Finance
+010650,Accounting Specialist,Finance
+011700,Accounting Supervisor,Finance
+012200,Accounts Payable/Receivable Clerk,Finance
+012300,Accounts Payable/Receivable Coordinator,Finance
+012800,Accounts Payable/Receivable Manager,Finance
+012600,Accounts Payable/Receivable Supervisor,Finance
+014600,Auditing Director,Finance
+014500,Auditing Manager,Finance
+013500,Auditor I,Finance
+014000,Auditor II (Senior),Finance
+014300,Auditor III (Lead),Finance
+014420,Billing Analyst I,Finance
+014430,Billing Analyst II (Senior),Finance
+014900,Bookkeeper I,Finance
+014920,Bookkeeper II (Senior),Finance
+014940,Bookkeeping Supervisor,Finance
+014700,Budget Analyst,Finance
+014720,Budget Director,Finance
+014800,Budget Manager,Finance
+142400,Collections Manager,Finance
+142250,Collections Supervisor,Finance
+142200,Collector I,Finance
+142300,Collector II (Senior),Finance
+015300,Controller,Finance
+015250,Controller - Assistant,Finance
+143000,Credit Analyst I,Finance
+143100,Credit Analyst II (Senior),Finance
+143150,Credit Analyst Supervisor,Finance
+015750,Economist,Finance
+015900,Finance Director,Finance
+016550,Finance Manager,Finance
+016100,Financial Analysis Director,Finance
+016000,Financial Analyst I,Finance
+016200,Financial Analyst II (Senior),Finance
+016250,Financial Analyst III (Lead),Finance
+016500,Financial Planning Manager,Finance
+016575,Financial Systems Manager,Finance
+017500,Payroll Clerk I,Finance
+017700,Payroll Clerk II (Senior),Finance
+017800,Payroll Coordinator,Finance
+018100,Payroll Manager,Finance
+018000,Payroll Supervisor,Finance
+167830,Risk Management Coordinator,Finance
+167810,Risk Management Director,Finance
+167820,Risk Management Specialist,Finance
+167840,Risk Management Supervisor,Finance
+167860,Risk Manager,Finance
+133700,Allocations Director,Materials Management
+133800,Allocations Manager,Materials Management
+133900,Allocator I,Materials Management
+133950,Allocator II (Senior),Materials Management
+100010,Buyer - Assistant,Materials Management
+100050,Buyer - Associate,Materials Management
+100100,Buyer I,Materials Management
+100300,Buyer II (Senior),Materials Management
+101500,Courier/Driver,Materials Management
+101510,Courier/Driver - Non CDL,Materials Management
+101000,Dispatcher,Materials Management
+101800,Driver - Delivery,Materials Management
+181100,Driver - Over the Road/Heavy,Materials Management
+181200,Driver - Route Delivery,Materials Management
+181300,Driver - Within 100 Miles,Materials Management
+101100,e-Commerce Analyst,Materials Management
+101200,e-Commerce Director,Materials Management
+101600,Fleet Coordinator,Materials Management
+101750,Fleet Director,Materials Management
+101700,Fleet Manager,Materials Management
+102000,Inventory & Production Control Manager,Materials Management
+102200,Inventory Clerk,Materials Management
+102500,Inventory Control Analyst,Materials Management
+134100,Loss Prevention Director,Materials Management
+134200,Loss Prevention Investigator,Materials Management
+134000,Loss Prevention Manager,Materials Management
+134300,Loss Prevention Representative,Materials Management
+134500,Loss Prevention Specialist,Materials Management
+104000,Materials Management Director,Materials Management
+104010,Materials Management Manager,Materials Management
+104005,Materials Management Supervisor,Materials Management
+135000,Merchandiser,Materials Management
+136040,Pricing Analyst,Materials Management
+104040,Procurement Director,Materials Management
+104500,Purchasing Clerk,Materials Management
+104600,Purchasing Director,Materials Management
+105000,Purchasing Manager,Materials Management
+177900,Quality Generalist Manager,Materials Management
+105500,Scheduling Manager,Materials Management
+138000,Stock Clerk,Materials Management
+138500,Stock Manager,Materials Management
+138600,Stockroom Supervisor,Materials Management
+107000,Traffic Manager,Materials Management
+,Planning Engineer,Project Control
+,Cost Control Engineer,Project Control
