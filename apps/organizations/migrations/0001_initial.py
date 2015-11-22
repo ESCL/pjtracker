@@ -8,19 +8,19 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('work', '__first__'),
         ('accounts', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Company',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=8)),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'verbose_name_plural': 'companies',
@@ -29,9 +29,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Position',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('name', models.CharField(max_length=128)),
-                ('code', models.CharField(max_length=3, null=True)),
+                ('code', models.CharField(null=True, max_length=3)),
             ],
             options={
                 'abstract': False,
@@ -40,9 +40,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PositionLabourType',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('labour_type', models.ForeignKey(to='work.LabourType')),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
                 ('position', models.ForeignKey(to='organizations.Position')),
             ],
             options={
@@ -52,14 +52,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Team',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
                 ('name', models.CharField(max_length=128)),
-                ('code', models.CharField(unique=True, max_length=16)),
+                ('code', models.CharField(max_length=16)),
                 ('activities', models.ManyToManyField(to='work.Activity', blank=True)),
                 ('company', models.ForeignKey(to='organizations.Company')),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
-                ('supervisors', models.ManyToManyField(to=settings.AUTH_USER_MODEL, related_name='supervised_teams', blank=True)),
-                ('timekeepers', models.ManyToManyField(to=settings.AUTH_USER_MODEL, related_name='timekept_teams', blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
+                ('supervisors', models.ManyToManyField(related_name='supervised_teams', blank=True, to=settings.AUTH_USER_MODEL)),
+                ('timekeepers', models.ManyToManyField(related_name='timekept_teams', blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,
@@ -73,6 +73,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='position',
             name='owner',
-            field=models.ForeignKey(to='accounts.Account', null=True, blank=True),
+            field=models.ForeignKey(null=True, to='accounts.Account', blank=True),
         ),
     ]

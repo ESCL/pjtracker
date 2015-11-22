@@ -27,7 +27,6 @@ class Team(OwnedEntity):
     )
     code = models.CharField(
         max_length=16,
-        unique=True
     )
     company = models.ForeignKey(
         'organizations.Company'

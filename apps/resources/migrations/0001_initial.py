@@ -7,8 +7,8 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
         ('organizations', '0001_initial'),
+        ('accounts', '0001_initial'),
         ('work', '__first__'),
     ]
 
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('equipment_type', models.ForeignKey(to='resources.EquipmentType')),
                 ('labour_type', models.ForeignKey(to='work.LabourType')),
-                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,
@@ -97,10 +97,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Employee',
             fields=[
-                ('resource_ptr', models.OneToOneField(parent_link=True, to='resources.Resource', primary_key=True, serialize=False, auto_created=True)),
+                ('resource_ptr', models.OneToOneField(parent_link=True, auto_created=True, to='resources.Resource', primary_key=True, serialize=False)),
                 ('first_name', models.CharField(max_length=64)),
                 ('last_name', models.CharField(max_length=64)),
-                ('gender', models.CharField(choices=[('F', 'Female'), ('M', 'Male')], max_length=1)),
+                ('gender', models.CharField(max_length=1, choices=[('F', 'Female'), ('M', 'Male')])),
                 ('position', models.ForeignKey(to='organizations.Position')),
             ],
             options={
@@ -111,8 +111,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Equipment',
             fields=[
-                ('resource_ptr', models.OneToOneField(parent_link=True, to='resources.Resource', primary_key=True, serialize=False, auto_created=True)),
-                ('model', models.CharField(help_text='Manufacturer brand and model.', max_length=128)),
+                ('resource_ptr', models.OneToOneField(parent_link=True, auto_created=True, to='resources.Resource', primary_key=True, serialize=False)),
+                ('model', models.CharField(max_length=128, help_text='Manufacturer brand and model.')),
                 ('year', models.PositiveIntegerField(help_text='Year of manufacture.')),
             ],
             options={
@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='owner',
-            field=models.ForeignKey(null=True, to='accounts.Account', blank=True),
+            field=models.ForeignKey(blank=True, null=True, to='accounts.Account'),
         ),
         migrations.AddField(
             model_name='resource',
@@ -143,17 +143,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='equipmenttype',
             name='labour_types',
-            field=models.ManyToManyField(to='work.LabourType', through='resources.EquipmentTypeLabourType'),
+            field=models.ManyToManyField(through='resources.EquipmentTypeLabourType', to='work.LabourType'),
         ),
         migrations.AddField(
             model_name='equipmenttype',
             name='owner',
-            field=models.ForeignKey(null=True, to='accounts.Account', blank=True),
+            field=models.ForeignKey(blank=True, null=True, to='accounts.Account'),
         ),
         migrations.AddField(
             model_name='equipmenttype',
             name='parent',
-            field=models.ForeignKey(null=True, to='resources.EquipmentType', related_name='subtypes'),
+            field=models.ForeignKey(related_name='subtypes', null=True, to='resources.EquipmentType'),
         ),
         migrations.AddField(
             model_name='positionhistory',

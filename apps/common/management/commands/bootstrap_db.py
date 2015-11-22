@@ -17,11 +17,17 @@ class Command(BaseCommand):
         # Set up default global objects
         call_command('create_default_groups')
         call_command('create_default_labour_types')
+        call_command('create_default_activity_groups')
         call_command('create_default_positions')
         call_command('create_default_equipment_types')
-        call_command('create_default_activity_groups')
 
-        if settings.BOOTSTRAP_EXAMPLE:
+        # Create example account if required
+        if settings.BOOTSTRAP_EXAMPLE_ACCOUNT:
+            call_command('create_example_account')
+
+        # Create example data if required
+        if settings.BOOTSTRAP_EXAMPLE_DATA:
             call_command('create_example_data')
 
         print("Done.")
+
