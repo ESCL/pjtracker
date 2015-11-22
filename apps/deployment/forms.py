@@ -43,19 +43,20 @@ class TimeSheetSearchForm(ModernForm):
 
 class TimeSheetActionForm(forms.Form):
 
+    # Action choices are empty, they are defined on form init
     action = forms.ChoiceField()
     feedback = forms.CharField(widget=forms.Textarea, required=False)
 
     def __init__(self, *args, **kwargs):
+        # Pop user/ts first to avoid superclass errors
+        self.user = kwargs.pop('user', None)
+        self.timesheet = kwargs.pop('instance', None)
+
+        # Now init form to create all fields
         super(TimeSheetActionForm, self).__init__(*args, **kwargs)
 
         # Add choices to actions based on current status
-        instance = kwargs.get('instance')
-        self.fields['action'].choices = instance.allowed_actions
-
-        # Store user and timesheet for future ref
-        self.timesheet = instance
-        self.user = kwargs.get('user')
+        self.fields['action'].choices = self.timesheet.allowed_actions
 
     def clean(self):
         cleaned_data = super(TimeSheetActionForm, self).clean()
@@ -64,12 +65,19 @@ class TimeSheetActionForm(forms.Form):
         action = cleaned_data.get('action')
         feedback = cleaned_data.get('feedback')
         if action == 'reject' and not feedback:
-            raise forms.ValidationError("Feedback is required for rejections to "
-                                        "help timekeepers correct any mistakes.")
+            cleaned_data.pop('feedback', None)
+
+            # Add the error to feedback field specifically
+            self.add_error(
+                'feedback',
+                forms.ValidationError("Feedback is required for rejections to "
+                                      "help timekeepers correct any mistakes.")
+            )
 
         return cleaned_data
 
     def save(self):
+        # Determine method and execute it
         action = self.cleaned_data.get('action')
         method = getattr(self.timesheet, action)
         method(self.user)

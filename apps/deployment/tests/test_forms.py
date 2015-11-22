@@ -6,7 +6,7 @@ from django.test import TestCase
 from ...accounts.factories import UserFactory
 from ...accounts.utils import create_permissions
 from ...organizations.factories import TeamFactory
-from ..forms import TimeSheetForm
+from ..forms import TimeSheetForm, TimeSheetActionForm
 from ..models import TimeSheet
 
 
@@ -15,7 +15,7 @@ class TimeSheetFormTest(TestCase):
     def setUp(self):
         super(TimeSheetFormTest, self).setUp()
 
-        # Setup teama and create timesheet
+        # Setup user and team
         self.user = UserFactory.create()
         self.user.user_permissions.add(*create_permissions(TimeSheet, ['create']))
         self.team = TeamFactory.create(owner=self.user.owner)
@@ -39,3 +39,39 @@ class TimeSheetFormTest(TestCase):
         self.assertTrue(form.is_valid())
         form.save()
         self.assertTrue(TimeSheet.objects.filter(team=self.team, date=tomorrow).exists())
+
+
+class TimeSheetActionFormTest(TestCase):
+
+    def setUp(self):
+        super(TimeSheetActionFormTest, self).setUp()
+
+        # Setup user and team and create timesheet
+        self.user = UserFactory.create()
+        self.user.user_permissions.add(*create_permissions(TimeSheet, ['issue']))
+        self.team = TeamFactory.create(owner=self.user.owner)
+        self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
+
+    def test_clean(self):
+        # Init form for render, make sure it does not break (issue #91)
+        form = TimeSheetActionForm(instance=self.ts, user=self.user)
+        self.assertEqual(form.user, self.user)
+
+        # Now post issue, should be ok
+        form = TimeSheetActionForm({'action': 'issue', 'feedback': ''}, instance=self.ts, user=self.user)
+        self.assertTrue(form.is_valid())
+
+        # Simulate issuance to allow testing rejection
+        TimeSheet.objects.filter(pk=self.ts.id).update(status=TimeSheet.STATUS_ISSUED)
+        self.ts = TimeSheet.objects.get(pk=self.ts.id)
+
+        # Now post rejection w/o feedback, error
+        form = TimeSheetActionForm({'action': 'reject', 'feedback': ''}, instance=self.ts, user=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertFalse('feedback' in form.cleaned_data)
+        self.assertTrue('feedback' in form.errors)
+
+        # Now post rejection with feedback, ok
+        form = TimeSheetActionForm({'action': 'reject', 'feedback': 'bullshit, they were on stike!'},
+                                   instance=self.ts, user=self.user)
+        self.assertTrue(form.is_valid())
