@@ -1,8 +1,12 @@
-{% if sub_form.errors %}
+{% if sub_form.errors or sub_form.alerts %}
 <div class="error-list">
     <ul class="errorlist">
     {% for error in sub_form.non_field_errors %}
         <li>{{ error }}</li>
+    {% endfor %}
+
+    {% for alert in sub_form.alerts %}
+        <li>{{ alert }}</li>
     {% endfor %}
     </ul>
 </div>

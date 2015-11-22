@@ -89,28 +89,51 @@ class WorkLogsForm(forms.Form):
         super(WorkLogsForm, self).__init__(post_data)
         self.timesheet = instance
         self.rows = []
+        self.alerts = []
         self.user = user
 
+        # Sanity checks
+        lts_matched = False
+        has_acts = bool(self.timesheet.activities)
+        has_res = bool(self.timesheet.resources)
+
+        # Main processing
         for pk, resource in self.timesheet.resources.items():
             logs = []
             for activity in self.timesheet.activities.values():
                 # Get log (existing or new)
                 log = self._get_log_for(resource, activity)
 
-                # Append to row and to form
+                # Generate field
                 name = '{}.{}'.format(pk, activity.id)
                 self.fields[name] = forms.DecimalField(
                     initial=log.hours, required=False, max_value=12,
                 )
+
+                # Make sure lts match, otherwise disable it
                 res_lt = resource.get_labour_types_for(self.user)
                 act_lt = activity.labour_types.all()
                 if not set(res_lt).intersection(act_lt):
                     self.fields[name].widget.attrs.update({'disabled': 'disabled',
                                                            'readonly': True})
+                elif not lts_matched:
+                    lts_matched = True
+
+                # Attach to log and form
                 log.field = self[name]
                 logs.append(log)
 
             self.rows.append({'resource': resource, 'logs': logs})
+
+        # Append alerts if we have any problems
+        if not has_res:
+            self.alerts.append('This team has no resources assigned.')
+        if not has_acts:
+            self.alerts.append('This team has no activities assigned.')
+
+        if has_acts and has_res and not lts_matched:
+            self.alerts.append('Labour types for activities and resources '
+                               'assigned to this team do not match.')
 
     def _get_log_for(self, resource, activity):
         return self.timesheet.work_logs_data.get(resource, {}).get(
