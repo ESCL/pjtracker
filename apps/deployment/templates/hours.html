@@ -24,9 +24,10 @@
 <form method="GET" class="row search-form">
 
     {{ search_form.page_size }}
+    {{ search_form.status }}
     {{ search_form.from_date }}
     {{ search_form.to_date }}
-    {{ search_form.status }}
+    {{ search_form.resource_type }}
     <button type="submit">Re-fresh</button>
     <br>
     <div class="radio-group">

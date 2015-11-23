@@ -8,6 +8,9 @@ from ..common.db.query import OwnedEntityQuerySet, ValuesGroupMixin
 class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
 
     def _filter_for_querystring(self, querystring):
+        """
+        Apply a bunch of filters according to the passed querystring.
+        """
         filters = {}
         ts_model = self.model.timesheet.field.rel.to
 
@@ -26,9 +29,18 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
         if date_end:
             filters['timesheet__date__lte'] = datetime.strptime(date_end, '%Y-%m-%d').date()
 
+        # Add resource type filter if required
+        res_type = querystring.get('resource_type')
+        if res_type:
+            filters['resource__resource_type'] = res_type
+
+        # Apply all filters and return
         return self.filter(**filters)
 
     def _group_for_querystring(self, querystring):
+        """
+        Apply a bunch of group_bys according to the passed querystring.
+        """
         groups = set()
         group_by = querystring.getlist('group_by')
 
@@ -47,4 +59,5 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
             groups.update({'resource__id', 'resource__identifier',
                            'resource__resource_type'})
 
+        # Return grouped queryset (a ValuesGroupQuerySet)
         return self.values(*groups)
