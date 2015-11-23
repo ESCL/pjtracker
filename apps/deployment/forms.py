@@ -154,7 +154,8 @@ class WorkLogsForm(forms.Form):
 
         for resource, activity, value in self._iter_fields_values(cleaned_data):
             if value:
-                # Check that labour types match
+                # Check that labour types match (this should not really be
+                # necessary since we disable the inputs, but some people use IE)
                 res_lt = resource.get_labour_types_for(self.user)
                 act_lt = activity.labour_types.all()
                 if not set(res_lt).intersection(act_lt):
@@ -181,7 +182,7 @@ class WorkLogsForm(forms.Form):
                 # Some hours set, process the log
                 log.hours = value
 
-                # Use the first allowed labour type (we'll fix that later)
+                # Use the first allowed labour type
                 # TODO: Allow setting labour type in timesheet
                 res_lt = resource.get_labour_types_for(self.user)
                 act_lt = activity.labour_types.all()
@@ -197,15 +198,25 @@ class WorkLogsForm(forms.Form):
 
 
 class HoursSearchForm(ModernForm):
+    # Filters
     from_date = forms.DateField(label='From date', required=False)
     to_date = forms.DateField(label='To date', required=False)
     status = forms.ChoiceField(
         label='Time-sheet status', required=False,
-        choices=((None, 'All'),
+        choices=((None, 'All time-sheets'),
                  ('approved', 'Approved'),
                  ('issued', 'Issued')),
         initial=None
     )
+    resource_type = forms.ChoiceField(
+        label='Resource type', required=False,
+        choices=((None, 'All resources'),
+                 ('employee', 'Employees'),
+                 ('equipment', 'Equipment')),
+        initial=None
+    )
+
+    # Group by options
     group_by = forms.ChoiceField(
         label='Grouping options',
         widget=forms.CheckboxSelectMultiple,
