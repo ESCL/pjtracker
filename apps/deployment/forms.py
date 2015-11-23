@@ -10,15 +10,21 @@ class TimeSheetForm(OwnedEntityForm):
 
     class Meta:
         model = TimeSheet
-        fields = ('team', 'date',)
+        fields = ('team', 'date', 'comments',)
+
+    comments = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super(TimeSheetForm, self).__init__(*args, **kwargs)
 
         # Remove team field for existing timesheets (resources depend on this so
         # we can't have people changing it)
-        if kwargs.get('instance'):
-            self.fields.pop('team')
+        if self.instance.id:
+            self.fields.pop('team', None)
+            print('removed team')
+        else:
+            print('removed comments')
+            self.fields.pop('comments', None)
 
     def clean(self):
         cleaned_data = super(TimeSheetForm, self).clean()

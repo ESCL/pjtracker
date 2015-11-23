@@ -1,11 +1,21 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'employees' %}">employees</a></li>
-<li><span>{{ employee }}</span></li>
+<li><span>{{ employee.identifier }}</span></li>
 <li><a href="{% url 'employee' pk=employee.id action='edit'%}">edit</a></li>
 
 {% endblock %}
@@ -14,26 +24,24 @@
 {% block body %}
 
 <div class="row">
-    <div class="six columns">
-        <h4>Personal</h4>
-        <dl>
-            <dt>Identifier</dt><dd>{{ employee.identifier }}</dd>
-            <dt>Name</dt><dd>{{ employee.full_name }}</dd>
-            <dt>Passport</dt><dd>{{ employee.passport|default:'N/A' }}</dd>
-            <dt>Birth Date</dt><dd>{{ employee.birth_date|default:'N/A' }}</dd>
-            <dt>Home Address</dt><dd>{{ employee.home_address|default:'N/A' }}</dd>
-        </dl>
-    </div>
+    <h4>Personal Information</h4>
+    <dl>
+        <dt>Identifier</dt><dd>{{ employee.identifier }}</dd>
+        <dt>Name</dt><dd>{{ employee.full_name }}</dd>
+        <dt>Gender</dt><dd>{{ employee.get_gender_display }}</dd>
+    </dl>
+</div>
 
-    <div class="six columns">
-        <h4>Assignment</h4>
-        <dl>
-            <dt>Company</dt><dd>{{ employee.company }}</dd>
-            <dt>Team</dt><dd>{{ employee.team }}</dd>
-            <dt>Position</dt><dd>{{ employee.position }}</dd>
-            <dt>Project</dt><dd>{{ employee.project }}</dd>
-        </dl>
-    </div>
+<hr>
+
+<div class="row">
+    <h4>Assignment</h4>
+    <dl>
+        <dt>Company</dt><dd>{{ employee.company }}</dd>
+        <dt>Team</dt><dd>{{ employee.team|default:'-' }}</dd>
+        <dt>Position</dt><dd>{{ employee.position.name }}</dd>
+        <dt>Project</dt><dd>{{ employee.project }}</dd>
+    </dl>
 </div>
 
 {% endblock %}

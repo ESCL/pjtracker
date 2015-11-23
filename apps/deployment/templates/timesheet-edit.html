@@ -28,13 +28,19 @@
 {% block body %}
 
 <form method="POST">
+    <div class="row">
+        <h4>{{ timesheet.team }} <small>time-sheet</small></h4>
+        {% csrf_token %}
+        {{ main_form }}
+    </div>
 
-    {% csrf_token %}
-
-    {{ main_form }}
+    <hr>
 
     {% if sub_form %}
+    <div class="row">
+        <h5>Work</h5>
         {% include 'worklogs-form.html' %}
+    </div>
     {% endif %}
 
     <div class="buttons">

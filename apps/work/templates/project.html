@@ -1,11 +1,21 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'projects' %}">projects</a></li>
-<li><span>{{ project }}</span></li>
+<li><span>{{ project.code }}</span></li>
 <li><a href="{% url 'project' pk=project.id action='edit' %}">edit</a></li>
 
 {% endblock %}
@@ -14,10 +24,21 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main</h4>
+    <h4>Main Information</h4>
     <dl>
         <dt>Code</dt><dd>{{ project.code }}</dd>
         <dt>Name</dt><dd>{{ project.name}}</dd>
+    </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Statistics</h5>
+    <dl>
+        <dt>Employees</dt><dd>{{ project.employees_count }}</dd>
+        <dt>Equipment</dt><dd>{{ project.equipment_count }}</dd>
+        <dt>Activities</dt><dd>{{ project.activity_set.count }}</dd>
     </dl>
 </div>
 

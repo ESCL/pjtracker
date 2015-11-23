@@ -1,6 +1,15 @@
 {% extends 'apps/base.html' %}
 
 {% load tags %}
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
 
 
 {% block breadcrumbs %}
@@ -26,6 +35,8 @@
                 {% get position 'labour_types_for' request.user as labour_types %}
                 {% for lt in labour_types %}
                     <li>{{ lt }}</li>
+                {% empty %}
+                    -
                 {% endfor %}
             </ul>
         </dd>

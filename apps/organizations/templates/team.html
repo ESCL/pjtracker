@@ -1,5 +1,16 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
 
 {% block breadcrumbs %}
 
@@ -14,76 +25,78 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main</h4>
+    <h4>Main Information</h4>
     <dl>
         <dt>Code</dt><dd>{{ team.code }}</dd>
         <dt>Name</dt><dd>{{ team.name }}</dd>
         <dt>Company</dt><dd>{{ team.company }}</dd>
-        <dt>Supervisor</dt><dd>{{ team.supervisor }}</dd>
     </dl>
 </div>
 
-<div class="row">
-    <div class="seven columns">
-        <h5>Employees</h5>
-        <table>
-            <thead>
-                <tr>
-                    <th>Identifier</th>
-                    <th>Name</th>
-                    <th>Position</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for e in team.employees %}
-                    <tr>
-                        <td>{{ e.identifier }}</td>
-                        <td>{{ e.employee.full_name }}</td>
-                        <td>{{ e.employee.position }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="five columns">
-        <h5>Equipment</h5>
-        <table>
-            <thead>
-                <tr>
-                    <th>Identifier</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for e in team.equipment %}
-                    <tr>
-                        <td>{{ e.identifier }}</td>
-                        <td>{{ e.equipment.type }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+<hr>
 
 <div class="row">
-    <h5>Activities</h5>
-    <table>
-        <thead>
-            <tr>
-                <th>WBS Code</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for a in team.activities.all %}
-                <tr>
-                    <td>{{ a.wbs_code }}</td>
-                    <td>{{ a.name }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h5>Management</h5>
+    <dl>
+        <dt>Timekeepers</dt>
+        <dd>
+            <ul>
+                {% for tk in team.timekeepers.all %}
+                    <li>{{ tk }}</li>
+                {% empty %}
+                    <li>-</li>
+                {% endfor %}
+            </ul>
+        </dd>
+        <dt>Reviewers</dt>
+        <dd>
+            <ul>
+                {% for s in team.supervisors.all %}
+                    <li>{{ s }}</li>
+                {% empty %}
+                    <li>-</li>
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Assignments</h5>
+    <dl>
+        <dt>Employees</dt>
+        <dd>
+            <ul>
+                {% for e in team.employees %}
+                    <li>{{ e }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+        <dt>Equipment</dt>
+        <dd>
+            <ul>
+                {% for e in team.equipment %}
+                    <li>{{ e }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+        <dt>Activities</dt>
+        <dd>
+            <ul>
+                {% for e in team.activities.all %}
+                    <li>{{ e }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
 </div>
 
 {% endblock %}

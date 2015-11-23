@@ -1,36 +1,27 @@
-<div class="row">
-
-    {% if timesheet.work_logs_data %}
-
-        <h4>Work Logs</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Resource</th>
-                    <th colspan="2">Activity</th>
-                    <th>Labour</th>
-                    <th>Hours</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for resource, activities in timesheet.work_logs_data.items %}
-                    {% for activity, log in activities.items %}
-                        <tr>
-                            <td>{{ resource }}</td>
-                            <td>{{ activity.wbs_code }}</td>
-                            <td>{{ activity.name }}</td>
-                            <td>{{ log.labour_type }}</td>
-                            <td>{{ log.hours }}</td>
-                        </tr>
-                    {% endfor %}
+{% if timesheet.work_logs_data %}
+    <table>
+        <thead>
+            <tr>
+                <th>Resource</th>
+                <th colspan="2">Activity</th>
+                <th>Labour</th>
+                <th>Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resource, activities in timesheet.work_logs_data.items %}
+                {% for activity, log in activities.items %}
+                    <tr>
+                        <td>{{ resource }}</td>
+                        <td>{{ activity.wbs_code }}</td>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ log.labour_type }}</td>
+                        <td>{{ log.hours }}</td>
+                    </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-
-    {% else %}
-
-        <p>No activities performed for the given date.</p>
-
-    {% endif %}
-
-</div>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No activities performed for the given date.</p>
+{% endif %}
