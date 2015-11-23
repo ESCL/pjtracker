@@ -8,7 +8,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'projects' %}">projects</a></li>
 {% if project %}
-    <li><a href="{% url 'project' pk=project.id %}">{{ project }}</a></li>
+    <li><a href="{% url 'project' pk=project.id %}">{{ project.code }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>

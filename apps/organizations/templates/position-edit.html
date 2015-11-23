@@ -1,5 +1,7 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
 
 {% block breadcrumbs %}
 
@@ -28,5 +30,20 @@
     </div>
 
 </form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="{% static 'js/filter-multi-select.js' %}"></script>
+    <script>
+        (function() {
+            // Use FilterMultiSelect to turn multi-select into something usable
+            var labourTypes = document.querySelector('#id_main-pos_labour_types');
+            var labourTypesSelect = new FilterMultiSelect(labourTypes);
+            labourTypesSelect.start();
+        })();
+    </script>
 
 {% endblock %}

@@ -211,15 +211,13 @@ class HoursSearchForm(ModernForm):
         label='Time-sheet status', required=False,
         choices=((None, 'All time-sheets'),
                  ('approved', 'Approved'),
-                 ('issued', 'Issued')),
-        initial=None
+                 ('issued', 'Issued'))
     )
     resource_type = forms.ChoiceField(
         label='Resource type', required=False,
         choices=((None, 'All resources'),
                  ('employee', 'Employees'),
-                 ('equipment', 'Equipment')),
-        initial=None
+                 ('equipment', 'Equipment'))
     )
 
     # Group by options
@@ -229,6 +227,6 @@ class HoursSearchForm(ModernForm):
         choices=(('project', 'Project'),
                  ('activity', 'Activity'),
                  ('labour_type', 'Labour type'),
-                 ('resource', 'Resource')),
-        initial=['project']
+                 ('resource', 'Resource'),
+                 ('date', 'Date'))
     )

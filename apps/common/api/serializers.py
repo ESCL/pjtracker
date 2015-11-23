@@ -34,3 +34,4 @@ class JsonCsvSerializer(Serializer):
         for item in csv.DictReader(raw_data):
             data.append(item)
         return data
+

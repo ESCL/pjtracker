@@ -6,7 +6,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'employees' %}">employees</a></li>
 {% if employee %}
-    <li><a href="{% url 'employee' pk=employee.id %}">{{ employee }}</a></li>
+    <li><a href="{% url 'employee' pk=employee.id %}">{{ employee.identifier }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>

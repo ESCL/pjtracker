@@ -58,6 +58,8 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
         if 'resource' in group_by:
             groups.update({'resource__id', 'resource__identifier',
                            'resource__resource_type'})
+        if 'date' in group_by:
+            groups.update({'timesheet__date'})
 
         # Return grouped queryset (a ValuesGroupQuerySet)
         return self.values(*groups)

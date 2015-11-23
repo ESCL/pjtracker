@@ -16,7 +16,7 @@ class HoursResource(OwnedResource):
         queryset = WorkLog.objects.all()
         fields = ('project_code', 'activity_code', 'activity_name',
                   'labour_type_code', 'labour_type_name',
-                  'resource_identifier', 'hours',)
+                  'resource_identifier', 'date', 'hours',)
         resource_name = 'hours'
         include_resource_uri = False
         serializer = JsonCsvSerializer(formats=('json', 'csv',))
@@ -29,6 +29,7 @@ class HoursResource(OwnedResource):
     labour_type_name = fields.CharField(attribute='labour_type__name', null=True)
     resource_identifier = fields.CharField(attribute='resource__identifier', null=True)
     resource_description = fields.CharField(attribute='resource__description', null=True)
+    date = fields.CharField(attribute='timesheet__date', null=True)
     hours = fields.DecimalField(readonly=True, attribute='total_hours')
 
     def apply_filters(self, request, applicable_filters):

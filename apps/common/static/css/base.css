@@ -144,6 +144,10 @@ select[multiple] {
     height: 10em;
 }
 
+form .helptext {
+    display: none;
+}
+
 /* FilterMultiSelect widget button */
 .multiselect-button {
     margin-top: 10em;

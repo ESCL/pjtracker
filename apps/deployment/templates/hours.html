@@ -34,8 +34,7 @@
         <label>Group by</label>
         {{ search_form.group_by }}
     </div>
-    <a class="button" href="/deployment/api/v0/hours/?{{ qs }}&format=csv">Download</a>
-    <br>
+    <a class="button" href="/work/api/v0/hours/?{{ qs }}&format=csv">Download</a>
 
 </form>
 
@@ -57,6 +56,9 @@
                 {%  if 'resource' in groups %}
                     <th>Resource</th>
                 {% endif %}
+            {%  if 'date' in groups %}
+                    <th>Date</th>
+                {% endif %}
                 <th>Hours</th>
             </tr>
         </thead>
@@ -72,8 +74,11 @@
                     {% if 'labour_type' in groups %}
                         <td>{{ wl.labour_type }}</td>
                     {% endif %}
-                    {%  if 'resource' in groups %}
+                    {% if 'resource' in groups %}
                         <td>{{ wl.resource.instance }}</td>
+                    {% endif %}
+                    {% if 'date' in groups %}
+                        <td>{{ wl.timesheet.date }}</td>
                     {% endif %}
                     <td>{{ wl.total_hours }}</td>
                 </tr>
