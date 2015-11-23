@@ -55,28 +55,28 @@
     (function() {
         generateGraph({
             title: 'Resources by project', type: 'column',
-            url: '/work/api/v0/projects/?format=json',
+            url: '/wbs/api/v0/projects/?format=json',
             labelField: 'code',
             dataFields: [{label: 'Employees', value: 'employees'}, {label: 'Equipment', value: 'equipment'}],
             animate: true
         });
         generateGraph({
             title: 'Hours by project', type: 'column',
-            url: '/deployment/api/v0/hours/?format=json&group_by=project&status=approved&order_by=-hours&limit=10',
+            url: '/work/api/v0/hours/?format=json&group_by=project&status=approved&order_by=-hours&limit=10',
             labelField: 'project_code',
             dataFields:[{legend: null, value: 'hours'}],
             animate: true
         });
         generateGraph({
             title: 'Hours by labour type', type: 'pie',
-            url: '/deployment/api/v0/hours/?format=json&group_by=labour_type&status=approved&order_by=-hours&limit=10',
+            url: '/work/api/v0/hours/?format=json&group_by=labour_type&status=approved&order_by=-hours&limit=10',
             labelField: 'labour_type_name',
             dataFields: [{legend: null, value: 'hours'}],
             animate: true
         });
         generateGraph({
             title: 'Top activities by hours', type: 'bar',
-            url: '/deployment/api/v0/hours/?format=json&group_by=activity&status=approved&order_by=-hours&limit=10',
+            url: '/work/api/v0/hours/?format=json&group_by=activity&status=approved&order_by=-hours&limit=10',
             labelField: 'activity_code', order: -1,
             dataFields: [{legend: null, value: 'hours'}],
             animate: true
