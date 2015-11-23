@@ -1,0 +1,16 @@
+<dl>
+    <dt>Team</dt><dd>{{ timesheet.team }}</dd>
+    <dt>Date</dt><dd>{{ timesheet.date }}</dd>
+    <dt>Status</dt><dd>{{ timesheet.get_status_display }}</dd>
+    <dt>Workflow</dt>
+    <dd>
+        <ul>
+            {% for ta in timesheet.actions.all %}
+                <li><b>{{ ta.get_action_display|title }}</b> by {{ ta.actor }} on {{ ta.timestamp }}</li>
+            {% empty %}
+                -
+            {% endfor %}
+        </ul>
+    </dd>
+    <dt>Comments</dt><dd>{{ timesheet.comments|default:'-'}}</dd>
+</dl>

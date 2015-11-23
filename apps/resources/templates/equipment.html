@@ -1,10 +1,21 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'equipments' %}">equipment</a></li>
-<li><span>{{ equipment }}</span></li>
+<li><span>{{ equipment.identifier }}</span></li>
 <li><a href="{% url 'equipment' pk=equipment.id action='edit' %}">edit</a></li>
 
 {% endblock %}
@@ -13,28 +24,28 @@
 {% block body %}
 
 <div class="row">
-    <div class="six columns">
-        <h4>Details</h4>
-        <dl>
-            <dt>Identifier</dt><dd>{{ equipment.identifier }}</dd>
-            {% if equipment.type.parent %}
-                <dt>Type</dt><dd>{{ equipment.type.parent}} > {{ equipment.type }}</dd>
-            {% else %}
-                <dt>Type</dt><dd>{{ equipment.type }}</dd>
-            {% endif %}
-            <dt>Model</dt><dd>{{ equipment.model }}</dd>
-            <dt>Year</dt><dd>{{ equipment.year }}</dd>
-        </dl>
-    </div>
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Identifier</dt><dd>{{ equipment.identifier }}</dd>
+        {% if equipment.type.parent %}
+            <dt>Type</dt><dd>{{ equipment.type.parent}} > {{ equipment.type }}</dd>
+        {% else %}
+            <dt>Type</dt><dd>{{ equipment.type }}</dd>
+        {% endif %}
+        <dt>Model</dt><dd>{{ equipment.model }}</dd>
+        <dt>Year</dt><dd>{{ equipment.year }}</dd>
+    </dl>
+</div>
 
-    <div class="six columns">
-        <h4>Assignment</h4>
-        <dl>
-            <dt>Company</dt><dd>{{ equipment.company }}</dd>
-            <dt>Team</dt><dd>{{ equipment.team }}</dd>
-            <dt>Project</dt><dd>{{ equipment.project }}</dd>
-        </dl>
-    </div>
+<hr>
+
+<div class="row">
+    <h5>Assignment</h5>
+    <dl>
+        <dt>Company</dt><dd>{{ equipment.company }}</dd>
+        <dt>Team</dt><dd>{{ equipment.team|default:'-' }}</dd>
+        <dt>Project</dt><dd>{{ equipment.project }}</dd>
+    </dl>
 </div>
 
 {% endblock %}

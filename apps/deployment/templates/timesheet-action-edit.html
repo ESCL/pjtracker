@@ -1,5 +1,16 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super}}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
 
 {% block breadcrumbs %}
 
@@ -13,14 +24,24 @@
 
 {% block body %}
 
-{% include 'worklogs-table.html' %}
+<div class="row">
+    <h4>Main Information</h4>
+    {% include 'timesheet-info.html' %}
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Work</h5>
+    {% include 'worklogs-table.html' %}
+</div>
+
+<hr>
 
 <form method="POST">
-
+    <h5>Review</h5>
     {% csrf_token %}
-
     {{ main_form }}
-
     <div class="buttons">
         <button type="submit" class="button-primary">Confirm</button>
     </div>

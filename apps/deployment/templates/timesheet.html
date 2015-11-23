@@ -6,7 +6,7 @@
 {% block styles %}
 
     {{ block.super}}
-    <link rel="stylesheet" href="{% static 'css/timesheets.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
 
 {% endblock %}
 
@@ -24,14 +24,15 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main</h4>
-    <dl>
-        <dt>Team</dt><dd>{{ timesheet.team }}</dd>
-        <dt>Date</dt><dd>{{ timesheet.date }}</dd>
-        <dt>Status</dt><dd>{{ timesheet.get_status_display }}</dd>
-    </dl>
+    <h4>Main Information</h4>
+    {% include 'timesheet-info.html' %}
 </div>
 
-{% include 'worklogs-table.html' %}
+<hr>
+
+<div class="row">
+    <h5>Work</h5>
+    {% include 'worklogs-table.html' %}
+</div>
 
 {% endblock %}

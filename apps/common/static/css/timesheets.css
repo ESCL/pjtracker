@@ -5,6 +5,10 @@
     display: inline-table;
 }
 
+.timesheet-header {
+    margin-bottom: 1em;
+}
+
 .timesheet-header .activity {
     text-align: center;
     line-height: 1em;

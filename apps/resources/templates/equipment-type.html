@@ -2,6 +2,16 @@
 
 {% load tags %}
 
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
 
 {% block breadcrumbs %}
 
@@ -16,7 +26,7 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main</h4>
+    <h4>Main Information</h4>
     <dl>
         <dt>Name</dt><dd>{{ equipmenttype.name}}</dd>
         <dt>Parent</dt><dd>{{ equipmenttype.parent|default:'-' }}</dd>
@@ -26,6 +36,8 @@
                 {% get equipmenttype 'labour_types_for' request.user as labour_types %}
                 {% for lt in labour_types %}
                     <li>{{ lt }}</li>
+                {% empty %}
+                    -
                 {% endfor %}
             </ul>
         </dd>

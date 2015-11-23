@@ -20,12 +20,24 @@ body {
     padding: 12px 0;
 }
 
+hr {
+    margin: 20px 0 0 0;
+    padding: 0;
+}
+
+
+/** Headings **/
+
+h1, h2, h3, h4, h5, h6 {
+    color: #577;
+}
+
 
 /** Links **/
 
 a {
     text-decoration: none;
-    color: #488;
+    color: #48a;
 }
 
 .light-blue {
@@ -89,7 +101,7 @@ th, td {
 
 thead th {
     text-transform: uppercase;
-    color: #488;
+    color: #577;
 }
 
 tbody tr:nth-child(even) {

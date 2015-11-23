@@ -2,6 +2,37 @@
 
 /** Definition lists */
 
+dl, dt, dd {
+    float: left;
+}
+
+dl, dt, dd, ul {
+    padding: 0;
+}
+
+dl {
+    line-height: 1em;
+    margin: 0;
+    width: 100%;
+}
+
+dt, dd {
+    margin: 8px 0;
+}
+
 dt {
     font-weight: bold;
+    width: 20%;
+}
+
+dd {
+    width: 80%;
+}
+
+dd ul {
+    margin: 0;
+}
+
+dd li {
+    list-style-type: none;
 }
