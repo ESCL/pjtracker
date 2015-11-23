@@ -11,16 +11,14 @@ from ..exceptions import AuthorizationError
 
 
 def handle_exception(func):
-    if settings.DEBUG:
-        # For debug, don't handle so devs get stacktrace
-        return func
-
     # Non debug, catch and process exception
     def wrapper_func(*args, **kwargs):
         try:
             res = func(*args, **kwargs)
 
         except Exception as e:
+            if settings.DEBUG and not hasattr(e, 'status_code'):
+                raise
             view, request = args[0:2]
             return view.process_exception(request, e)
 
