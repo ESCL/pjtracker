@@ -51,9 +51,9 @@ class TimeSheetFormTest(TestCase):
         # Create a timesheet, instance has no account (same as user's)
         form = TimeSheetForm({'team': self.team.id, 'date': date.today()}, user=self.user)
         self.assertTrue(form.is_valid())
+        self.assertIsNone(form.instance.owner)
 
         # Save it, now account is the same as team's
-        self.assertIsNone(form.instance.owner)
         form.save()
         self.assertEqual(form.instance.owner, self.team.owner)
 
