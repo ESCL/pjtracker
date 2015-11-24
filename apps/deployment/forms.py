@@ -40,6 +40,11 @@ class TimeSheetForm(OwnedEntityForm):
 
         return cleaned_data
 
+    def save(self, commit=True):
+        if not self.instance.owner:
+            self.instance.owner = self.instance.team.owner
+        return super(TimeSheetForm, self).save(commit=commit)
+
 
 class TimeSheetSearchForm(ModernForm):
     team__code__icontains = forms.CharField(max_length=32, required=False, label='Team code')

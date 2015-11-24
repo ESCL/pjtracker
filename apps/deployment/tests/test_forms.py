@@ -40,6 +40,23 @@ class TimeSheetFormTest(TestCase):
         form.save()
         self.assertTrue(TimeSheet.objects.filter(team=self.team, date=tomorrow).exists())
 
+    def test_ensure_owner(self):
+        self.assertIsNotNone(self.team.owner)
+        self.assertIsNotNone(self.user.owner)
+
+        # Set user as global
+        self.user.owner = None
+        self.user.save()
+
+        # Create a timesheet, instance has no account (same as user's)
+        form = TimeSheetForm({'team': self.team.id, 'date': date.today()}, user=self.user)
+        self.assertTrue(form.is_valid())
+        self.assertIsNone(form.instance.owner)
+
+        # Save it, now account is the same as team's
+        form.save()
+        self.assertEqual(form.instance.owner, self.team.owner)
+
 
 class TimeSheetActionFormTest(TestCase):
 
