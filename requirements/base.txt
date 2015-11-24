@@ -2,5 +2,5 @@
 django==1.8
 django-tastypie==0.12.2
 
-# Factory, required for database bootstrapping
+# Factory, required for unit tests and database bootstrapping
 factory_boy==2.6.0

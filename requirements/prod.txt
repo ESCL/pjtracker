@@ -1,2 +1,4 @@
 -r base.txt
 
+# uWSGI application server
+uwsgi==2.0
