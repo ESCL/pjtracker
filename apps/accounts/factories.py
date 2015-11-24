@@ -2,6 +2,7 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation
 
+from ..common.utils import generate_code_from_name
 from .models import Account, User
 
 
@@ -11,6 +12,7 @@ class AccountFactory(DjangoModelFactory):
         model = Account
 
     name = Faker('company')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
 
 
 class UserFactory(DjangoModelFactory):
