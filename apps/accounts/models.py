@@ -14,11 +14,21 @@ class Account(models.Model, SignalsMixin):
     TIMESHEET_REVIEW_ALL = 'all'
 
     name = models.CharField(
-        max_length=128
+        max_length=128,
+        help_text="Full name to identify the account."
+    )
+    code = models.CharField(
+        max_length=16,
+        unique=True,
+        help_text="Short code used for users login."
     )
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.lower()
+        return super(Account, self).save(*args, **kwargs)
 
 
 class User(AbstractUser):
@@ -79,3 +89,13 @@ class User(AbstractUser):
 
         # Return result
         return disallowed
+
+    def save(self, *args, **kwargs):
+        # Store normalized username that includes account code
+        username_parts = self.username.split('@')[:1]
+        if self.owner:
+            username_parts.append(self.owner.code)
+        self.username = '@'.join(username_parts)
+
+        # Return result of normal saves
+        return super(User, self).save(*args, **kwargs)

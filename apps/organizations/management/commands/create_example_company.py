@@ -12,8 +12,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print('Creating company...')
         account = Account.objects.get()
-        timekeeper = User.objects.get(username='timekeeper')
-        supervisor = User.objects.get(username='supervisor')
+        timekeeper = User.objects.get(username__icontains='timekeeper')
+        supervisor = User.objects.get(username__icontains='supervisor')
 
         # Create one company
         cpy = CompanyFactory.create(owner=account)

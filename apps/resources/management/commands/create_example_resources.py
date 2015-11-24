@@ -13,11 +13,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Creating example resources...")
         pj = Project.objects.get()
-        hr = User.objects.get(username='hr')
-        pcon = User.objects.get(username='pcon')
-        mgt = LabourType.objects.get(code='MG')
-        ind = LabourType.objects.get(code='IN')
-        dir = LabourType.objects.get(code='DI')
+        hr = User.objects.get(username__icontains='hr')
+        pcon = User.objects.get(username__icontains='pcon')
+        mgt = LabourType.objects.get(code__icontains='MG')
+        ind = LabourType.objects.get(code__icontains='IN')
+        dir = LabourType.objects.get(code__icontains='DI')
         res = []
 
         # Fetch teams

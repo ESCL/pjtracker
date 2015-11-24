@@ -13,7 +13,7 @@ class UserTest(TestCase):
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Account.objects.count(), 0)
 
-        # Create a user, should add a profile and and account
+        # Create a user, should add a profile and an account
         user = UserFactory.create()
         self.assertIsNotNone(user.owner)
         self.assertEqual(User.objects.count(), 1)
@@ -75,3 +75,16 @@ class UserTest(TestCase):
         # Check fields, only username is removed
         fields = user.get_disallowed_fields_for(User(owner=user.owner))
         self.assertEqual(fields, set(User._meta.get_all_field_names()).difference({'username'}))
+
+    def test_username(self):
+        # Create user (with account)
+        user = UserFactory.create()
+        self.assertIsNotNone(user.owner)
+
+        # Check username includes @<account.code>
+        self.assertTrue('@{}'.format(user.owner.code) in user.username)
+
+        # Remove account, username now excludes account code
+        user.owner = None
+        user.save()
+        self.assertFalse('@' in user.username)

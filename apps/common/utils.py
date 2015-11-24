@@ -22,13 +22,12 @@ def generate_code_from_name(name, max_len=3):
     # Now split in words
     name_parts = [p for p in name.split() if len(p) > 3]
 
-    # Start by attaching at least one char from first word, but try to leave
-    # room for other words
+    # Start by attaching at least one char from first word
     len_first = max(1, (max_len + 1) - len(name_parts))
     code_parts = [name_parts[0][:len_first]]
 
-    # Now attach one char for every other word
+    # Now attach one char from every other word
     code_parts.extend(p[0] for p in name_parts[1:])
 
-    # Return the whole thing in uppercase respecting max length
+    # Return it upper-cased and truncated
     return ''.join(code_parts).upper()[:max_len]
