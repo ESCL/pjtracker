@@ -3,7 +3,14 @@ __author__ = 'kako'
 from django import forms
 
 from ..common.forms import OwnedEntityForm, ModernForm
-from .models import TimeSheet, WorkLog
+from .models import TimeSheet, WorkLog, TimeSheetSettings
+
+
+class TimeSheetSettingsForm(forms.ModelForm):
+
+    class Meta:
+        model = TimeSheetSettings
+        exclude = ('account',)
 
 
 class TimeSheetForm(OwnedEntityForm):

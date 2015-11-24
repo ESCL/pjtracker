@@ -60,7 +60,8 @@
                     {{ request.user.username }}
                 </a>
                 <ul>
-                    <li class="disabled"><a href="#">Settings</a></li>
+                    <li><a href="{% url 'settings' %}">Settings</a></li>
+                    <li><a href="{% url 'users' %}">Users</a></li>
                     {% if user.is_staff %}
                         <li><a href="/admin/">Admin</a></li>
                     {% endif %}

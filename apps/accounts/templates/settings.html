@@ -1,0 +1,48 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="{% url 'home' %}">home</a></li>
+<li><span>settings</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Account</h4>
+    <dl>
+        <dt>Name</dt><dd>{{ account.name }}</dd>
+        <dt>Code</dt><dd>{{ account.code }}</dd>
+    </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Time-Sheets</h5>
+    <form class="inline" method="POST">
+        {% csrf_token %}
+        {{ timesheets_form }}
+    </form>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Users</h5>
+
+</div>
+
+{% endblock %}

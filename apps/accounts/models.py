@@ -35,10 +35,17 @@ class User(AbstractUser):
 
     owner = models.ForeignKey(
         'Account',
-        null=True
+        null=True,
+        related_name='users'
     )
 
     objects = UserManager()
+
+    @property
+    def all_permissions(self):
+        for g in self.groups.all():
+            for p in g.permissions.all():
+                yield p
 
     @property
     def domain(self):

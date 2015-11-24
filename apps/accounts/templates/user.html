@@ -1,0 +1,92 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'users' %}">users</a></li>
+<li><span>{{ user.username }}</span></li>
+<li><a href="{% url 'user' pk=user.id action='edit'%}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Username</dt><dd>{{ user.username }}</dd>
+        <dt>First Name</dt><dd>{{ user.first_name|default:'-' }}</dd>
+        <dt>Last Name</dt><dd>{{ user.last_name|default:'-' }}</dd>
+        <dt>Email Address</dt><dd>{{ user.email|default:'-' }}</dd>
+    </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Authorization</h5>
+    <dl>
+        <dt>Groups</dt>
+        <dd>
+            <ul>
+                {% for group in user.groups.all %}
+                    <li>{{ group }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+        <dt>Permissions</dt>
+        <dd>
+            <ul>
+                {% for perm in user.all_permissions %}
+                    <li>{{ perm.name }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h5>Assignment</h5>
+    <dl>
+        <dt>Timekeeping Teams</dt>
+        <dd>
+            <ul>
+                {% for team in user.timekept_teams.all %}
+                    <li>{{ team }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+        <dt>Reviewing Teams</dt>
+        <dd>
+            <ul>
+                {% for team in user.supervised_teams.all %}
+                    <li>{{ team }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+{% endblock %}

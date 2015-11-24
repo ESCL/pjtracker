@@ -258,7 +258,7 @@ class WorkLog(OwnedEntity):
         return '{} - {}'.format(self.resource, self.activity)
 
 
-class TimeSheetSettings(OwnedEntity):
+class TimeSheetSettings(models.Model):
     """
     Settings for timesheets and related entities for a given account.
     """
