@@ -1,5 +1,7 @@
 {% extends 'apps/base.html' %}
 
+{% load staticfiles %}
+
 
 {% block breadcrumbs %}
 
@@ -24,5 +26,20 @@
     </div>
 
 </form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script src="{% static 'js/filter-multi-select.js' %}"></script>
+    <script>
+        (function() {
+            // Use FilterMultiSelect to turn multi-select into something usable
+            var groups = document.querySelector('#id_main-groups');
+            var groupsSelect = new FilterMultiSelect(groups);
+            groupsSelect.start();
+        })();
+    </script>
 
 {% endblock %}

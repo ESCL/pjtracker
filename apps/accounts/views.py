@@ -36,10 +36,9 @@ class SettingsView(SafeView):
 
 class UserView(StandardResourceView):
     model = User
+    include_global = False
     list_template = 'users.html'
     detail_template = 'user.html'
     edit_template = 'user-edit.html'
     search_form = UserSearchForm
     main_form = UserForm
-    # Go back to settings on save
-    collection_view_name = 'settings'

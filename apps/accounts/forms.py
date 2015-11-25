@@ -10,7 +10,7 @@ class UserForm(OwnedEntityForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'groups', )
+        fields = ('username', 'first_name', 'last_name', 'email', 'groups', )
 
 
 class UserSearchForm(ModernForm):
