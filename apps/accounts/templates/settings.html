@@ -4,9 +4,11 @@
 
 
 {% block styles %}
+
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/detail.css' %}">
-    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+
 {% endblock %}
 
 
@@ -31,14 +33,38 @@
 
 <hr>
 
-<div class="row">
-    <h5>Time-Sheets</h5>
-    <form class="inline" method="POST">
-        {% csrf_token %}
-        {{ timesheets_form }}
-    </form>
-</div>
+<form method="POST">
 
-<hr>
+    <div class="row">
+        <h5>Time-Sheets</h5>
+        <div class="row">
+            <div class="three columns">
+                {% csrf_token %}
+                {% for field in timesheets_form %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                {% endfor %}
+            </div>
+            <div class="nine columns form-help">
+                <p>
+                    Approval and rejection policies define the number of approvals and rejections required
+                    to change the status of a time-sheet:
+                </p>
+                <ul>
+                    <li><b>All</b>: Time-sheet is approved/rejected only when all team reviewers approve/reject it</li>
+                    <li><b>Majority</b>: Time-sheet is approved/rejected immediately when a majority is reached</li>
+                    <li><b>Any</b>: Time-sheet is approved/rejected immediately on the first approval/rejection</li>
+                </ul>
+            </div>
+        </div>
+        {{ timesheets_form.non_field_errors }}
+    </div>
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+
+</form>
 
 {% endblock %}

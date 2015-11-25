@@ -12,6 +12,23 @@ class TimeSheetSettingsForm(forms.ModelForm):
         model = TimeSheetSettings
         exclude = ('account',)
 
+    def clean(self):
+        cleaned_data = super(TimeSheetSettingsForm, self).clean()
+
+        # Make sure policies are compatible
+        app_pol = cleaned_data['approval_policy']
+        rej_pol = cleaned_data['rejection_policy']
+        if app_pol == rej_pol == TimeSheet.REVIEW_POLICY_ALL:
+            # They are not, error
+            cleaned_data.pop('approval_policy')
+            cleaned_data.pop('rejection_policy')
+            raise forms.ValidationError(
+                'This combination is not allowed because time-sheet status '
+                'can remain undefined after all reviews have been submitted.'
+            )
+
+        return cleaned_data
+
 
 class TimeSheetForm(OwnedEntityForm):
 

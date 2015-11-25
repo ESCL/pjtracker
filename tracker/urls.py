@@ -7,12 +7,12 @@ urlpatterns = [
     url(r'^', include('apps.common.urls')),
 
     # Specific app views (modules)
-    url(r'^accounts/', include('apps.accounts.urls')),
+    url(r'^account/', include('apps.accounts.urls')),
+    url(r'^notifications/', include('apps.notifications.urls')),
     url(r'^organizations/', include('apps.organizations.urls')),
     url(r'^resources/', include('apps.resources.urls')),
     url(r'^wbs/', include('apps.work.urls')),
     url(r'^work/', include('apps.deployment.urls')),
-    url(r'^notifications/', include('apps.notifications.urls')),
 
     # Admin dashboard
     url(r'^admin/', include(admin.site.urls)),

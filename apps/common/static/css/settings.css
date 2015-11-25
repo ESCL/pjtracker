@@ -1,0 +1,17 @@
+/*** Styles for the account settings view ***/
+
+
+/** Forms **/
+
+.form-help p {
+    margin: 0 0 0.5em 0;
+}
+
+.form-help ul {
+    margin: 0;
+    padding: 0;
+}
+
+.form-help li {
+    margin: 0.25em;
+}
