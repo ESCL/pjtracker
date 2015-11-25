@@ -88,3 +88,21 @@ class UserTest(TestCase):
         user.owner = None
         user.save()
         self.assertFalse('@' in user.username)
+
+    def test_query_domain(self):
+        User.objects.all().delete()
+
+        # Add one global user and two for an account
+        staff = UserFactory.create(owner=None)
+        acc_admin = UserFactory.create()
+        acc_user = UserFactory.create(owner=acc_admin.owner)
+
+        # Staff gets list, all are there
+        qs = User.objects.for_user(staff)
+        self.assertEqual(qs.count(), 3)
+        self.assertEqual(set(qs), {staff, acc_admin, acc_user})
+
+        # Account admin gets list, staff is not there
+        qs = User.objects.for_user(acc_admin)
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(set(qs), {acc_admin, acc_user})

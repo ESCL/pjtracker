@@ -25,6 +25,7 @@
     <dl>
         <dt>Name</dt><dd>{{ account.name }}</dd>
         <dt>Code</dt><dd>{{ account.code }}</dd>
+        <dt>Users</dt><dd><a href="{% url 'users' %}">{{ account.users.count }}</a></dd>
     </dl>
 </div>
 
@@ -39,10 +40,5 @@
 </div>
 
 <hr>
-
-<div class="row">
-    <h5>Users</h5>
-
-</div>
 
 {% endblock %}
