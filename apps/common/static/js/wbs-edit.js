@@ -53,7 +53,7 @@
         var code = row.getElementsByTagName('input')[0].value;
         row.dataset.wbs = [row.dataset.parentWbs, code].filter(function(part){return !!part}).join('.');
         row.dataset.new = true;
-        row.dataset.id = 'new-' + newNum;
+        row.dataset.id = 'activity_set-' + newNum;
 
         // Init, append to its siblings and update formset value
         initRow(row);

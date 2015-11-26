@@ -1,10 +1,42 @@
 __author__ = 'kako'
 
+import pdb
+
 from django import forms
 
 from ..common.forms import OwnedEntityForm, ModernForm
-from .models import Project, Activity
+from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 
+
+# Search forms for list views
+
+class ProjectSearchForm(ModernForm):
+    code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Project name')
+
+
+class ActivitySearchForm(ModernForm):
+    project__code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
+    name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Activity name')
+
+
+class ActivityGroupSearchForm(ModernForm):
+    code__iexact = forms.CharField(max_length=16, required=False, label='Group code')
+    name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Group name')
+    type = forms.ModelChoiceField(queryset=ActivityGroupType.objects.all(), label='Type')
+
+
+class ActivityGroupTypeSearchForm(ModernForm):
+    code__iexact = forms.CharField(max_length=16, required=False, label='Type code')
+    name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Type name')
+
+
+class LabourTypeSearchForm(ModernForm):
+    code__iexact = forms.CharField(max_length=16, required=False, label='Labour type code')
+    name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Labour type name')
+
+
+# Edit forms for edit views
 
 class ProjectForm(OwnedEntityForm):
 
@@ -19,6 +51,29 @@ class ActivityForm(OwnedEntityForm):
         model = Activity
         exclude = ('owner',)
 
+
+class ActivityGroupForm(OwnedEntityForm):
+
+    class Meta:
+        model = ActivityGroup
+        exclude = ('owner',)
+
+
+class ActivityGroupTypeForm(OwnedEntityForm):
+
+    class Meta:
+        model = ActivityGroupType
+        exclude = ('owner',)
+
+
+class LabourTypeForm(OwnedEntityForm):
+
+    class Meta:
+        model = LabourType
+        exclude = ('owner',)
+
+
+# Forms for experimental Project WBS edit view
 
 class ActivityInlineForm(forms.ModelForm):
 
@@ -40,41 +95,48 @@ class ActivityInlineForm(forms.ModelForm):
 
 
 class ActivityInlineFormSet(forms.BaseInlineFormSet):
-
+    """
+    Inline form set that allows saving new nested activities correctly,
+    even when their parents are new.
+    """
     def __init__(self, *args, **kwargs):
         super(ActivityInlineFormSet, self).__init__(*args, **kwargs)
-        self._new_start = 1000000
         self._new_objs = {}
 
     def save_new(self, form, commit=True):
-        form_n = int(form.prefix.split('-')[-1])
-        self._new_start = min(form_n, self._new_start)
-        return super(ActivityInlineFormSet, self).save_new(form, commit=commit)
+        """
+        Save new instance and store its id keyed with its form prefix number
+        to allowed fetching it later.
+        """
+        obj = super(ActivityInlineFormSet, self).save_new(form, commit=commit)
+
+        # Store new instance id
+        self._new_objs[form.prefix] = obj.id
+        return obj
+
+    def _get_parent_id(self, pk):
+        """
+        Get the parent id as integer from the field value, which could be
+        a real id (for existing object) or a form prefix (for new ones).
+        """
+        if not pk.isdigit():
+            pk = self._new_objs[pk]
+        return int(pk)
 
     def save_parents(self):
-        for form in self.forms[self._new_start:]:
-            obj_id = form.prefix.split('-')[-1]
-            self._new_objs[obj_id] = form.instance
-            parent_id = form.cleaned_data['parent_id']
-            if not parent_id:
-                continue
+        """
+        Save all parents for changed forms.
+        """
+        # TODO: Find out why has_changed is always true, fix it
+        for form in self.forms:
+            if form.has_changed():
+                parent_id = form.cleaned_data['parent_id']
+                if parent_id:
+                    form.instance.parent_id = self._get_parent_id(parent_id)
+                    form.instance.save()
 
-            try:
-                parent_id = int(parent_id)
-            except ValueError:
-                parent_id = parent_id.split('-')[1]
-                form.instance.parent = self._new_objs[parent_id]
-                form.instance.save()
-            else:
-                form.instance.parent_id = parent_id
-                form.instance.save()
+    def save(self, commit=True):
+        res = super(ActivityInlineFormSet, self).save(commit=commit)
+        self.save_parents()
+        return res
 
-
-class ProjectSearchForm(ModernForm):
-    code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
-    name__icontains = forms.CharField(max_length=32, required=False, label='Project name')
-
-
-class ActivitySearchForm(ModernForm):
-    project__code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
-    name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Activity name')

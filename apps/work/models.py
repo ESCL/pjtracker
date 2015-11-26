@@ -26,32 +26,6 @@ class Project(OwnedEntity):
         return self.resource_set.filter(resource_type='equipment').count()
 
 
-class ActivityGroupType(OwnedEntity):
-
-    name = models.CharField(
-        max_length=128
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class ActivityGroup(OwnedEntity):
-
-    name = models.CharField(
-        max_length=128
-    )
-    code = models.CharField(
-        max_length=16
-    )
-    type = models.ForeignKey(
-        'ActivityGroupType'
-    )
-
-    def __str__(self):
-        return '{} ({})'.format(self.code, self.name)
-
-
 class Activity(OwnedEntity):
 
     class Meta:
@@ -120,6 +94,32 @@ class Activity(OwnedEntity):
 
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
+
+
+class ActivityGroup(OwnedEntity):
+
+    name = models.CharField(
+        max_length=128
+    )
+    code = models.CharField(
+        max_length=16
+    )
+    type = models.ForeignKey(
+        'ActivityGroupType'
+    )
+
+    def __str__(self):
+        return '{} ({})'.format(self.code, self.name)
+
+
+class ActivityGroupType(OwnedEntity):
+
+    name = models.CharField(
+        max_length=128
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class LabourType(OwnedEntity):

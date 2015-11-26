@@ -1,0 +1,58 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>activity groups</span></li>
+<li><a href="{% url 'activity-group' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=activitygroups %}
+
+{% if activitygroups %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Type</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ag in activitygroups %}
+                <tr>
+                    <td>{{ ag.name }}</td>
+                    <td>{{ ag.code }}</td>
+                    <td>{{ ag.type }}</td>
+                    <td class="actions">
+                        <ul class="action-group">
+                            <li><a href="{% url 'activity-group' pk=ag.id %}">view</a></li>
+                            <li><a href="{% url 'activity-group' pk=ag.id action='edit' %}">edit</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No activity groups found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'activity-groups' %}">activity groups</a></li>
+<li><span>{{ activitygroup.code }}</span></li>
+<li><a href="{% url 'activity-group' pk=activitygroup.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Name</dt><dd>{{ activitygroup.name }}</dd>
+        <dt>Code</dt><dd>{{ activitygroup.code }}</dd>
+        <dt>Type</dt><dd>{{ activitygroup.type }}</dd>
+    </dl>
+</div>
+
+{% endblock %}
