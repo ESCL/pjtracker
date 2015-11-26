@@ -1,13 +1,13 @@
 __author__ = 'kako'
 
 from django.test import TestCase
-from unittest.mock import patch, MagicMock
 
+from ...common.test import mock
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import create_permissions
 from ..factories import PositionFactory
 from ..forms import TeamForm, PositionForm
-from ..models import Team, Position, PositionLabourType
+from ..models import Team, Position
 
 
 class TeamFormTest(TestCase):
@@ -18,7 +18,8 @@ class TeamFormTest(TestCase):
         self.user = UserFactory.create()
         self.account = self.user.owner
 
-    @patch('apps.work.query.ActivityQuerySet.workable', MagicMock(return_value=['lala']))
+    @mock.patch('apps.work.query.ActivityQuerySet.workable',
+                mock.MagicMock(return_value=['lala']))
     def test_activities_queryset(self):
         # Init the form passing correct user
         form = TeamForm(user=self.user)

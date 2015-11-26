@@ -4,6 +4,7 @@ import re
 
 
 RE_NAME_REPLACE = re.compile(r'[\(\)-/]')
+LEVEL_REPLACE = re.compile(r'\bI+\b')
 
 
 def generate_code_from_name(name, max_len=3):
@@ -13,14 +14,15 @@ def generate_code_from_name(name, max_len=3):
 
     Examples:
       - "Some Name" -> "SON"
-      - "What the Fuck" -> "WAF" (yes, "the" is too short and is ignored)
+      - "What the Fuck" -> "WTF"
       - "Some Very Long Case" -> "SVL"
     """
     # First remove weird characters
     name = RE_NAME_REPLACE.sub('', name.replace('/', ' '))
+    name = LEVEL_REPLACE.sub('', name)
 
     # Now split in words
-    name_parts = [p for p in name.split() if len(p) > 3]
+    name_parts = name.split()
 
     # Start by attaching at least one char from first word
     len_first = max(1, (max_len + 1) - len(name_parts))

@@ -15,11 +15,11 @@ class UserFormTest(TestCase):
         admin.user_permissions.add(*create_permissions(User, ['add']))
 
         # Render and submit the form
-        form = UserForm({'username': 'Karina'}, user=admin)
+        form = UserForm({'username': 'karina'}, user=admin)
         self.assertTrue(form.is_valid())
         form.save()
 
         # Check that new user was created with correct owner
         karina = User.objects.latest('date_joined')
-        self.assertEqual(karina.username, 'Karina')
+        self.assertEqual(karina.username, 'karina@{}'.format(admin.owner.code))
         self.assertEqual(karina.owner, admin.owner)
