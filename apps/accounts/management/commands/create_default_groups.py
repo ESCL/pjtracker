@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from ....deployment.models import TimeSheetSettings, TimeSheet
 from ....organizations.models import Company, Team, Position
 from ....resources.models import Employee, Equipment, EquipmentType
-from ....work.models import Project, Activity, ActivityGroup, ActivityGroupType
+from ....work.models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 from ...models import User
 from ...utils import create_permissions
 
@@ -53,6 +53,7 @@ class Command(BaseCommand):
         group.permissions.add(*create_permissions(Activity, ['add', 'change']))
         group.permissions.add(*create_permissions(ActivityGroup, ['add', 'change']))
         group.permissions.add(*create_permissions(ActivityGroupType, ['add', 'change']))
+        group.permissions.add(*create_permissions(LabourType, ['add', 'change']))
         print("Group {} created successfully.".format(group))
 
         # Timekeeping group

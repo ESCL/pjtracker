@@ -46,7 +46,7 @@
             <div class="row body"
                  data-parent-wbs="{{ form.instance.parent_wbs_code }}"
                  data-wbs="{{ form.instance.wbs_code }}"
-                 data-id="{{ form.instance.id|default:'new-0' }}">
+                 data-id="{{ form.prefix }}">
 
                 <div class="three columns wbs-code {% if form.code.errors %}invalid{% endif %}">
                     <span class="parent-wbs">{{ form.instance.parent_wbs_code }}</span>

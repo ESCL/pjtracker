@@ -1,0 +1,54 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>activity group types</span></li>
+<li><a href="{% url 'activity-group-type' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=activitygrouptypes %}
+
+{% if activitygrouptypes %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agt in activitygrouptypes %}
+                <tr>
+                    <td>{{ agt.name }}</td>
+                    <td class="actions">
+                        <ul class="action-group">
+                            <li><a href="{% url 'activity-group-type' pk=agt.id %}">view</a></li>
+                            <li><a href="{% url 'activity-group-type' pk=agt.id action='edit' %}">edit</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No activity group types found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}
