@@ -3,4 +3,7 @@ base:
     - core.swap
     - core.python
     - services.nginx
-    - services.uwsgi
+
+    # Temp until we sort out uwsgi
+    - app.environment
+    # - services.uwsgi
