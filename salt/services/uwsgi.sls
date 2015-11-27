@@ -9,7 +9,6 @@ uwsgi-install:
     - no_chown: true
     - name: uwsgi
     - require:
-      - pkg: pip3
       - virtualenv: pjtracker-virtualenv
 
 uwsgi-logdir:
