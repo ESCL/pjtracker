@@ -5,7 +5,12 @@ include:
 
 uwsgi-install:
   pip.installed:
+    - bin_env: /home/ubuntu/.virtualenvs/pjtracker
+    - no_chown: true
     - name: uwsgi
+    - require:
+      - pkg: pip3
+      - virtualenv: pjtracker-virtualenv
 
 uwsgi-logdir:
   file.directory:

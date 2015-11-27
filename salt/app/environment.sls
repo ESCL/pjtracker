@@ -18,7 +18,6 @@ pjtracker-requirements:
     - bin_env: /home/ubuntu/.virtualenvs/pjtracker
     - cwd: /home/ubuntu
     - no_chown: true
-    - user: ubuntu
     - requirements: /home/ubuntu/apps/tracker/requirements/prod-cpython.txt
     - require:
       - virtualenv: pjtracker-virtualenv

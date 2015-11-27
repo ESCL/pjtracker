@@ -15,6 +15,11 @@ pip:
     - require:
       - pkg: python2
 
+pip3:
+  pkg.installed:
+    - name: python3-pip
+    - require: python3
+
 pip-update:
   cmd.run:
     - name: pip install -U pip
