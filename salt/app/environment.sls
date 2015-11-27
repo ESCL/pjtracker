@@ -7,6 +7,7 @@ include:
 pjtracker-virtualenv:
   virtualenv.managed:
     - name: /home/ubuntu/.virtualenvs/pjtracker
+    - python: /usr/bin/python3
     - system_site_packages: False
     - user: ubuntu
     - require:
