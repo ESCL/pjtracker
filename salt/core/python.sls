@@ -4,14 +4,14 @@ python3:
   pkg.installed:
     - name: python3
 
-pip3:
+pip:
   pkg.installed:
-    - name: python3-pip
+    - name: python-pip
     - require:
-      - pkg: python3
+      - pkg: python
 
-pip3-update:
+pip-update:
   cmd.run:
     - name: pip install -U pip
     - require:
-      - pkg: pip3
+      - pkg: pip
