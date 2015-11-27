@@ -23,4 +23,4 @@ pjtracker-requirements:
     - require:
       - virtualenv: pjtracker-virtualenv
       - pkg: pgsql-install
-      - cmd: pip3-update
+      - cmd: pip-update

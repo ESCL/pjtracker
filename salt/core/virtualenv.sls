@@ -7,7 +7,7 @@ virtualenv:
   pip.installed:
     - name: virtualenv
     - require:
-      - pkg: pip3
+      - pkg: pip
 
 virtualenvwrapper:
   pip.installed:
