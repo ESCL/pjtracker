@@ -3,13 +3,17 @@
 include:
   - app.environment
 
-uwsgi-install:
-  pip.installed:
-    - bin_env: /home/ubuntu/.virtualenvs/pjtracker
-    - no_chown: true
-    - name: uwsgi
+workon-pjtracker:
+  cmd.run:
+    - name: workon pjtracker
     - require:
       - virtualenv: pjtracker-virtualenv
+
+uwsgi-install:
+  pip.installed:
+    - name: uwsgi
+    - require:
+      - cmd: workon-pjtracker
 
 uwsgi-logdir:
   file.directory:
@@ -19,7 +23,7 @@ uwsgi-run:
   cmd.run:
     - name: uwsgi --ini /home/ubuntu/apps/tracker/tracker/uwsgi.ini --chdir=/home/ubuntu/apps/tracker
     - bin_env: /home/ubuntu/.virtualenvs/pjtracker
-    - unless: test -e /tmp/wsgi-fifo
+    - unless: test -e /tmp/uwsgi-fifo
     - require:
       - pip: uwsgi-install
       - pip: pjtracker-requirements
@@ -27,8 +31,8 @@ uwsgi-run:
 
 uwsgi-reload:
   cmd.run:
-    - name: echo r > /tmp/wsgi-fifo
-    - onlyif: test -e /tmp/wsgi-fifo
+    - name: echo r > /tmp/uwsgi-fifo
+    - onlyif: test -e /tmp/uwsgi-fifo
     - require:
       - pip: uwsgi-install
       - pip: pjtracker-requirements
