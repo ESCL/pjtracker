@@ -19,6 +19,7 @@ uwsgi-logdir:
 uwsgi-run:
   cmd.run:
     - name: uwsgi --ini /home/ubuntu/apps/tracker/tracker/uwsgi.ini --chdir=/home/ubuntu/apps/tracker
+    - bin_env: /home/ubuntu/.virtualenvs/pjtracker
     - unless: test -e /tmp/wsgi-fifo
     - require:
       - pip: uwsgi-install
