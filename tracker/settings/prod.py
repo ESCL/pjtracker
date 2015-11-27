@@ -14,7 +14,7 @@ DATABASES['default'].update({
     'PORT': 5432,
     'NAME': 'pjtracker',
     'USER': 'pjtracker',
-    'PASSWORD': 'tr4ackmypjs'
+    'PASSWORD': 'tr4ckmypjs'
 })
 
 
