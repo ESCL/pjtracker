@@ -7,7 +7,10 @@ python2:
       - python-dev
 
 python3:
-  pkg.installed: []
+  pkg.installed:
+    - pkgs:
+      - python3
+      - python3-dev
 
 pip:
   pkg.installed:
