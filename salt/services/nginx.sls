@@ -4,7 +4,7 @@ nginx-install:
   pkg.installed:
     - name: nginx
 
-nginx-run:
+nginx:
   service.running:
     - require:
       - pkg: nginx-install
