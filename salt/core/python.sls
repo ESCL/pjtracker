@@ -1,7 +1,10 @@
 # Install python2, python3 and pip
 
-python:
-  pkg.installed: []
+python2:
+  pkg.installed:
+    - pkgs:
+      - python
+      - python-dev
 
 python3:
   pkg.installed: []
@@ -10,7 +13,7 @@ pip:
   pkg.installed:
     - name: python-pip
     - require:
-      - pkg: python
+      - pkg: python2
 
 pip-update:
   cmd.run:
