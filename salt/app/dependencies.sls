@@ -5,3 +5,4 @@ pgsql-install:
     - refresh: True
     - pkgs:
       - postgresql
+      - libpq-dev
