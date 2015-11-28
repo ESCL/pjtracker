@@ -36,6 +36,7 @@ class User(AbstractUser):
     owner = models.ForeignKey(
         'Account',
         null=True,
+        blank=True,
         related_name='users'
     )
 
