@@ -4,7 +4,7 @@ include:
   - core.git
   - core.ssh
 
-pjtracker-protocol:
+pjtracker-repository-protocol:
   cmd.run:
     - name: git remote set-url origin 'git+ssh://git@bitbucket.org:escng/tracker.git'
     - cwd: /home/ubuntu/apps/tracker
@@ -22,4 +22,4 @@ pjtracker-repository:
     - require:
       - file: ssh-config
       - ssh_known_hosts: ssh-bitbucket-host
-      - cmd: pktracker-protocol
+      - cmd: pjtracker-repository-protocol
