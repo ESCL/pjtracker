@@ -17,7 +17,7 @@ ssh-public-key:
   file.managed:
     - name: /home/ubuntu/.ssh/id_rsa.pub
     - user: ubuntu
-    - mode: 644
+    - mode: 600
     - source: salt://core/ssh/id_rsa.pub
     - require:
       - file: ssh-directory
