@@ -65,12 +65,11 @@ class ActivityForm(OwnedEntityForm):
 
         # Now add the initial values if instance exists
         if self.instance.id:
-            groups = self.instance.groups.all()[:]
+            groups = {g.type_id: g.id for f in self.instance.groups.all()}
             for gt in self.group_types:
-                for g in groups:
-                    if g.type == gt:
-                        self.fields['group_{}'.format(slugify(gt.name))].initial = g
-                        break
+                g = groups.get(gt.id)
+                if g:
+                    self.fields['group_{}'.format(slugify(gt.name))].initial = g
 
     def save(self, commit=True):
         # Get final list of groups
