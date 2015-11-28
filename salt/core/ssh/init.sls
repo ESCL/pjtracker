@@ -2,7 +2,7 @@ ssh-directory:
   file.directory:
     - name: /home/ubuntu/.ssh
     - user: ubuntu
-    - mode: 775
+    - mode: 700
 
 ssh-identity-file:
   file.managed:
@@ -35,7 +35,7 @@ ssh-config:
   file.managed:
     - name: /home/ubuntu/.ssh/config
     - user: ubuntu
-    - mode: 644
+    - mode: 600
     - template: jinja
     - source: salt://core/ssh/config
     - require:

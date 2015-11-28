@@ -8,6 +8,7 @@ pjtracker-repository-protocol:
   cmd.run:
     - name: git remote set-url origin 'git+ssh://git@bitbucket.org/escng/tracker.git'
     - cwd: /home/ubuntu/apps/tracker
+    - user: ubuntu
     - require:
       - pkg: git
 
@@ -17,7 +18,6 @@ pjtracker-repository:
     - rev: master
     - target: /home/ubuntu/apps/tracker
     - force_checkout: true
-    - force_clone: true
     - user: ubuntu
     - require:
       - file: ssh-config
