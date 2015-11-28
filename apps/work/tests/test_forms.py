@@ -48,13 +48,20 @@ class ActivityFormTest(TestCase):
         act = Activity.objects.latest('id')
         self.assertEqual(set(act.groups.all()), {self.eng, self.civ})
 
+        # Render form, make sure initial is selected
+        form = ActivityForm(user=self.user, instance=act)
+        f_phase = form.fields['group_phase']
+        f_disc = form.fields['group_discipline']
+        self.assertEqual(f_phase.initial, self.eng.id)
+        self.assertEqual(f_disc.initial, self.civ.id)
+
         # Edit and select other groups, make sure they are updated
         data = {'project': self.pj.id, 'name': 'x', 'code': 'X', 'group_phase': None, 'group_discipline': self.mec.id}
-        form = ActivityForm(data, user=self.user)
+        form = ActivityForm(data, instance=act, user=self.user)
         form.is_valid()
         form.save()
 
         # Make sure the right groups were added
-        act = Activity.objects.latest('id')
+        act = Activity.objects.get(pk=act.id)
         self.assertEqual(set(act.groups.all()), {self.mec})
 

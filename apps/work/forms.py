@@ -65,7 +65,7 @@ class ActivityForm(OwnedEntityForm):
 
         # Now add the initial values if instance exists
         if self.instance.id:
-            groups = {g.type_id: g.id for f in self.instance.groups.all()}
+            groups = {g.type_id: g.id for g in self.instance.groups.all()}
             for gt in self.group_types:
                 g = groups.get(gt.id)
                 if g:
