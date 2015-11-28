@@ -7,6 +7,7 @@ include:
 pjtracker-protocol:
   cmd.run:
     - name: git remote set-url origin 'git+ssh://git@bitbucket.org:escng/tracker.git'
+    - cwd: /home/ubuntu/aps/tracker
     - require:
       - pkg: git
 
