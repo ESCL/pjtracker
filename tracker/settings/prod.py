@@ -1,12 +1,22 @@
 __author__ = 'kako'
 
+# Import defaults
+
 from .base import *
 
 
+# Debug level
+
 DEBUG = False
+TASTYPIE_FULL_DEBUG = False
+
+
+# Request listener
 
 ALLOWED_HOSTS = ['*']
 
+
+# Database connection
 
 DATABASES['default'].update({
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -18,31 +28,25 @@ DATABASES['default'].update({
 })
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Database bootstrapping options
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = False
 BOOTSTRAP_EXAMPLE_DATA = False
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        }
-    },
-    'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'formatter': 'verbose',
-            'filename': '/var/log/django/pjtracker.log',
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
-        },
-    },
+
+# Static media
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+# Logging handlers
+
+LOGGING['handlers'] = {
+    'file': {
+        'class': 'logging.FileHandler',
+        'formatter': 'verbose',
+        'filename': '/var/log/django/pjtracker.log',
+    }
 }
+
+LOGGING['loggers']['django']['handlers'] = ['file']

@@ -1,34 +1,29 @@
 __author__ = 'kako'
 
+# Import defaults
+
 from .base import *
 
+
+# Debug level
+
 DEBUG = True
+TASTYPIE_FULL_DEBUG = True
+
+
+# Database bootstrapping
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = True
 BOOTSTRAP_EXAMPLE_DATA = True
 
-TASTYPIE_FULL_DEBUG = True
 
+# Logging handlers
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        }
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
-        },
-    },
+LOGGING['handlers'] = {
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'verbose'
+    }
 }
+
+LOGGING['loggers']['django']['handlers'] = ['console']
