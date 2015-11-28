@@ -10,7 +10,7 @@ pjtracker-repository:
     - rev: master
     - target: /home/ubuntu/apps/tracker
     - force_checkout: true
-    - force: true
+    - force_clone: true
     - user: ubuntu
     - require:
       - pkg: git
