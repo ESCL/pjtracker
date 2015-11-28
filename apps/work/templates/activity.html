@@ -41,16 +41,9 @@
                 {% endfor %}
             </ul>
         </dd>
-        <dt>Groups</dt>
-        <dd>
-            <ul>
-                {% for g in activity.groups.all %}
-                    <li>{{ g }}</li>
-                {% empty %}
-                    -
-                {% endfor %}
-            </ul>
-        </dd>
+        {% for g in activity.groups.all %}
+            <dt>{{ g.type }}</dt><dd>{{ g }}</dd>
+        {% endfor %}
     </dl>
 
 </div>
