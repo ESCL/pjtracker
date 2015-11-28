@@ -3,6 +3,7 @@
 include:
   - core.virtualenv
   - app.dependencies
+  - app.repository
 
 pjtracker-virtualenv:
   virtualenv.managed:
@@ -20,6 +21,7 @@ pjtracker-requirements:
     - no_chown: true
     - requirements: /home/ubuntu/apps/tracker/requirements/prod-cpython.txt
     - require:
-      - virtualenv: pjtracker-virtualenv
-      - pkg: pgsql-install
       - cmd: pip-update
+      - git: pjtracker-repository
+      - pkg: pgsql-install
+      - virtualenv: pjtracker-virtualenv
