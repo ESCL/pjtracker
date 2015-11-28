@@ -40,11 +40,8 @@
     <script>
         (function() {
             // Use FilterMultiSelect to turn multi-select into something usable
-            var groups = document.querySelector('#id_main-groups');
             var labourTypes = document.querySelector('#id_main-labour_types');
-            var groupsSelect = new FilterMultiSelect(groups);
             var labourTypesSelect = new FilterMultiSelect(labourTypes);
-            groupsSelect.start();
             labourTypesSelect.start();
         })();
     </script>

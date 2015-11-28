@@ -1,8 +1,7 @@
 __author__ = 'kako'
 
-import pdb
-
 from django import forms
+from django.template.defaultfilters import slugify
 
 from ..common.forms import OwnedEntityForm, ModernForm
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
@@ -49,7 +48,42 @@ class ActivityForm(OwnedEntityForm):
 
     class Meta:
         model = Activity
-        exclude = ('owner',)
+        exclude = ('owner', 'groups',)
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+
+        # Fetch the group types for this account
+        self.group_types = ActivityGroupType.objects.for_user(self.user)
+
+        # Now add one field per type
+        for gt in self.group_types:
+            self.fields['group_{}'.format(slugify(gt.name))] = forms.ModelChoiceField(
+                queryset=ActivityGroup.objects.filter(type=gt),
+                required=False, label=gt.name,
+            )
+
+        # Now add the initial values if instance exists
+        if self.instance.id:
+            groups = {g.type_id: g.id for g in self.instance.groups.all()}
+            for gt in self.group_types:
+                g = groups.get(gt.id)
+                if g:
+                    self.fields['group_{}'.format(slugify(gt.name))].initial = g
+
+    def save(self, commit=True):
+        # Get final list of groups
+        groups = []
+        for gt in self.group_types:
+            val = self.cleaned_data.pop('group_{}'.format(slugify(gt.name)))
+            if val:
+                groups.append(val)
+
+        # Save, update groups and return
+        # Note: the second save only updates the m2m, it's not really redundant
+        obj = super(ActivityForm, self).save()
+        obj.groups = groups
+        return obj.save()
 
 
 class ActivityGroupForm(OwnedEntityForm):
