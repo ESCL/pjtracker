@@ -22,6 +22,6 @@ pjtracker-requirements:
     - requirements: /home/ubuntu/apps/tracker/requirements/prod-cpython.txt
     - require:
       - cmd: pip-update
-      - git: pjtracker-repository
+      - cmd: pjtracker-repository
       - pkg: pgsql-install
       - virtualenv: pjtracker-virtualenv

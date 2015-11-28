@@ -12,14 +12,27 @@ pjtracker-repository-protocol:
     - require:
       - pkg: git
 
+# Temp hack for broken git.latest
 pjtracker-repository:
-  git.latest:
-    - name: 'git+ssh://git@bitbucket.org/escng/tracker.git'
-    - rev: master
-    - target: /home/ubuntu/apps/tracker
-    - force_checkout: true
+  cmd.run:
+    - name: git pull
+    - cwd: /home/ubuntu/apps/tracker
     - user: ubuntu
     - require:
+      - pkg: git
       - file: ssh-config
       - ssh_known_hosts: ssh-bitbucket-host
       - cmd: pjtracker-repository-protocol
+
+# Broken in current version
+#pjtracker-repository:
+#  git.latest:
+#    - name: 'git+ssh://git@bitbucket.org/escng/tracker.git'
+#    - rev: master
+#    - target: /home/ubuntu/apps/tracker
+#    - force_checkout: true
+#    - user: ubuntu
+#    - require:
+#      - file: ssh-config
+#      - ssh_known_hosts: ssh-bitbucket-host
+#      - cmd: pjtracker-repository-protocol
