@@ -7,7 +7,7 @@ from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet, TimeSheetAction, WorkLog, AuthorizationError
+from ..models import TimeSheet, TimeSheetAction, WorkLog, NotAuthorizedError
 
 
 class TimeSheetTest(TestCase):
@@ -69,7 +69,7 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.status, TimeSheet.STATUS_PREPARING)
 
         # Try to issue with supervisor, error
-        self.assertRaises(AuthorizationError, self.ts.issue, self.supervisor1)
+        self.assertRaises(NotAuthorizedError, self.ts.issue, self.supervisor1)
 
         # Issue the timesheet
         n_count = Notification.objects.count()
@@ -98,7 +98,7 @@ class TimeSheetTest(TestCase):
         self.ts.issue(self.timekeeper)
 
         # Try to reject with worker, error
-        self.assertRaises(AuthorizationError, self.ts.reject, self.timekeeper)
+        self.assertRaises(NotAuthorizedError, self.ts.reject, self.timekeeper)
 
         # Reject the timesheet
         n_count = Notification.objects.count()
@@ -127,7 +127,7 @@ class TimeSheetTest(TestCase):
         self.ts.issue(self.timekeeper)
 
         # Try to approve with worker, error
-        self.assertRaises(AuthorizationError, self.ts.approve, self.timekeeper)
+        self.assertRaises(NotAuthorizedError, self.ts.approve, self.timekeeper)
 
         # Approve the timesheet
         n_count = Notification.objects.count()

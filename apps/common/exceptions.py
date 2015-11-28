@@ -1,13 +1,21 @@
 __author__ = 'kako'
 
 
-class ClientError(Exception):
+class BadRequestError(Exception):
     status_code = 400
 
 
-class AuthenticationError(Exception):
+class NotAuthenticatedError(Exception):
     status_code = 401
 
 
-class AuthorizationError(Exception):
+class NotAuthorizedError(Exception):
     status_code = 403
+
+
+class NotFoundError(Exception):
+    status_code = 404
+
+
+class MethodNotAllowedError(Exception):
+    status_code = 405

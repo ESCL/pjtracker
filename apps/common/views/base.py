@@ -1,5 +1,6 @@
 __author__ = 'kako'
 
+import logging
 import re
 
 from django.conf import settings
@@ -7,7 +8,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
-from ..exceptions import AuthorizationError
+from ..exceptions import NotAuthorizedError
+
+
+logger = logging.getLogger('django')
 
 
 def handle_exception(func):
@@ -28,22 +32,45 @@ def handle_exception(func):
 
 
 class SafeView(View):
-    error_template = None
+    error_template = 'apps/error.html'
+
+    @classmethod
+    def authorize(cls, request, action):
+        """
+        Authorization checks, to be overriden by subclasses.
+        """
+        pass
 
     @classmethod
     def process_exception(cls, request, exception):
-        # Build the context from the error data
+        """
+        Process the given exception.
+        By default, log it and render it to the user.
+        """
+        # Determiner status code (500 is terrible)
         status_code = getattr(exception, 'status_code', 500)
-        context = {'error': exception.__class__.__name__,
+
+        # Log the exception
+        if status_code == 500:
+            logger.exception(exception)
+        else:
+            logger.info(exception)
+
+        # Build context for error template
+        context = {'error': exception.__class__.__name__.replace('Error', ''),
                    'status': status_code,
                    'message': str(exception)}
 
-        # Render the error template with the data
+        # Render it
         return render(request, cls.error_template,
                       context, status=status_code)
 
     @handle_exception
     def dispatch(self, request, *args, **kwargs):
+        """
+        Wrapper for all requests, check authorization and execute the method.
+        """
+        self.authorize(request, kwargs.get('action'))
         return super(SafeView, self).dispatch(request, *args, **kwargs)
 
 
@@ -58,7 +85,6 @@ class ReadOnlyResourceView(SafeView):
     model = None
     list_template = None
     detail_template = None
-    error_template = 'apps/error.html'
     search_form = None
 
     # Helper class methods
@@ -171,16 +197,10 @@ class StandardResourceView(ReadOnlyResourceView):
                     if a[0] in cls.permissions[action]:
                         return
 
-        # If we got th  is far user is not authorized, raise error
-        raise AuthorizationError(
-            'User {} is not allowed to {} {}.'.format(request.user, action,
-                                                      cls.model._meta.verbose_name_plural)
+        # If we got this far user is not authorized, raise error
+        raise NotAuthorizedError(
+            'You are not allowed to {} {}.'.format(action, cls.model._meta.verbose_name_plural)
         )
-
-    @handle_exception
-    def dispatch(self, request, *args, **kwargs):
-        self.authorize(request, kwargs.get('action'))
-        return super(SafeView, self).dispatch(request, *args, **kwargs)
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird

@@ -22,3 +22,27 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = False
 BOOTSTRAP_EXAMPLE_DATA = False
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': '/var/log/django/pjtracker.log',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        },
+    },
+}

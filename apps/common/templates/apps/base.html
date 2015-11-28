@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load tags %}
 
 
 {% block styles %}
@@ -60,10 +61,14 @@
                     {{ request.user.username }}
                 </a>
                 <ul>
-                    <li><a href="{% url 'settings' %}">Settings</a></li>
-                    <li><a href="{% url 'users' %}">Users</a></li>
+                    {% get request.user 'all_permissions' as perms %}
                     {% if user.is_staff %}
                         <li><a href="/admin/">Admin</a></li>
+                    {% else %}
+                        {% if 'deployment.configure_timesheetsettings' in perms %}
+                            <li><a href="{% url 'settings' %}">Settings</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'users' %}">Users</a></li>
                     {% endif %}
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>

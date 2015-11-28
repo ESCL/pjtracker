@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+from ..common.exceptions import NotFoundError, NotAuthorizedError
 from ..common.views.base import SafeView, StandardResourceView
 from ..deployment.forms import TimeSheetSettingsForm
 from .forms import UserForm, UserSearchForm
@@ -8,10 +9,21 @@ from .models import User
 
 class SettingsView(SafeView):
     template_name = 'settings.html'
+    required_permissions = (
+        'deployment.configure_timesheetsettings',
+    )
+
+    @classmethod
+    def authorize(cls, request, action):
+        if not request.user.owner:
+            raise NotFoundError('The requested URL is not available.')
+
+        all_perms = request.user.get_all_permissions()
+        if not all_perms.intersection(cls.required_permissions):
+            raise NotAuthorizedError('You are not authorized to edit account settings.')
 
     def get(self, request):
         account = request.user.owner
-
         ts_form = TimeSheetSettingsForm(instance=account.timesheet_settings)
 
         context = {
