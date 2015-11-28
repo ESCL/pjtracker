@@ -6,7 +6,7 @@ include:
 
 pjtracker-repository:
   git.latest:
-    - name: 'git+ssh://git@github.com/escng/tracker.git'
+    - name: 'git+ssh://git@bitbucket.org:escng/tracker.git'
     - rev: master
     - target: /home/ubuntu/apps/tracker
     - force_checkout: true
