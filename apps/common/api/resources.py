@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from tastypie import resources, exceptions, http
 
-from ..exceptions import AuthenticationError
+from ..exceptions import NotAuthenticatedError
 
 
 class OwnedResource(resources.ModelResource):
@@ -15,6 +15,6 @@ class OwnedResource(resources.ModelResource):
         qs = super(OwnedResource, self).apply_filters(request, applicable_filters)
         try:
             qs = qs.for_user(request.user)
-        except AuthenticationError as e:
+        except NotAuthenticatedError as e:
             raise exceptions.ImmediateHttpResponse(http.HttpUnauthorized(e))
         return qs

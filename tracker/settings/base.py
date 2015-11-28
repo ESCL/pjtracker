@@ -118,3 +118,24 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_REDIRECT_URL = '/'
+
+
+# Basic logging definitions
+# Handlers must be defined and set in the loggers in every env
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': [],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        }
+    }
+}

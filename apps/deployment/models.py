@@ -6,7 +6,7 @@ from django.dispatch import Signal
 from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity
-from ..common.exceptions import AuthorizationError
+from ..common.exceptions import NotAuthorizedError
 from ..common.signals import SignalsMixin
 from .query import WorkLogQuerySet
 
@@ -122,7 +122,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def issue(self, user):
         if user not in self.team.timekeepers.all():
-            raise AuthorizationError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
+            raise NotAuthorizedError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,
@@ -135,7 +135,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def reject(self, user):
         if user not in self.team.supervisors.all():
-            raise AuthorizationError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
+            raise NotAuthorizedError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,
@@ -147,7 +147,7 @@ class TimeSheet(OwnedEntity, SignalsMixin):
 
     def approve(self, user):
         if user not in self.team.supervisors.all():
-            raise AuthorizationError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
+            raise NotAuthorizedError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
         TimeSheetAction.objects.create(
             timesheet=self,

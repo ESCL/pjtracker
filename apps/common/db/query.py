@@ -1,8 +1,8 @@
 __author__ = 'kako'
 
-from django.db.models.query import QuerySet, Q, ValuesQuerySet
+from django.db.models.query import QuerySet, ValuesQuerySet
 
-from ..exceptions import AuthenticationError
+from ..exceptions import NotAuthenticatedError
 
 
 class OwnedEntityQuerySet(QuerySet):
@@ -31,7 +31,7 @@ class OwnedEntityQuerySet(QuerySet):
             return qs
 
         except AttributeError:
-            raise AuthenticationError('A user with account is required to view owned objects.')
+            raise NotAuthenticatedError('A user with account is required to view owned objects.')
 
 
 class ValuesGroup(object):
