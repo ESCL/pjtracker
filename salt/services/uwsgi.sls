@@ -7,6 +7,8 @@ uwsgi-logdir:
   file.directory:
     - name: /var/log/uwsgi
     - user: ubuntu
+    - recurse:
+      - user
 
 uwsgi-run:
   cmd.run:

@@ -7,6 +7,8 @@ django-logdir:
   file.directory:
     - name: /var/log/django
     - user: ubuntu
+    - recurse:
+      - user
 
 django-migrate:
   cmd.run:
