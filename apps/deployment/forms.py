@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms import OwnedEntityForm, ModernForm, CustomLabelModelChoiceField
 from .models import TimeSheet, WorkLog, TimeSheetSettings
 
 
@@ -36,7 +36,7 @@ class TimeSheetForm(OwnedEntityForm):
         model = TimeSheet
         fields = ('team', 'date', 'comments',)
 
-    comments = forms.CharField(widget=forms.Textarea)
+    comments = forms.CharField(widget=forms.Textarea, required=False)
 
     def __init__(self, *args, **kwargs):
         super(TimeSheetForm, self).__init__(*args, **kwargs)
@@ -135,30 +135,41 @@ class WorkLogsForm(forms.Form):
         # Main processing
         for pk, resource in self.timesheet.resources.items():
             logs = []
+
+            # Get labour types for resource and add lt choice field
+            res_lt = resource.get_labour_types_for(self.user)
+            self.fields[str(resource.id)] = CustomLabelModelChoiceField(
+                queryset=res_lt, option_label_attr='code', empty_label=None,
+            )
+
+            # Now add work log fields
             for activity in self.timesheet.activities.values():
                 # Get log (existing or new)
                 log = self._get_log_for(resource, activity)
 
                 # Generate field
-                name = '{}.{}'.format(pk, activity.id)
-                self.fields[name] = forms.DecimalField(
+                log_name = '{}.{}'.format(pk, activity.id)
+                self.fields[log_name] = forms.DecimalField(
                     initial=log.hours, required=False, max_value=12,
                 )
 
-                # Make sure lts match, otherwise disable it
-                res_lt = resource.get_labour_types_for(self.user)
+                # Disable if labour types don't match
                 act_lt = activity.labour_types.all()
                 if not set(res_lt).intersection(act_lt):
-                    self.fields[name].widget.attrs.update({'disabled': 'disabled',
-                                                           'readonly': True})
+                    self.fields[log_name].widget.attrs.update(
+                        {'disabled': 'disabled', 'readonly': True}
+                    )
+                    pass
                 elif not lts_matched:
                     lts_matched = True
 
                 # Attach to log and form
-                log.field = self[name]
+                log.field = self[log_name]
                 logs.append(log)
 
-            self.rows.append({'resource': resource, 'logs': logs})
+            self.rows.append({'resource': resource,
+                              'labour_type': self[str(resource.id)],
+                              'logs': logs})
 
         # Append alerts if we have any problems
         if not has_res:
@@ -178,10 +189,11 @@ class WorkLogsForm(forms.Form):
 
     def _iter_fields_values(self, cleaned_data):
         for fname, v in cleaned_data.items():
-            r_id, a_id = fname.split('.')
-            r = self.timesheet.resources[int(r_id)]
-            a = self.timesheet.activities[int(a_id)]
-            yield r, a, v
+            if '.' in fname:
+                r_id, a_id = fname.split('.')
+                r = self.timesheet.resources[int(r_id)]
+                a = self.timesheet.activities[int(a_id)]
+                yield r, a, v
 
     def clean(self):
         cleaned_data = super(WorkLogsForm, self).clean()
@@ -191,18 +203,16 @@ class WorkLogsForm(forms.Form):
             if value:
                 # Check that labour types match (this should not really be
                 # necessary since we disable the inputs, but some people use IE)
-                res_lt = resource.get_labour_types_for(self.user)
-                act_lt = activity.labour_types.all()
-                if not set(res_lt).intersection(act_lt):
-                    if not res_lt.exists():
+                res_lt = self.cleaned_data[str(resource.id)]
+                act_lt = set(activity.labour_types.all())
+                if res_lt not in act_lt:
+                    if not res_lt:
                         es.append("{} cannot charge hours.".format(resource.instance))
-                    if not act_lt.exists():
+                    if not act_lt:
                         es.append("Activity {} does not allow charging hours for any labour types.".format(activity))
 
                     if not es:
-                        es.append("{} can charge hours as {}, activity {} only allows {}.".format(
-                            resource, ', '.join(str(l) for l in res_lt), activity, ', '.join(str(l) for l in act_lt))
-                        )
+                        es.append("Activity {} does not allow charging hours for {}.".format(activity, res_lt))
 
         if es:
             raise forms.ValidationError(es)
@@ -214,16 +224,9 @@ class WorkLogsForm(forms.Form):
             log = self._get_log_for(resource, activity)
 
             if value:
-                # Some hours set, process the log
+                # Some hours set, process the log and save it
                 log.hours = value
-
-                # Use the first allowed labour type
-                # TODO: Allow setting labour type in timesheet
-                res_lt = resource.get_labour_types_for(self.user)
-                act_lt = activity.labour_types.all()
-                log.labour_type = list(set(res_lt).intersection(act_lt))[0]
-
-                # Save the log
+                log.labour_type = self.cleaned_data[str(resource.id)]
                 log.save()
 
             else:
