@@ -1,11 +1,13 @@
 __author__ = 'kako'
 
 from django.test import TestCase
+from django.contrib.auth.models import Group
 
 from ...common.test import mock
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import create_permissions
-from ..factories import PositionFactory
+from ...deployment.models import TimeSheet
+from ..factories import PositionFactory, CompanyFactory
 from ..forms import TeamForm, PositionForm
 from ..models import Team, Position
 
@@ -57,6 +59,42 @@ class TeamFormTest(TestCase):
         for k, field in form.fields.items():
             self.assertFalse('disabled' in field.widget.attrs)
             self.assertFalse('readonly' in field.widget.attrs)
+
+    def test_limit_timesheet_assignment(self):
+        # Make user a team manager to allow setting timekeepers and supervisors
+        self.user.user_permissions.add(*create_permissions(Team, ['add', 'change']))
+
+        # Render w/o timekeepers/supervisors, both fields are empty
+        form = TeamForm(user=self.user)
+        self.assertEqual(form.fields['timekeepers'].queryset.count(), 0)
+        self.assertEqual(form.fields['supervisors'].queryset.count(), 0)
+
+        # Add a timekeeper with direct permissions
+        tk = UserFactory.create(owner=self.user.owner)
+        tk.user_permissions.add(*create_permissions(TimeSheet, ['issue']))
+
+        # Add a supervisor with indirect permissions (through group)
+        g = Group.objects.create(name='supervisors')
+        g.permissions.add(*create_permissions(TimeSheet, ['review']))
+        s = UserFactory.create(owner=self.user.owner, groups=[g])
+
+        # Render form again, they are both options
+        form = TeamForm(user=self.user)
+        self.assertEqual(set(form.fields['timekeepers'].queryset.all()), {tk})
+        self.assertEqual(set(form.fields['supervisors'].queryset.all()), {s})
+
+        # Post form with wrong timekeeper and supervisor, error
+        data = {'name': 'x', 'company': CompanyFactory.create(), 'code': 'X',
+                'timekeepers': [s.id], 'supervisors': [tk.id]}
+        form = TeamForm(data, user=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertTrue('timekeepers' in form.errors)
+        self.assertTrue('supervisors' in form.errors)
+
+        # Post form with correct tk+sup, no errors there
+        data.update({'timekeepers': [tk.id], 'supervisors': [s.id]})
+        form = TeamForm(data, user=self.user)
+        self.assertTrue(form.is_valid())
 
 
 class PositionFormTest(TestCase):

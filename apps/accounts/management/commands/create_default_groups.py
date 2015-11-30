@@ -22,7 +22,7 @@ class Command(BaseCommand):
         print("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(User, ['change']))
-        group.permissions.add(*create_permissions(TimeSheetSettings, ['configure']))
+        group.permissions.add(*create_permissions(TimeSheetSettings, ['change']))
         print("Group {} created successfully.".format(group))
 
         # HR grouo

@@ -10,7 +10,7 @@ from .models import User
 class SettingsView(SafeView):
     template_name = 'settings.html'
     required_permissions = (
-        'deployment.configure_timesheetsettings',
+        'deployment.change_timesheetsettings',
     )
 
     @classmethod

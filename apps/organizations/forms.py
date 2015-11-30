@@ -1,8 +1,7 @@
 __author__ = 'kako'
 
-import itertools
-
 from django import forms
+from django.db.models import Q
 
 from ..common.forms import OwnedEntityForm, ModernForm
 from ..resources.models import Employee, Equipment
@@ -56,15 +55,42 @@ class TeamForm(OwnedEntityForm):
     def __init__(self, *args, **kwargs):
         super(TeamForm, self).__init__(*args, **kwargs)
 
-        # Restrict activities to workable only
-        f = self.fields['activities']
-        f.queryset = f.queryset.workable()
+        # Restrict activities to workable only (field could be missing if form
+        # is bound and user has no permissions to edit activities)
+        f = self.fields.get('activities')
+        if f:
+            f.queryset = f.queryset.workable()
 
         # If it's a saved instance set initial values for related fields
         if self.instance.id:
             for k in ('employees', 'equipment'):
-                f = self.fields[k]
-                f.initial = f.queryset.filter(team=self.instance)
+                f = self.fields.get(k)
+                if f:
+                    f.initial = f.queryset.filter(team=self.instance)
+
+        # Limit timesheet workflow assignment fields
+        self._limit_timesheet_assignments()
+
+    def _limit_timesheet_assignments(self):
+        """
+        Restrict timekeepers and supervisors querysets to users that are
+        allowed to perform the actions required.
+        """
+        # Timekeepers: only those that can issue
+        f = self.fields.get('timekeepers')
+        if f:
+            f.queryset = f.queryset.filter(
+                Q(user_permissions__codename='issue_timesheet')|
+                Q(groups__permissions__codename='issue_timesheet')
+            )
+
+        # Supervisors: only those that can review
+        f = self.fields.get('supervisors')
+        if f:
+            f.queryset = f.queryset.filter(
+                Q(user_permissions__codename='review_timesheet')|
+                Q(groups__permissions__codename='review_timesheet')
+            )
 
     def save(self, *args, **kwargs):
         team = super(TeamForm, self).save(*args, **kwargs)
