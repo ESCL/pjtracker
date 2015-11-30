@@ -13,10 +13,10 @@
 {% endif %}
 
 <div class="row timesheet-header">
-    <div class="three columns">
+    <div class="four columns">
         <p><span class="activities-title">Activities</span><br>Resources</p>
     </div>
-    <div class="nine columns">
+    <div class="eight columns">
         {% for activity in timesheet.activities.values %}
             <div class="grid-column activity" title="{{ activity.name }}">
                 {{ activity.full_wbs_path|join:'<br>' }}
@@ -45,7 +45,11 @@
                 {% endif %}
             </div>
 
-            <div class="nine columns logs">
+            <div class="one column labour-type">
+                {{ row.labour_type }}
+            </div>
+
+            <div class="eight columns logs">
                 {% for log in row.logs %}
                     <div class="grid-column log {% if log.field.errors %}invalid{% endif %}">
                         {{ log.field }}

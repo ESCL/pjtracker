@@ -3,6 +3,16 @@ __author__ = 'kako'
 from django import forms
 
 
+class CustomLabelModelChoiceField(forms.ModelChoiceField):
+
+    def __init__(self, *args, option_label_attr=None, **kwargs):
+        super(CustomLabelModelChoiceField, self).__init__(*args, **kwargs)
+        self.option_label_attr = option_label_attr
+
+    def label_from_instance(self, obj):
+        return getattr(obj, self.option_label_attr)
+
+
 class ModernizeFieldsMixin(object):
 
     def modernize_fields(self):
