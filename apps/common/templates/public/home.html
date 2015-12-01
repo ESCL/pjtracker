@@ -17,11 +17,11 @@
 {% block body %}
 <h3>Existing user? <a href="{% url 'login' %}">here's where you log in</a></h3>
 <hr>
-<h3><span class="light-blue">User support?</span> <a href="http://support.pjtracker.com/">here's where you launch a ticket</a></h3>
+<h3><span class="light-blue">User support?</span> <a href="http://support.{{ APP.domain }}">here's where you launch a ticket</a></h3>
 <hr />
 
 <div class="title">
-    pjtracker&copy;
+    {{ APP.name }}
     <br />
     <span class="grey">Project Tracker Tool</span>
 </div>
@@ -114,11 +114,9 @@
     <hr />
     <!-- START THE FEATURETTES -->
 
-    <p>
-        <div class="title">
-            <span class="grey">How</span> pjtracker&copy; <span class="grey">works?</span>
-        </div>
-    </p>
+    <div class="title">
+        <span class="grey">How</span> {{ APP.name }} <span class="grey">works?</span>
+    </div>
     <br />
     <br />
     <div class="row featurette" id="wbs-definition">
@@ -244,7 +242,7 @@
             <a href="#">Back to top</a>
         </p>
         <p>
-            <span class="light-blue">© 2015 pjtracker</span> - A <span class="mobile-friendly">mobile friendly</span> product of Enterprise Systems Consultancy Ltd <a href="http://www.escng.com/" target="_blank">www.escng.com</a> · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
+            <span class="light-blue">© 2015 {{ APP.name }}</span> - A <span class="mobile-friendly">mobile friendly</span> product of {{ COMPANY.name }} <a href="http://{{ COMPANY.domain }}" target="_blank">{{ COMPANY.domain }}</a> · <a href="{% url 'public' page='privacy' %}" target="_blank">Privacy</a> · <a href="{% url 'public' page='terms' %}" target="_blank">Terms</a>
         </p>
     </footer>
 </div>

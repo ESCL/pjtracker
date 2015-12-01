@@ -22,7 +22,7 @@
 
 <div class="row">
 
-    <h1>Welcome to <span class="light-blue">pjtracker&copy;</span>!</h1>
+    <h1>Welcome to <span class="light-blue">{{ APP.name }}&copy;</span>!</h1>
 
     <div id="notifications">
         {% include 'apps/notifications.html' %}
@@ -32,7 +32,7 @@
     </div>
 
     <div class="user-support-link">
-        <span class="light-blue">Need help?</span>&nbsp;<a href="http://support.pjtracker.com/" target="_blank">Contact our support team</a>
+        <span class="light-blue">Need help?</span>&nbsp;<a href="http://support.{{ APP.domain }}" target="_blank">Contact our support team</a>
     </div>
 
 </div>
