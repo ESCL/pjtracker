@@ -42,15 +42,27 @@ function generateGraph(options) {
     get(options.url).then(function(data) {
         // Parse response and setup order
         data = JSON.parse(data);
-        var graphData = [], currentData;
+        var graphData = [];
+        var currentData;
 
         // Generate data
-        options.dataFields.forEach(function(dataField) {
-            currentData = data.objects.map(function(obj) {
-                return {
-                    label: obj[options.labelField],
-                    y: parseInt(obj[dataField.value])
-                };
+        var labelFieldParts, dataFieldValueParts;
+        options.dataFields.forEach(function (dataField) {
+            currentData = data.objects.map(function (obj) {
+                labelFieldParts = options.labelField.split('.');
+                dataFieldValueParts = dataField.value.split('.');
+                var i;
+
+                var label = obj[labelFieldParts[0]];
+                for (i = 1; i < labelFieldParts.length; i++) {
+                    label = label[labelFieldParts[i]];
+                }
+
+                var y = obj[dataFieldValueParts[0]];
+                for (i = 1; i < dataFieldValueParts.length; i++) {
+                    y = y[dataFieldValueParts[i]];
+                }
+                return {label: label, y: parseFloat(y)};
             });
 
             // Reverse if required
@@ -90,9 +102,5 @@ function generateGraph(options) {
 
         // Render the graph
         chart.render();
-
-    }).catch(function(error) {
-        // Something failed, we don't care, just log it
-        console.log(error)
     });
 }
