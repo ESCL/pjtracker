@@ -20,6 +20,7 @@ class Notification(models.Model, SignalsMixin):
 
     STATUS_ENABLED = 'E'
     STATUS_DISMISSED = 'D'
+    STATUS_EXPIRED = 'X'
 
     objects = NotificationQuerySet.as_manager()
 
@@ -46,10 +47,19 @@ class Notification(models.Model, SignalsMixin):
     timestamp = models.DateTimeField(
         default=datetime.utcnow
     )
+    action_url = models.CharField(
+        max_length=256,
+        null=True
+    )
+    action_label = models.CharField(
+        max_length=128,
+        null=True
+    )
     status = models.CharField(
         max_length=1,
         choices=((STATUS_ENABLED, 'Active'),
-                 (STATUS_DISMISSED, 'Dismissed')),
+                 (STATUS_DISMISSED, 'Dismissed'),
+                 (STATUS_EXPIRED, 'Expired')),
         default=STATUS_ENABLED
     )
 
@@ -58,10 +68,19 @@ class Notification(models.Model, SignalsMixin):
         return self.status == self.STATUS_ENABLED
 
     @property
+    def template_context(self):
+        return Context({'target': self.event_target, 'event': self.event_type})
+
+    @property
     def message(self):
-        return Template(self.message_template).render(Context(
-            {'target': self.event_target, 'event': self.event_type}
-        ))
+        return Template(self.message_template).render(self.template_context)
+
+    @property
+    def action_link(self):
+        return '<a href="{}">{}</a>'.format(
+            Template(self.action_url).render(self.template_context),
+            self.action_label
+        )
 
     def dismiss(self):
         self.status = self.STATUS_DISMISSED

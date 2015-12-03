@@ -11,7 +11,7 @@ from ..common.signals import SignalsMixin
 from .query import WorkLogQuerySet
 
 
-class TimeSheet(OwnedEntity, SignalsMixin):
+class TimeSheet(SignalsMixin, OwnedEntity):
 
     CUSTOM_SIGNALS = {
         'issued': Signal(),
@@ -186,7 +186,11 @@ class TimeSheet(OwnedEntity, SignalsMixin):
         return False
 
 
-class TimeSheetAction(OwnedEntity):
+class TimeSheetAction(SignalsMixin, OwnedEntity):
+
+    CUSTOM_SIGNALS = {
+        'reviewed': Signal()
+    }
 
     ISSUED = 'I'
     REJECTED = 'R'
@@ -210,6 +214,12 @@ class TimeSheetAction(OwnedEntity):
     timestamp = models.DateTimeField(
         default=datetime.utcnow
     )
+
+    def save(self, *args, **kwargs):
+        res = super(TimeSheetAction, self).save(*args, **kwargs)
+        if self.action in (self.REJECTED, self.APPROVED):
+            self.signal('reviewed')
+        return res
 
 
 class WorkLog(OwnedEntity):
