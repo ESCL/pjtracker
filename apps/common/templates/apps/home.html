@@ -63,21 +63,21 @@
         generateGraph({
             title: 'Hours by project', type: 'column',
             url: '/work/api/v0/hours/?format=json&group_by=project&status=approved&order_by=-hours&limit=10',
-            labelField: 'project_code',
+            labelField: 'project.code',
             dataFields:[{legend: null, value: 'hours'}],
             animate: true
         });
         generateGraph({
             title: 'Hours by labour type', type: 'pie',
             url: '/work/api/v0/hours/?format=json&group_by=labour_type&status=approved&order_by=-hours&limit=10',
-            labelField: 'labour_type_name',
+            labelField: 'labour_type.name',
             dataFields: [{legend: null, value: 'hours'}],
             animate: true
         });
         generateGraph({
             title: 'Top activities by hours', type: 'bar',
             url: '/work/api/v0/hours/?format=json&group_by=activity&status=approved&order_by=-hours&limit=10',
-            labelField: 'activity_code', order: -1,
+            labelField: 'activity.wbs_code', order: -1,
             dataFields: [{legend: null, value: 'hours'}],
             animate: true
         });
