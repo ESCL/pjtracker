@@ -87,6 +87,6 @@ class TimeSheetNotificationsTest(TestCase):
         self.ts = TimeSheet.objects.get(id=self.ts.id)
         self.assertEqual(self.ts.status, TimeSheet.STATUS_APPROVED)
 
-        # One dropped (for reviewer 1), remaining is n2 (from previous check)
+        # One more dropped, nothing left
         self.assertEqual(Notification.objects.enabled().count(), 0)
         self.assertEqual(Notification.objects.disabled().count(), 5)

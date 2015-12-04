@@ -82,7 +82,7 @@ def disable_notifications(sender, instance, name=None, **kwargs):
 Account.on_signal('saved', ensure_settings)
 
 # Timesheet action done, disable notifs
-TimeSheetAction.on_signal('acted', disable_notifications)
+TimeSheetAction.on_signal('executed', disable_notifications)
 
 # Timesheet status changed, disable notifs
 TimeSheet.on_signal('issued', disable_notifications)

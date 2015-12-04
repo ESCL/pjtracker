@@ -142,9 +142,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
             actor=user,
             action=TimeSheetAction.REJECTED
         )
-        print('created reject action')
         if self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED):
-            print('shooting signal rejected')
             self.signal('rejected')
 
     def approve(self, user):
@@ -191,7 +189,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
 class TimeSheetAction(SignalsMixin, OwnedEntity):
 
     CUSTOM_SIGNALS = {
-        'acted': Signal()
+        'executed': Signal()
     }
 
     ISSUED = 'I'
@@ -219,7 +217,7 @@ class TimeSheetAction(SignalsMixin, OwnedEntity):
 
     def save(self, *args, **kwargs):
         res = super(TimeSheetAction, self).save(*args, **kwargs)
-        self.signal('acted')
+        self.signal('executed')
         return res
 
 
