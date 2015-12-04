@@ -20,7 +20,7 @@ class Notification(models.Model, SignalsMixin):
 
     STATUS_ENABLED = 'E'
     STATUS_DISMISSED = 'D'
-    STATUS_EXPIRED = 'X'
+    STATUS_DISABLED = 'X'
 
     objects = NotificationQuerySet.as_manager()
 
@@ -59,7 +59,7 @@ class Notification(models.Model, SignalsMixin):
         max_length=1,
         choices=((STATUS_ENABLED, 'Active'),
                  (STATUS_DISMISSED, 'Dismissed'),
-                 (STATUS_EXPIRED, 'Expired')),
+                 (STATUS_DISABLED, 'Disabled')),
         default=STATUS_ENABLED
     )
 

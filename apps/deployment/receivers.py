@@ -38,10 +38,9 @@ def notify_timesheet_rejected(sender, instance, name=None, **kwargs):
     Notify team timekeepers and supervisors that have reviewed the timesheet
     that the timesheet has been rejected.
     """
-    recipients = set(instance.team.timekeepers.all())
-    for recipient in recipients:
+    for timekeeper in instance.team.timekeepers.all():
         Notification.objects.create(
-            recipient=recipient,
+            recipient=timekeeper,
             event_target=instance,
             event_type=name,
             title='TimeSheet Rejected',
@@ -53,22 +52,21 @@ def notify_timesheet_rejected(sender, instance, name=None, **kwargs):
         )
 
 
-def expire_issued_notifications(sender, instance, name=None, **kwargs):
+def disable_notifications(sender, instance, name=None, **kwargs):
     """
     Expire "issued" notifications, which depending on the action will be all
     notifications for a timesheet or just the ones for the actor.
     """
-    # Start building filters, restrict to TimeSheet.issued
+    # Start building filters, restrict to TimeSheet model
     ct_ts = ContentType.objects.get_for_model(TimeSheet)
-    filters = {'event_target_model': ct_ts,
-               'event_type': 'issued'}
+    filters = {'event_target_model': ct_ts}
 
     if isinstance(instance, TimeSheet):
         # Timesheet status changed: restrict to this timesheet
         filters['event_target_id'] = instance.id
 
     elif isinstance(instance, TimeSheetAction):
-        # Supervisor reviewed: restrict the action's timesheet and this supervisor
+        # Supervisor reviewed: restrict to action's timesheet and this its actor
         filters['event_target_id'] = instance.timesheet.id
         filters['recipient'] = instance.actor
 
@@ -76,17 +74,23 @@ def expire_issued_notifications(sender, instance, name=None, **kwargs):
         # WTF? No idea what to do
         raise TypeError('Cannot process for instance {}.'.format(instance))
 
-    # Finally, expire them
-    Notification.objects.filter(**filters).update(status=Notification.STATUS_EXPIRED)
+    # Finally, disable them
+    Notification.objects.enabled().filter(**filters).update(status=Notification.STATUS_DISABLED)
 
 
-# Account creation listeners
+# Account saved, ensure settings
 Account.on_signal('saved', ensure_settings)
 
-# Timesheet workflow listeners
-TimeSheetAction.on_signal('reviewed', expire_issued_notifications)
-TimeSheet.on_signal('issued', notify_timesheet_issued)
-TimeSheet.on_signal('rejected', notify_timesheet_rejected)
-TimeSheet.on_signal('rejected', expire_issued_notifications)
-TimeSheet.on_signal('approved', expire_issued_notifications)
+# Timesheet action done, disable notifs
+TimeSheetAction.on_signal('acted', disable_notifications)
 
+# Timesheet status changed, disable notifs
+TimeSheet.on_signal('issued', disable_notifications)
+TimeSheet.on_signal('approved', disable_notifications)
+TimeSheet.on_signal('rejected', disable_notifications)
+
+# Timesheet issued, notify
+TimeSheet.on_signal('issued', notify_timesheet_issued)
+
+# Timesheet rejected, notify
+TimeSheet.on_signal('rejected', notify_timesheet_rejected)
