@@ -24,7 +24,7 @@ var currentDiv = 0;
  *   - type: type of graph [column, pie, area, bar, doughnut]
  *   - url: data endpoint, including querystring
  *   - labelField: name of the instance field that contains the label (x)
- *   - dataField: name of the instance field that contains the value (y)
+ *   - dataFields: name of the instance fields that contains the values (y1, y2...)
  *   - theme (opt): theme to use (default to "theme1")
  *   - animate (opt): animate the graph? (default to false)
  *   - export (opt): allow exporting as file? (default to false)
