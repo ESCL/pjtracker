@@ -84,7 +84,8 @@ class TeamFormTest(TestCase):
         self.assertEqual(set(form.fields['supervisors'].queryset.all()), {s})
 
         # Post form with wrong timekeeper and supervisor, error
-        data = {'name': 'x', 'company': CompanyFactory.create(), 'code': 'X',
+        cpy = CompanyFactory.create(owner=self.user.owner)
+        data = {'name': 'x', 'company': cpy.id, 'code': 'X',
                 'timekeepers': [s.id], 'supervisors': [tk.id]}
         form = TeamForm(data, user=self.user)
         self.assertFalse(form.is_valid())
@@ -94,7 +95,8 @@ class TeamFormTest(TestCase):
         # Post form with correct tk+sup, no errors there
         data.update({'timekeepers': [tk.id], 'supervisors': [s.id]})
         form = TeamForm(data, user=self.user)
-        self.assertTrue(form.is_valid())
+        v = form.is_valid()
+        self.assertTrue(v)
 
 
 class PositionFormTest(TestCase):

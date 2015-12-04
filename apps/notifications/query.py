@@ -10,3 +10,8 @@ class NotificationQuerySet(QuerySet):
             return self.filter(recipient=user.id)
         return self.none()
 
+    def enabled(self):
+        return self.filter(status=self.model.STATUS_ENABLED)
+
+    def disabled(self):
+        return self.filter(status=self.model.STATUS_DISABLED)

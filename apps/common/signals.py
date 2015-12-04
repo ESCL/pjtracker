@@ -52,7 +52,7 @@ class SignalsMixin(object):
         an error if the type doesn't exist.
         """
         signal = cls._get_signal(name)
-        uid = '{}.{}'.format(cls._meta.model_name, name)
+        uid = '{}.{}.{}'.format(cls._meta.model_name, name, receiver.__name__)
         signal.connect(receiver, sender=cls, dispatch_uid=uid)
 
     def signal(self, name, **kwargs):

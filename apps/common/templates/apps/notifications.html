@@ -4,8 +4,12 @@
     <div class="row notification">
         <span class="title">{{ notification.title }}</span>
         <span class="timestamp">{{ notification.timestamp }}</span>
-        <a class="u-pull-right action" data-action="dismiss" data-id="{{ notification.id }}" href="#" title="Dismiss">X</a>
+        <div class="u-pull-right">
+            <span class="action">{{ notification.action_link|safe }}</span>
+            <span class="action"><a data-action="dismiss" data-id="{{ notification.id }}" href="#" title="Dismiss">X</a></span>
+        </div>
         <p>{{ notification.message }}</p>
+
     </div>
 {% empty %}
     <div class="row notification">No notifications available!</div>

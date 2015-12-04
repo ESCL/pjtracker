@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ...notifications.models import Notification
+from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
@@ -31,6 +31,7 @@ class TimeSheetTest(TestCase):
         self.ts = TimeSheetFactory.create(owner=self.account,
                                           team=self.team)
 
+    @mock.patch('apps.deployment.models.TimeSheet.signal', mock.MagicMock())
     def test_reviews(self):
         # Issue and check reviews, nothing
         self.ts.issue(self.timekeeper)
@@ -65,6 +66,7 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.active_reviews, [])
         self.assertEqual(self.ts.pending_reviews, {self.supervisor1, self.supervisor2})
 
+    @mock.patch('apps.deployment.models.TimeSheet.signal', mock.MagicMock())
     def test_issue(self):
         self.assertEqual(self.ts.status, TimeSheet.STATUS_PREPARING)
 
@@ -72,7 +74,6 @@ class TimeSheetTest(TestCase):
         self.assertRaises(NotAuthorizedError, self.ts.issue, self.supervisor1)
 
         # Issue the timesheet
-        n_count = Notification.objects.count()
         self.ts.issue(self.timekeeper)
 
         # Check that status and action were updated
@@ -81,18 +82,7 @@ class TimeSheetTest(TestCase):
         self.assertEqual(action.actor, self.timekeeper)
         self.assertEqual(action.action, TimeSheetAction.ISSUED)
 
-        # Check that supervisors were notified (fetch last new)
-        notifs = Notification.objects.all()[n_count:]
-        self.assertEqual(len(notifs), 2)
-        self.assertEqual(notifs[0].recipient, self.supervisor1)
-        self.assertEqual(notifs[0].event_target, self.ts)
-        self.assertEqual(notifs[0].event_type, 'issued')
-        self.assertEqual(notifs[0].title, 'TimeSheet Issued')
-        self.assertEqual(notifs[1].recipient, self.supervisor2)
-        self.assertEqual(notifs[1].event_target, self.ts)
-        self.assertEqual(notifs[1].event_type, 'issued')
-        self.assertEqual(notifs[1].title, 'TimeSheet Issued')
-
+    @mock.patch('apps.deployment.models.TimeSheet.signal', mock.MagicMock())
     def test_reject(self):
         # Issue the timesheet
         self.ts.issue(self.timekeeper)
@@ -101,7 +91,6 @@ class TimeSheetTest(TestCase):
         self.assertRaises(NotAuthorizedError, self.ts.reject, self.timekeeper)
 
         # Reject the timesheet
-        n_count = Notification.objects.count()
         self.ts.reject(self.supervisor1)
 
         # Make sure status and action are updated
@@ -110,18 +99,7 @@ class TimeSheetTest(TestCase):
         self.assertEqual(action.actor, self.supervisor1)
         self.assertEqual(action.action, TimeSheetAction.REJECTED)
 
-        # Make sure the notifications (issuer and supervisor1) are created
-        notifs = Notification.objects.all()[n_count:]
-        self.assertEqual(len(notifs), 2)
-        self.assertEqual(notifs[0].recipient, self.timekeeper)
-        self.assertEqual(notifs[0].event_target, self.ts)
-        self.assertEqual(notifs[0].event_type, 'rejected')
-        self.assertEqual(notifs[0].title, 'TimeSheet Rejected')
-        self.assertEqual(notifs[1].recipient, self.supervisor1)
-        self.assertEqual(notifs[1].event_target, self.ts)
-        self.assertEqual(notifs[1].event_type, 'rejected')
-        self.assertEqual(notifs[1].title, 'TimeSheet Rejected')
-
+    @mock.patch('apps.deployment.models.TimeSheet.signal', mock.MagicMock())
     def test_approve(self):
         # Issue the timesheet
         self.ts.issue(self.timekeeper)
@@ -130,7 +108,6 @@ class TimeSheetTest(TestCase):
         self.assertRaises(NotAuthorizedError, self.ts.approve, self.timekeeper)
 
         # Approve the timesheet
-        n_count = Notification.objects.count()
         self.ts.approve(self.supervisor1)
 
         # Status was not updated yet, since default approval policy is ALL
@@ -139,9 +116,6 @@ class TimeSheetTest(TestCase):
         action = TimeSheetAction.objects.latest('timestamp')
         self.assertEqual(action.actor, self.supervisor1)
         self.assertEqual(action.action, TimeSheetAction.APPROVED)
-
-        # Make sure no notifications we created
-        self.assertEqual(n_count, Notification.objects.count())
 
         # Approve again, should know update status
         self.ts.approve(self.supervisor2)
@@ -152,7 +126,6 @@ class TimeSheetTest(TestCase):
         action = TimeSheetAction.objects.latest('timestamp')
         self.assertEqual(action.actor, self.supervisor2)
         self.assertEqual(action.action, TimeSheetAction.APPROVED)
-        self.assertEqual(n_count, Notification.objects.count())
 
     def test_work_logs_properties(self):
         # All properties are empty first
@@ -192,3 +165,4 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.resources, {e1.resource_ptr.id: e1.resource_ptr,
                                              e2.resource_ptr.id: e2.resource_ptr})
         self.assertEqual(self.ts.activities, {a1.id: a1, a2.id: a2, a3.id: a3})
+

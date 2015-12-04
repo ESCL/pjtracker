@@ -34,3 +34,8 @@ class UserFactory(DjangoModelFactory):
         if created and value:
             self.set_password(value)
             self.save()
+
+    @post_generation
+    def user_permissions(self, created, value):
+        if created and value:
+            self.user_permissions.add(*value)
