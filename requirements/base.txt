@@ -4,3 +4,9 @@ django-tastypie==0.12.2
 
 # Factory, required for unit tests and database bootstrapping
 factory_boy==2.6.0
+
+# OAuth stuff
+django-oauth-toolkit==0.9.0
+
+# CORS headers
+django-cors-headers==1.1.0

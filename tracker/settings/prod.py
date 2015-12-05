@@ -16,6 +16,13 @@ TASTYPIE_FULL_DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
+# CORS allowed domains
+
+CORS_ORIGIN_WHITELIST = (
+    'forecast.escng.com',
+)
+
+
 # Database connection
 
 DATABASES['default'].update({

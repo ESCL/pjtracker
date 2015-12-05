@@ -39,13 +39,17 @@ APP_INFO = {
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # OAuth provider and CORS headers
+    'oauth2_provider',
+    'corsheaders',
 
     # Apps
     'apps.common',
@@ -55,10 +59,11 @@ INSTALLED_APPS = (
     'apps.resources',
     'apps.work',
     'apps.deployment',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,7 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-)
+]
 
 ROOT_URLCONF = 'tracker.urls'
 
@@ -128,6 +133,8 @@ STATIC_URL = '/static/'
 # Auth setup
 
 AUTH_USER_MODEL = 'accounts.User'
+LOGIN_URL = '/account/login'
+LOGOUT_URL = '/account/logout'
 LOGIN_REDIRECT_URL = '/'
 
 

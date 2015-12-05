@@ -11,6 +11,11 @@ DEBUG = True
 TASTYPIE_FULL_DEBUG = True
 
 
+# CORS allowed domains
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 # Database bootstrapping
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = True

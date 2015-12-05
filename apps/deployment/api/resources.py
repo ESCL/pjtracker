@@ -2,7 +2,9 @@ __author__ = 'kako'
 
 from django.db.models import Sum
 from tastypie import fields
+from tastypie.authentication import Authentication, MultiAuthentication
 
+from ...common.api.authentication import OAuth2Authentication
 from ...common.api.resources import OwnedResource
 from ...common.api.serializers import JsonCsvSerializer
 from ...resources.models import Resource
@@ -21,6 +23,7 @@ class HoursResource(OwnedResource):
         include_resource_uri = False
         serializer = JsonCsvSerializer(formats=('json', 'csv',))
         ordering = ('activity', 'labour_type', 'resource', 'hours',)
+        authentication = MultiAuthentication(OAuth2Authentication(), Authentication())
 
     project = fields.ToOneField('apps.deployment.api.resources.MinimalProjectResource',
                                 attribute='activity__project', full=True, null=True)

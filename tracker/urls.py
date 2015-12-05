@@ -14,6 +14,9 @@ urlpatterns = [
     url(r'^wbs/', include('apps.work.urls')),
     url(r'^work/', include('apps.deployment.urls')),
 
+    # OAuth2 provider
+    url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
     # Admin dashboard
     url(r'^admin/', include(admin.site.urls)),
 ]
