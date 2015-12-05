@@ -54,3 +54,5 @@ class UserView(StandardResourceView):
     edit_template = 'user-edit.html'
     search_form = UserSearchForm
     main_form = UserForm
+
+
