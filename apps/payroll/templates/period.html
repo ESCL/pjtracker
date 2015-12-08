@@ -1,0 +1,38 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'periods' %}">periods</a></li>
+<li><span>{{ period.code }}</span></li>
+<li><a href="{% url 'period' pk=period.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Name</dt><dd>{{ period.name }}</dd>
+        <dt>Code</dt><dd>{{ period.code }}</dd>
+        <dt>Start</dt><dd>{{ period.start_date }}</dd>
+        <dt>End</dt><dd>{{ period.end_date }}</dd>
+        <dt>Forecast Dates</dt><dd>{{ period.forecast_start_date }} - {{ period.end_date }}</dd>
+    </dl>
+</div>
+
+{% endblock %}

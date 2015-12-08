@@ -60,6 +60,31 @@
         {{ timesheets_form.non_field_errors }}
     </div>
 
+    <hr>
+
+    <div class="row">
+        <h5>Payroll</h5>
+        <div class="row">
+            <div class="six columns">
+                <h6>Standard Hours</h6>
+                <div class="row">
+                    <div class="six columns">
+                        {% for field in standard_hours_form %}
+                            {{ field.label_tag }}
+                            {{ field }}
+                        {% endfor %}
+                    </div>
+                    <div class="six columns">
+                        <p>
+                            Standard hours are used to predict the forecast that will be used to complete the
+                            payroll period's hours.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="buttons">
         <button type="reset">Reset</button>
         <button type="submit" class="button-primary">Save</button>

@@ -60,6 +60,7 @@
                 <ul>
                     <li><a href="{% url 'calendar' %}">Calendar</a></li>
                     <li><a href="{% url 'hour-types' %}">Hour Types</a></li>
+                    <li><a href="{% url 'periods' %}">Periods</a></li>
                 </ul>
             </li>
 
@@ -73,7 +74,7 @@
                     {% if user.is_staff %}
                         <li><a href="/admin/">Admin</a></li>
                     {% else %}
-                        {% if 'deployment.configure_timesheetsettings' in perms %}
+                        {% if 'deployment.change_timesheetsettings' in perms %}
                             <li><a href="{% url 'settings' %}">Settings</a></li>
                         {% endif %}
                         <li><a href="{% url 'users' %}">Users</a></li>

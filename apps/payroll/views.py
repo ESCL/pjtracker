@@ -2,8 +2,10 @@ __author__ = 'kako'
 
 from ..common.views.base import StandardResourceView
 
-from .models import CalendarDay, HourType
-from .forms import CalendarDayForm, CalendarDaySearchForm, HourTypeForm, HourTypeSearchForm
+from .models import CalendarDay, HourType, Period
+from .forms import (CalendarDayForm, CalendarDaySearchForm,
+                    HourTypeForm, HourTypeSearchForm,
+                    PeriodForm, PeriodSearchForm)
 
 
 class CalendarDayView(StandardResourceView):
@@ -24,3 +26,12 @@ class HourTypeView(StandardResourceView):
     detail_template = 'hour-type.html'
     edit_template = 'hour-type-edit.html'
     collection_view_name = 'hour-types'
+
+
+class PeriodView(StandardResourceView):
+    model = Period
+    main_form = PeriodForm
+    search_form = PeriodSearchForm
+    list_template = 'periods.html'
+    detail_template = 'period.html'
+    edit_template = 'period-edit.html'

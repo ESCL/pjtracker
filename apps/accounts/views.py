@@ -3,6 +3,7 @@ from django.shortcuts import render
 from ..common.exceptions import NotFoundError, NotAuthorizedError
 from ..common.views.base import SafeView, StandardResourceView
 from ..deployment.forms import TimeSheetSettingsForm
+from ..payroll.forms import StandardHoursForm
 from .forms import UserForm, UserSearchForm
 from .models import User
 
@@ -25,10 +26,12 @@ class SettingsView(SafeView):
     def get(self, request):
         account = request.user.owner
         ts_form = TimeSheetSettingsForm(instance=account.timesheet_settings)
+        sh_form = StandardHoursForm(account=account)
 
         context = {
             'account': account,
-            'timesheets_form': ts_form
+            'timesheets_form': ts_form,
+            'standard_hours_form': sh_form
         }
         return render(request, self.template_name, context)
 
@@ -36,12 +39,15 @@ class SettingsView(SafeView):
         account = request.user.owner
 
         ts_form = TimeSheetSettingsForm(request.POST, instance=account.timesheet_settings)
-        if ts_form.is_valid():
+        sh_form = StandardHoursForm(request.POST, account=account)
+        if ts_form.is_valid() and sh_form.is_valid():
             ts_form.save()
+            sh_form.save()
 
         context = {
             'account': account,
-            'timesheets_form': ts_form
+            'timesheets_form': ts_form,
+            'standard_hours_form': sh_form
         }
         return render(request, self.template_name, context)
 

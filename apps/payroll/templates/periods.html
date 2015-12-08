@@ -15,8 +15,8 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><span>calendar</span></li>
-<li><a href="{% url 'calendar-day' action='add' %}" title="add">+</a></li>
+<li><span>periods</span></li>
+<li><a href="{% url 'period' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
 
@@ -24,28 +24,30 @@
 {% block body %}
 
 {% include 'apps/search-form.html' %}
-{% include 'apps/paginator.html' with list=calendardays %}
+{% include 'apps/paginator.html' with list=periods %}
 
-{% if calendardays %}
+{% if periods %}
     <table>
         <thead>
             <tr>
-                <th>Date</th>
                 <th>Name</th>
-                <th>Type</th>
+                <th>Code</th>
+                <th>Start</th>
+                <th>End</th>
                 <th class="actions">Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for d in calendardays %}
+            {% for p in periods %}
                 <tr>
-                    <td>{{ d.date }}</td>
-                    <td>{{ d.name }}</td>
-                    <td>{{ d.get_type_display }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.code }}</td>
+                    <td>{{ p.start_date }}</td>
+                    <td>{{ p.end_date }}</td>
                     <td class="actions">
                         <ul class="action-group">
-                            <li><a href="{% url 'calendar-day' pk=d.id %}">view</a></li>
-                            <li><a href="{% url 'calendar-day' pk=d.id action='edit' %}">edit</a></li>
+                            <li><a href="{% url 'period' pk=p.id %}">view</a></li>
+                            <li><a href="{% url 'period' pk=p.id action='edit' %}">edit</a></li>
                         </ul>
                     </td>
                 </tr>
@@ -53,7 +55,7 @@
         </tbody>
     </table>
 {% else %}
-    <p>No calendar days found matching the current search criteria.</p>
+    <p>No periods found matching the current search criteria.</p>
 {% endif %}
 
 {% endblock %}
