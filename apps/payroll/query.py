@@ -7,12 +7,14 @@ from ..common.db.query import OwnedEntityQuerySet
 
 class CalendarDayQuerySet(OwnedEntityQuerySet):
 
-    def holidays(self, year=None):
-        if not year:
-            year = date.today().year
-        return self.filter(year=year) | self.filter(year=None)
-
     def in_range(self, cur_date, end_date):
+        """
+        Get a dictionary of the form date:CalendarDay that is a merge of
+        stored day instances (holidays) and new ones.
+
+        Note: we return a dictionary to allow easy access through date objects
+        for work logs.
+        """
         # Start with all the stored ones
         res = {cd.date: cd for cd in self.filter(date__gte=cur_date, date__lte=end_date)}
 
