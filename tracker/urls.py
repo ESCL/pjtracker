@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^resources/', include('apps.resources.urls')),
     url(r'^wbs/', include('apps.work.urls')),
     url(r'^work/', include('apps.deployment.urls')),
+    url(r'^payroll/', include('apps.payroll.urls')),
 
     # OAuth2 provider
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),

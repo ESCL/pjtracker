@@ -56,6 +56,14 @@
             </li>
 
             <li>
+                <a href="#">Payroll</a>
+                <ul>
+                    <li><a href="{% url 'calendar' %}">Calendar</a></li>
+                    <li><a href="{% url 'hour-types' %}">Hour Types</a></li>
+                </ul>
+            </li>
+
+            <li>
                 <a href="#">
                     <img src="{% static 'img/menu/user.png' %}">
                     {{ request.user.username }}

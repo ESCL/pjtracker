@@ -1,0 +1,35 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'hour-types' %}">hour types</a></li>
+<li><span>{{ hourtype.code }}</span></li>
+<li><a href="{% url 'hour-type' pk=hourtype.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Name</dt><dd>{{ hourtype.name }}</dd>
+        <dt>Code</dt><dd>{{ hourtype.code }}</dd>
+    </dl>
+</div>
+
+{% endblock %}

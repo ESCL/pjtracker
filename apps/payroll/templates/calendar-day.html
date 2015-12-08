@@ -1,0 +1,36 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'calendar' %}">calendar</a></li>
+<li><span>{{ calendarday.date.isoformat }}</span></li>
+<li><a href="{% url 'calendar-day' pk=calendarday.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h4>Main Information</h4>
+    <dl>
+        <dt>Date</dt><dd>{{ calendarday.date }}</dd>
+        <dt>Name</dt><dd>{{ calendarday.name }}</dd>
+        <dt>Type</dt><dd>{{ calendarday.get_type_display }}</dd>
+    </dl>
+</div>
+
+{% endblock %}
