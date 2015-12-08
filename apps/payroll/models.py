@@ -268,7 +268,10 @@ class WorkedHours(OwnedEntity):
     @classmethod
     def _get_adjusted_hours(cls, period, employee):
         """
-        Get a dictionary of
+        Get a dictionary of hours per hour type to adjust for the previous
+        period, calculated as retroactive actual - forecast. For instance, if
+        we our forecast of OT150 was 5 hours and got only 3, the adjustment
+        for OT150 is -2.
         """
         sql = '''SELECT
         pf.id AS id, pf.period_id, pf.phase, pf.employee_id, pf.hour_type_id, COALESCE(pr.hours, 0) - pf.hours AS hours
@@ -288,9 +291,11 @@ class WorkedHours(OwnedEntity):
         Get new WorkedHours instances for the given period, employee and phase.
         """
         if phase == cls.PHASE_ADJUSTMENT:
+            # Adjustment phase, set directly
             hours_per_type = cls._get_adjusted_hours(period, employee)
 
         else:
+            # Non-adjustment, we need to calculate them
             if phase == cls.PHASE_FORECAST:
                 # Forecast phase
                 start = period.forecast_start_date
@@ -298,6 +303,7 @@ class WorkedHours(OwnedEntity):
                 hours_method = cls._get_forecast_hours
 
             else:
+                # Actual phase
                 if phase == cls.PHASE_ACTUAL:
                     start = period.start_date
                     end = period.forecast_start_date - timedelta(days=1)
