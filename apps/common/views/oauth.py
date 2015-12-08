@@ -1,7 +1,6 @@
 __author__ = 'kako'
 
-from django.http import HttpResponseRedirect
-from oauth2_provider.views.base import AuthorizationView, TokenView, RevokeTokenView
+from oauth2_provider.views.base import AuthorizationView
 from oauth2_provider.exceptions import OAuthToolkitError
 from oauth2_provider.http import HttpResponseUriRedirect
 

@@ -33,6 +33,9 @@ class OwnedEntityQuerySet(QuerySet):
         except AttributeError:
             raise NotAuthenticatedError('A user with account is required to view owned objects.')
 
+    def for_owner(self, owner):
+        return self.filter(owner=owner)
+
 
 class ValuesGroup(object):
     """

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'apps.resources',
     'apps.work',
     'apps.deployment',
+    'apps.payroll',
 ]
 
 MIDDLEWARE_CLASSES = [
