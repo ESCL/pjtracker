@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 
 from django.db import models
+from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity
 from ..deployment.models import WorkLog, TimeSheet
@@ -151,6 +152,13 @@ class Period(OwnedEntity):
     forecast_start_date = models.DateField(
     )
 
+    @cached_property
+    def previous(self):
+        return self.__class__.objects.for_owner(self.owner).get(end_date=self.start_date - timedelta(days=1))
+
+    def __str__(self):
+        return self.code
+
     def save(self, *args, **kwargs):
         self.code = '{:%Y-%m}'.format(self.start_date)
         if not self.name:
@@ -166,6 +174,7 @@ class WorkedHours(OwnedEntity):
     Note: instances of this model SHOULD ONLY be created through this model's
     calculate class method.
     """
+    PHASE_ADJUSTMENT = 'D'
     PHASE_ACTUAL = 'A'
     PHASE_FORECAST = 'F'
     PHASE_RETROACTIVE = 'R'
@@ -176,7 +185,8 @@ class WorkedHours(OwnedEntity):
     phase = models.CharField(
         max_length=1,
         db_index=True,
-        choices=((PHASE_ACTUAL, 'Actual'),
+        choices=((PHASE_ADJUSTMENT, 'Adjustment'),
+                 (PHASE_ACTUAL, 'Actual'),
                  (PHASE_FORECAST, 'Forecast'),
                  (PHASE_RETROACTIVE, 'Retroactive'))
     )
@@ -256,36 +266,63 @@ class WorkedHours(OwnedEntity):
         return hpt
 
     @classmethod
+    def _get_adjusted_hours(cls, period, employee):
+        """
+        Get a dictionary of hours per hour type to adjust for the previous
+        period, calculated as retroactive actual - forecast. For instance, if
+        we our forecast of OT150 was 5 hours and got only 3, the adjustment
+        for OT150 is -2.
+        """
+        sql = '''SELECT
+        pf.id AS id, pf.period_id, pf.phase, pf.employee_id, pf.hour_type_id, COALESCE(pr.hours, 0) - pf.hours AS hours
+        FROM (SELECT * from payroll_workedhours WHERE phase = %s AND period_id = %s AND employee_id = %s)
+        as pf
+        LEFT OUTER JOIN (SELECT * from payroll_workedhours WHERE phase = %s and period_id = %s AND employee_id = %s)
+        as pr
+        ON (pf.hour_type_id = pr.hour_type_id)
+        '''
+        params = [cls.PHASE_FORECAST, period.previous.id, employee.id,
+                  cls.PHASE_RETROACTIVE, period.previous.id, employee.id]
+        return {wh.hour_type: wh.hours for wh in cls.objects.raw(sql, params)}
+
+    @classmethod
     def calculate(cls, period, phase, employee):
         """
         Get new WorkedHours instances for the given period, employee and phase.
         """
-        if phase == cls.PHASE_FORECAST:
-            # Forecast phase
-            start = period.forecast_start_date
-            end = period.end_date
-            hours_method = cls._get_forecast_hours
+        if phase == cls.PHASE_ADJUSTMENT:
+            # Adjustment phase, set directly
+            hours_per_type = cls._get_adjusted_hours(period, employee)
 
         else:
-            if phase == cls.PHASE_ACTUAL:
-                start = period.start_date
-                end = period.forecast_start_date - timedelta(days=1)
-            else:
+            # Non-adjustment, we need to calculate them
+            if phase == cls.PHASE_FORECAST:
+                # Forecast phase
                 start = period.forecast_start_date
                 end = period.end_date
-            hours_method = cls._get_actual_hours
+                hours_method = cls._get_forecast_hours
 
-        # Now get days, ranges and hours per day
-        days = CalendarDay.objects.in_range(start, end)
-        ranges = cls._get_day_ranges(employee.owner)
-        daily_hours = hours_method(days, employee, start, end)
+            else:
+                # Actual phase
+                if phase == cls.PHASE_ACTUAL:
+                    start = period.start_date
+                    end = period.forecast_start_date - timedelta(days=1)
+                else:
+                    start = period.forecast_start_date
+                    end = period.end_date
+                hours_method = cls._get_actual_hours
 
-        # Now calculate the types
-        hours_per_type = {}
-        for day in days:
-            hpt = cls._split_hours_per_type(daily_hours.get(day.date, 0), ranges[day.type])
-            for ht, h in hpt.items():
-                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
+            # Now get days, ranges and hours per day
+            days = CalendarDay.objects.in_range(start, end)
+            ranges = cls._get_day_ranges(employee.owner)
+            daily_hours = hours_method(days, employee, start, end)
+
+            # Now calculate the types
+            hours_per_type = {}
+            for day in days:
+                hpt = cls._split_hours_per_type(daily_hours.get(day.date, 0), ranges[day.type])
+                for ht, h in hpt.items():
+                    hours_per_type[ht] = hours_per_type.get(ht, 0) + h
 
         # Now return the list, one per type:hours
         return [cls(employee=employee, period=period, phase=phase,

@@ -99,112 +99,143 @@ class WorkedHoursTest(TestCase):
         self.ot150 = Overtime150HoursFactory.create(owner=self.acc)
         self.ot200 = Overtime200HoursFactory.create(owner=self.acc)
 
-        # Weekdays, normal up to 8, 150 after that
+        # Set standard hours: Weekdays 9, saturdays 6
+        StandardHours.objects.create(day_type=CalendarDay.WEEKDAY, hours=9, owner=self.acc)
+        StandardHours.objects.create(day_type=CalendarDay.SATURDAY, hours=6, owner=self.acc)
+
+        # Set normal ranges
         HourTypeRange.objects.create(day_type=CalendarDay.WEEKDAY, hour_type=self.n, limit=8)
         HourTypeRange.objects.create(day_type=CalendarDay.WEEKDAY, hour_type=self.ot150)
-
-        # Saturday and sunday, 150 up to 4, 200 after that
         HourTypeRange.objects.create(day_type=CalendarDay.SATURDAY, hour_type=self.ot150, limit=4)
         HourTypeRange.objects.create(day_type=CalendarDay.SATURDAY, hour_type=self.ot200)
-
-        # Sunday and public holidays all 200
         HourTypeRange.objects.create(day_type=CalendarDay.SUNDAY, hour_type=self.ot200)
         HourTypeRange.objects.create(day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
 
-        # Make friday a public holiday
-        CalendarDay.objects.create(date=date(2015, 12, 11), type=CalendarDay.PUBLIC_HOLIDAY)
+        # Make friday a public holiday and create the period
+        CalendarDay.objects.create(date=date(2015, 12, 25), type=CalendarDay.PUBLIC_HOLIDAY)
+        self.period = Period.objects.create(start_date=date(2015, 12, 5),
+                                            end_date=date(2016, 1, 3),
+                                            forecast_start_date=date(2015, 12, 28))
 
-    def test_calculate_actual(self):
-        # Monday: 8 normal
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 7)),
+        # Now add hours for the current week
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 21)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=8)
-
-        # Tuesday: 8 normal + 2 at 150
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 8)),
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 22)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=10)
-
-        # Wednesday: 4 normal
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 9)),
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 23)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=4)
-
-        # Thursday: 8 normal + 4 at 150
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 10)),
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 24)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=12)
-
-        # Holiday: 4 at 200
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 11)),
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 25)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=4)
-
-        # Saturday: 4 at 150 + 2 at 200
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 12)),
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 26)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=6)
 
         # Approve all timesheets to get the results
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
 
-        # Create one period
-        period = Period.objects.create(start_date=date(2015, 12, 1),
-                                       end_date=date(2015, 12, 31),
-                                       forecast_start_date=date(2015, 12, 24))
-
+    def test_calculate_actual(self):
         # Now calculate all hours for that employee
-        res = WorkedHours.calculate(period, WorkedHours.PHASE_ACTUAL, self.emp)
+        res = WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
         # Normal hours, 36 in total
-        self.assertEqual(wh1.period, period)
+        self.assertEqual(wh1.period, self.period)
         self.assertEqual(wh1.employee, self.emp)
         self.assertEqual(wh1.hour_type, self.n)
         self.assertEqual(wh1.hours, 28)
 
         # Overtime at 150, 10 in total
-        self.assertEqual(wh2.period, period)
+        self.assertEqual(wh2.period, self.period)
         self.assertEqual(wh2.employee, self.emp)
         self.assertEqual(wh2.hour_type, self.ot150)
         self.assertEqual(wh2.hours, 10)
 
         # Overtime at 200, 6 in total
-        self.assertEqual(wh3.period, period)
+        self.assertEqual(wh3.period, self.period)
         self.assertEqual(wh3.employee, self.emp)
         self.assertEqual(wh3.hour_type, self.ot200)
         self.assertEqual(wh3.hours, 6)
 
     def test_calculate_forecast(self):
-        # Weekdays 9, saturdays 6 (slave, dude!)
-        StandardHours.objects.create(day_type=CalendarDay.WEEKDAY, hours=9, owner=self.acc)
-        StandardHours.objects.create(day_type=CalendarDay.SATURDAY, hours=6, owner=self.acc)
-
-        # Create one period
-        period = Period.objects.create(start_date=date(2015, 12, 1),
-                                       end_date=date(2015, 12, 31),
-                                       forecast_start_date=date(2015, 12, 25))
-
         # Now calculate all hours for that employee
-        res = WorkedHours.calculate(period, WorkedHours.PHASE_FORECAST, self.emp)
+        res = WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
         # Normal hours, 40 in total
-        self.assertEqual(wh1.period, period)
+        self.assertEqual(wh1.period, self.period)
         self.assertEqual(wh1.employee, self.emp)
         self.assertEqual(wh1.hour_type, self.n)
         self.assertEqual(wh1.hours, 40)
 
         # Overtime at 150, 9 in total
-        self.assertEqual(wh2.period, period)
+        self.assertEqual(wh2.period, self.period)
         self.assertEqual(wh2.employee, self.emp)
         self.assertEqual(wh2.hour_type, self.ot150)
         self.assertEqual(wh2.hours, 9)
 
         # Overtime at 200, 2 in total
-        self.assertEqual(wh3.period, period)
+        self.assertEqual(wh3.period, self.period)
         self.assertEqual(wh3.employee, self.emp)
         self.assertEqual(wh3.hour_type, self.ot200)
         self.assertEqual(wh3.hours, 2)
+
+    def test_calculate_adjustment(self):
+        # Add a new period
+        self.period2 = Period.objects.create(start_date=date(2016, 1, 4),
+                                             end_date=date(2016, 2, 1),
+                                             forecast_start_date=date(2016, 1, 25))
+
+        # Calculate and save actual+forecast
+        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp):
+            wh.save()
+        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp):
+            wh.save()
+
+        # Now add real hours, 10 on weekdays and 7 on saturday (4+3)
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 29)),
+                               resource=self.emp.resource_ptr, activity=self.act,
+                               labour_type=self.lt, hours=6)
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 30)),
+                               resource=self.emp.resource_ptr, activity=self.act,
+                               labour_type=self.lt, hours=4)
+        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2016, 1, 2)),
+                               resource=self.emp.resource_ptr, activity=self.act,
+                               labour_type=self.lt, hours=7)
+        TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
+
+        # Calculate retroactive hours for previous
+        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_RETROACTIVE, self.emp):
+            wh.save()
+
+        # Calculate adjustment: normal -35, ot150 -4, nothing for ot200
+        res = WorkedHours.calculate(self.period2, WorkedHours.PHASE_ADJUSTMENT, self.emp)
+        self.assertEqual(len(res), 3)
+        wh1, wh2, wh3 = res
+
+        # Normal hours: 10 - 40 = -30
+        self.assertEqual(wh1.period, self.period2)
+        self.assertEqual(wh1.employee, self.emp)
+        self.assertEqual(wh1.hour_type, self.n)
+        self.assertEqual(wh1.hours, -30)
+
+        # Overtime at 150: 4 - 9 = -5
+        self.assertEqual(wh2.period, self.period2)
+        self.assertEqual(wh2.employee, self.emp)
+        self.assertEqual(wh2.hour_type, self.ot150)
+        self.assertEqual(wh2.hours, -5)
+
+        # Overtime at 200: 3 - 2 = 1
+        self.assertEqual(wh3.period, self.period2)
+        self.assertEqual(wh3.employee, self.emp)
+        self.assertEqual(wh3.hour_type, self.ot200)
+        self.assertEqual(wh3.hours, 1)
+
