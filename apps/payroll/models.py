@@ -70,12 +70,12 @@ class HourType(OwnedEntity):
         return self.name
 
 
-
-
-class HourTypeRange(OwnedEntity):
-
+class DayTypeBase(OwnedEntity):
+    """
+    Base class for models that have a day_type field.
+    """
     class Meta:
-        ordering = ('day_type', 'limit',)
+       abstract = True
 
     day_type = models.CharField(
         max_length=3,
@@ -86,6 +86,13 @@ class HourTypeRange(OwnedEntity):
                  (CalendarDay.NATIONAL_HOLIDAY, 'National Holiday'),
                  (CalendarDay.STATE_HOLIDAY, 'State Holiday'))
     )
+
+
+class HourTypeRange(DayTypeBase):
+
+    class Meta:
+        ordering = ('day_type', 'limit',)
+
     limit = models.DecimalField(
         decimal_places=2,
         max_digits=4,
@@ -97,6 +104,17 @@ class HourTypeRange(OwnedEntity):
 
     def __str__(self):
         return '{} {}'.format(self.day_type, self.hour_type)
+
+
+class StandardHours(DayTypeBase):
+
+    class Meta:
+        unique_together = ('owner', 'day_type',)
+
+    hours = models.DecimalField(
+        decimal_places=2,
+        max_digits=4,
+    )
 
 
 class Period(OwnedEntity):
@@ -111,7 +129,7 @@ class Period(OwnedEntity):
     )
     end_date = models.DateField(
     )
-    predicted_days = models.PositiveIntegerField(
+    forecast_start_date = models.DateField(
     )
 
     def save(self, *args, **kwargs):
@@ -124,25 +142,19 @@ class Period(OwnedEntity):
 
 class WorkedHours(OwnedEntity):
 
-    SOURCE_ACTUAL = 'A'
-    SOURCE_PREDICTED = 'P'
-    ENACTMENT_CURRENT = 'C'
-    ENACTMENT_RETROACTIVE = 'R'
+    PHASE_ACTUAL = 'A'
+    PHASE_FORECAST = 'F'
+    PHASE_RETROACTIVE = 'R'
 
     period = models.ForeignKey(
         'Period'
     )
-    source = models.CharField(
+    phase = models.CharField(
         max_length=1,
         db_index=True,
-        choices=((SOURCE_ACTUAL, 'Actual'),
-                 (SOURCE_PREDICTED, 'Predicted'))
-    )
-    enactment = models.CharField(
-        max_length=1,
-        db_index=True,
-        choices=((ENACTMENT_CURRENT, 'Current'),
-                 (ENACTMENT_RETROACTIVE, 'Retroactive'))
+        choices=((PHASE_ACTUAL, 'Actual'),
+                 (PHASE_FORECAST, 'Forecast'),
+                 (PHASE_RETROACTIVE, 'Retroactive'))
     )
     employee = models.ForeignKey(
         'resources.Employee'
@@ -155,27 +167,79 @@ class WorkedHours(OwnedEntity):
         max_digits=4
     )
 
-    @classmethod
-    def calculate_actual(cls, period, employee, enactment):
-        # Get hour type ranges per day type
+    @staticmethod
+    def get_day_ranges(owner):
+        """
+        Get a dictionary of ranges per day type, where ranges is a list of
+        hour type ranges to apply in sequence (the order MUST be respected).
+        """
         day_ranges = {}
-        for range in HourTypeRange.objects.for_owner(period.owner):
+        for range in HourTypeRange.objects.for_owner(owner):
             if range.day_type not in day_ranges:
                 day_ranges[range.day_type] = []
             day_ranges[range.day_type].append(range)
+        return day_ranges
 
-        # Determine the dates
-        if enactment == cls.ENACTMENT_CURRENT:
-            start_date = period.start_date
-            end_date = period.end_date - timedelta(days=period.predicted_days)
+    @staticmethod
+    def split_hours_per_type(hours, ranges):
+        """
+        Get a dictionary of hours per hour type, determined by applying the
+        given hour type ranges to the given hours.
+        """
+        hpt = {}
+        limit = 0
+        for r in ranges:
+            # Get hours, sliced to respect both limits
+            h = min(max(hours - limit, 0), r.limit)
+
+            if h:
+                # Hours are not zero, add them
+                if r.hour_type not in hpt:
+                    hpt[r.hour_type] = 0
+                hpt[r.hour_type] += h
+
+            # Update limit for next one
+            limit = r.limit or 0
+
+        # Return split
+        return hpt
+
+    @classmethod
+    def calculate(cls, period, phase, employee):
+        """
+        Get new WorkedHours instances for the given period, employee and phase.
+        """
+        if phase == cls.PHASE_FORECAST:
+            # Forecast phase, calculate directly
+            hours_per_type = cls._calculate_forecast(employee, period.forecast_start_date,
+                                                     period.end_date)
+
         else:
-            start_date = period.end_date - timedelta(days=period.predicted_days + 1)
-            end_date = period.end_date
+            # One of actuals, first determine dates
+            if phase == cls.PHASE_ACTUAL:
+                start = period.start_date
+                end = period.forecast_start_date - timedelta(days=1)
+            else:
+                start = period.start_date
+                end = period.forecast_start_date - timedelta(days=1)
+
+            # Now calculate
+            hours_per_type = cls._calculate_actual(employee, start, end)
+
+        # Now return the list, one per type:hours
+        return [cls(employee=employee, period=period, phase=phase,
+                    hour_type=ht, hours=h)
+                for ht, h in hours_per_type.items()]
+
+    @classmethod
+    def _calculate_actual(cls, employee, start_date, end_date):
+        # Get hour type ranges per day type
+        day_ranges = cls.get_day_ranges(employee.owner)
 
         # Get all the days in the range (stored or not)
         days = CalendarDay.objects.in_range(start_date, end_date)
 
-        # Get the work logs
+        # Get the hours per day (actual values)
         groups = WorkLog.objects.filter(
             resource=employee.resource_ptr,
             timesheet__status=TimeSheet.STATUS_APPROVED,
@@ -184,24 +248,39 @@ class WorkedHours(OwnedEntity):
         )
 
         # Now collect hours per hour type
-        hour_per_type = {}
+        hours_per_type = {}
         for wlg in groups.values('timesheet__date').annotate(hours=models.Sum('hours')):
             day = days[wlg.timesheet.date]
-            cur_limit = 0
+            hpt = cls.split_hours_per_type(wlg.hours, day_ranges[day.type])
+            for ht, h in hpt.items():
+                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
 
-            for r in day_ranges[day.type]:
-                # Get hours, sliced to respect both limits
-                h = min(max(wlg.hours - cur_limit, 0), r.limit)
+        return hours_per_type
 
-                if h:
-                    # Hours are not zero, add them
-                    if r.hour_type not in hour_per_type:
-                        hour_per_type[r.hour_type] = 0
-                    hour_per_type[r.hour_type] += h
+    @classmethod
+    def _calculate_forecast(cls, employee, start_date, end_date):
+        # Get hour type ranges per day type
+        day_ranges = cls.get_day_ranges(employee.owner)
 
-                # Update limit for next one
-                cur_limit = r.limit or 0
+        # Get all the days in the range (stored or not)
+        days = CalendarDay.objects.in_range(start_date, end_date)
 
-        return [cls(employee=employee, period=period, source=cls.SOURCE_ACTUAL,
-                    enactment=enactment, hour_type=ht, hours=h)
-                for ht, h in hour_per_type.items()]
+        # Get hours per day (estimated values)
+        # TODO: abstract this away to allow using other methods
+        day_hours = {sh.day_type: sh.hours for sh in
+                     StandardHours.objects.for_owner(employee.owner)}
+
+        # Now collect hours per hour type
+        hours_per_type = {}
+        cur_date = start_date
+        while cur_date <= end_date:
+            day = days[cur_date]
+            hpt = cls.split_hours_per_type(day_hours.get(day.type, 0),
+                                           day_ranges[day.type])
+            for ht, h in hpt.items():
+                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
+
+            # Increase date
+            cur_date += timedelta(days=1)
+
+        return hours_per_type

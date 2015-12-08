@@ -62,7 +62,6 @@ class ManagementLabourFactory(DjangoModelFactory):
     code = 'MG'
 
 
-
 class IndirectLabourFactory(DjangoModelFactory):
 
     class Meta:

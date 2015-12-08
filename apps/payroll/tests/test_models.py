@@ -90,13 +90,14 @@ class WorkedHoursTest(TestCase):
         # Create an activity and an employee
         self.lt = ManagementLabourFactory.create()
         self.act = ActivityFactory.create(labour_types=[self.lt])
-        self.emp = EmployeeFactory.create()
+        self.acc = self.act.owner
+        self.emp = EmployeeFactory.create(owner=self.acc)
         self.team = self.emp.team
 
         # Create standard hour types (normal, OT 150%, OT 200%)
-        self.n = NormalHoursFactory.create()
-        self.ot150 = Overtime150HoursFactory.create()
-        self.ot200 = Overtime200HoursFactory.create()
+        self.n = NormalHoursFactory.create(owner=self.acc)
+        self.ot150 = Overtime150HoursFactory.create(owner=self.acc)
+        self.ot200 = Overtime200HoursFactory.create(owner=self.acc)
 
         # Weekdays, normal up to 8, 150 after that
         HourTypeRange.objects.create(day_type=CalendarDay.WEEKDAY, hour_type=self.n, limit=8)
@@ -153,7 +154,7 @@ class WorkedHoursTest(TestCase):
                                        forecast_start_date=date(2015, 12, 24))
 
         # Now calculate all hours for that employee
-        res = WorkedHours.calculate_actual(period, self.emp, WorkedHours.PHASE_ACTUAL)
+        res = WorkedHours.calculate(period, WorkedHours.PHASE_ACTUAL, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
@@ -177,16 +178,16 @@ class WorkedHoursTest(TestCase):
 
     def test_calculate_forecast(self):
         # Weekdays 9, saturdays 6 (slave, dude!)
-        StandardHours.objects.create(day_type=CalendarDay.WEEKDAY, hours=9)
-        StandardHours.objects.create(day_type=CalendarDay.SATURDAY, hours=6)
+        StandardHours.objects.create(day_type=CalendarDay.WEEKDAY, hours=9, owner=self.acc)
+        StandardHours.objects.create(day_type=CalendarDay.SATURDAY, hours=6, owner=self.acc)
 
         # Create one period
         period = Period.objects.create(start_date=date(2015, 12, 1),
                                        end_date=date(2015, 12, 31),
-                                       forecast_start_date=date(2015, 12, 24))
+                                       forecast_start_date=date(2015, 12, 25))
 
         # Now calculate all hours for that employee
-        res = WorkedHours.calculate_forecast(period=period, employee=self.emp)
+        res = WorkedHours.calculate(period, WorkedHours.PHASE_FORECAST, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
