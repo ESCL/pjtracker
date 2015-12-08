@@ -67,19 +67,19 @@ class CalendarDayTest(TestCase):
         # Filter from the 7th to the 10th, all non-stored dates
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 10))
         self.assertEqual(len(days), 4)
-        for day, d_n in zip(sorted(days.values()), (7, 8, 9, 10)):
+        for day, d_n in zip(days, (7, 8, 9, 10)):
             self.assertEqual(day.id, None)
             self.assertEqual(day.date, date(2015, 12, d_n))
 
         # Add the 11th, the first four are the same
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 11))
         self.assertEqual(len(days), 5)
-        for day, d_n in zip(sorted(days.values()), (7, 8, 9, 10)):
+        for day, d_n in zip(days, (7, 8, 9, 10)):
             self.assertEqual(day.id, None)
             self.assertEqual(day.date, date(2015, 12, d_n))
 
         # Last one has id (it's stored)
-        day = sorted(days.values())[4]
+        day = days[4]
         self.assertEqual(type(day.id), int)
         self.assertEqual(day.date, date(2015, 12, 11))
 

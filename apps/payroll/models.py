@@ -8,7 +8,10 @@ from .query import CalendarDayQuerySet
 
 
 class CalendarDay(OwnedEntity):
-
+    """
+    Special day marked in a calendar. Due to the default behaviour provided by
+    non-stored instances, usually only holidays need to be stored.
+    """
     PUBLIC_HOLIDAY = 'PH'
     NATIONAL_HOLIDAY = 'NH'
     STATE_HOLIDAY = 'SH'
@@ -34,9 +37,14 @@ class CalendarDay(OwnedEntity):
     )
 
     def __init__(self, *args, **kwargs):
+        """
+        Override to provide a default "type" if one is not provided.
+        """
         super(CalendarDay, self).__init__(*args, **kwargs)
         if not self.type in (self.PUBLIC_HOLIDAY,):
             self.type = self._determine_type()
+
+    # Magic methods to allow comparison: delegate to its date object
 
     def __cmp__(self, other):
         return self.date.__cmp__(other.date)
@@ -50,6 +58,8 @@ class CalendarDay(OwnedEntity):
     def __gt__(self, other):
         return self.date.__gt__(other.date)
 
+    # Helpers
+
     def _determine_type(self):
         return {6: self.SATURDAY, 7: self.SUNDAY}.get(self.date.isoweekday(), self.WEEKDAY)
 
@@ -58,7 +68,9 @@ class CalendarDay(OwnedEntity):
 
 
 class HourType(OwnedEntity):
-
+    """
+    Type of hour, usually differentiated according to their pay rates.
+    """
     name = models.CharField(
         max_length=128
     )
@@ -89,7 +101,9 @@ class DayTypeBase(OwnedEntity):
 
 
 class HourTypeRange(DayTypeBase):
-
+    """
+    Rule to determine hour type based on day type and number of hours.
+    """
     class Meta:
         ordering = ('day_type', 'limit',)
 
@@ -107,7 +121,10 @@ class HourTypeRange(DayTypeBase):
 
 
 class StandardHours(DayTypeBase):
-
+    """
+    Typical number of hours worked for a given day type, used for the simplest
+    form of prediction.
+    """
     class Meta:
         unique_together = ('owner', 'day_type',)
 
@@ -118,7 +135,9 @@ class StandardHours(DayTypeBase):
 
 
 class Period(OwnedEntity):
-
+    """
+    A "Payroll Month".
+    """
     name = models.CharField(
         max_length=128
     )
@@ -141,7 +160,12 @@ class Period(OwnedEntity):
 
 
 class WorkedHours(OwnedEntity):
+    """
+    Unique group of period:phase:employee:hour_type.
 
+    Note: instances of this model SHOULD ONLY be created through this model's
+    calculate class method.
+    """
     PHASE_ACTUAL = 'A'
     PHASE_FORECAST = 'F'
     PHASE_RETROACTIVE = 'R'
@@ -168,7 +192,7 @@ class WorkedHours(OwnedEntity):
     )
 
     @staticmethod
-    def get_day_ranges(owner):
+    def _get_day_ranges(owner):
         """
         Get a dictionary of ranges per day type, where ranges is a list of
         hour type ranges to apply in sequence (the order MUST be respected).
@@ -181,7 +205,7 @@ class WorkedHours(OwnedEntity):
         return day_ranges
 
     @staticmethod
-    def split_hours_per_type(hours, ranges):
+    def _split_hours_per_type(hours, ranges):
         """
         Get a dictionary of hours per hour type, determined by applying the
         given hour type ranges to the given hours.
@@ -210,21 +234,31 @@ class WorkedHours(OwnedEntity):
         Get new WorkedHours instances for the given period, employee and phase.
         """
         if phase == cls.PHASE_FORECAST:
-            # Forecast phase, calculate directly
-            hours_per_type = cls._calculate_forecast(employee, period.forecast_start_date,
-                                                     period.end_date)
+            # Forecast phase
+            start = period.forecast_start_date
+            end = period.end_date
+            hours_method = cls._get_forecast_hours
 
         else:
-            # One of actuals, first determine dates
             if phase == cls.PHASE_ACTUAL:
                 start = period.start_date
                 end = period.forecast_start_date - timedelta(days=1)
             else:
                 start = period.start_date
                 end = period.forecast_start_date - timedelta(days=1)
+            hours_method = cls._get_actual_hours
 
-            # Now calculate
-            hours_per_type = cls._calculate_actual(employee, start, end)
+        # Now get days, ranges and daily_hours
+        days = CalendarDay.objects.in_range(start, end)
+        ranges = cls._get_day_ranges(employee.owner)
+        daily_hours = hours_method(days, employee, start, end)
+
+        # Now calculate the types
+        hours_per_type = {}
+        for day in days:
+            hpt = cls._split_hours_per_type(daily_hours.get(day.date, 0), ranges[day.type])
+            for ht, h in hpt.items():
+                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
 
         # Now return the list, one per type:hours
         return [cls(employee=employee, period=period, phase=phase,
@@ -232,55 +266,28 @@ class WorkedHours(OwnedEntity):
                 for ht, h in hours_per_type.items()]
 
     @classmethod
-    def _calculate_actual(cls, employee, start_date, end_date):
-        # Get hour type ranges per day type
-        day_ranges = cls.get_day_ranges(employee.owner)
-
-        # Get all the days in the range (stored or not)
-        days = CalendarDay.objects.in_range(start_date, end_date)
-
-        # Get the hours per day (actual values)
+    def _get_actual_hours(cls, days, employee, start_date, end_date):
+        """
+        Get the total actual hours per day for the given employee.
+        """
         groups = WorkLog.objects.filter(
             resource=employee.resource_ptr,
             timesheet__status=TimeSheet.STATUS_APPROVED,
             timesheet__date__gte=start_date,
             timesheet__date__lte=end_date
-        )
-
-        # Now collect hours per hour type
-        hours_per_type = {}
-        for wlg in groups.values('timesheet__date').annotate(hours=models.Sum('hours')):
-            day = days[wlg.timesheet.date]
-            hpt = cls.split_hours_per_type(wlg.hours, day_ranges[day.type])
-            for ht, h in hpt.items():
-                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
-
-        return hours_per_type
+        ).values('timesheet__date').annotate(hours=models.Sum('hours'))
+        return {wlg.timesheet.date: wlg.hours for wlg in groups}
 
     @classmethod
-    def _calculate_forecast(cls, employee, start_date, end_date):
-        # Get hour type ranges per day type
-        day_ranges = cls.get_day_ranges(employee.owner)
-
-        # Get all the days in the range (stored or not)
-        days = CalendarDay.objects.in_range(start_date, end_date)
-
-        # Get hours per day (estimated values)
-        # TODO: abstract this away to allow using other methods
-        day_hours = {sh.day_type: sh.hours for sh in
-                     StandardHours.objects.for_owner(employee.owner)}
-
-        # Now collect hours per hour type
-        hours_per_type = {}
-        cur_date = start_date
-        while cur_date <= end_date:
-            day = days[cur_date]
-            hpt = cls.split_hours_per_type(day_hours.get(day.type, 0),
-                                           day_ranges[day.type])
-            for ht, h in hpt.items():
-                hours_per_type[ht] = hours_per_type.get(ht, 0) + h
-
-            # Increase date
-            cur_date += timedelta(days=1)
-
-        return hours_per_type
+    def _get_forecast_hours(cls, days, employee, start_date, end_date):
+        """
+        Get the total estimated hours per day for the given employee.
+        """
+        day_type_hours = {sh.day_type: sh.hours for sh in
+                          StandardHours.objects.for_owner(employee.owner)}
+        res = {}
+        for day in days:
+            h = day_type_hours.get(day.type)
+            if h:
+                res[day.date] = h
+        return res
