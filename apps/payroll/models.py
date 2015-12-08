@@ -192,6 +192,19 @@ class WorkedHours(OwnedEntity):
     )
 
     @staticmethod
+    def _get_actual_hours(days, employee, start_date, end_date):
+        """
+        Get the total actual hours per day for the given employee.
+        """
+        groups = WorkLog.objects.filter(
+            resource=employee.resource_ptr,
+            timesheet__status=TimeSheet.STATUS_APPROVED,
+            timesheet__date__gte=start_date,
+            timesheet__date__lte=end_date
+        ).values('timesheet__date').annotate(hours=models.Sum('hours'))
+        return {wlg.timesheet.date: wlg.hours for wlg in groups}
+
+    @staticmethod
     def _get_day_ranges(owner):
         """
         Get a dictionary of ranges per day type, where ranges is a list of
@@ -203,6 +216,20 @@ class WorkedHours(OwnedEntity):
                 day_ranges[range.day_type] = []
             day_ranges[range.day_type].append(range)
         return day_ranges
+
+    @staticmethod
+    def _get_forecast_hours(days, employee, start_date, end_date):
+        """
+        Get the total estimated hours per day for the given employee.
+        """
+        day_type_hours = {sh.day_type: sh.hours for sh in
+                          StandardHours.objects.for_owner(employee.owner)}
+        res = {}
+        for day in days:
+            h = day_type_hours.get(day.type)
+            if h:
+                res[day.date] = h
+        return res
 
     @staticmethod
     def _split_hours_per_type(hours, ranges):
@@ -244,11 +271,11 @@ class WorkedHours(OwnedEntity):
                 start = period.start_date
                 end = period.forecast_start_date - timedelta(days=1)
             else:
-                start = period.start_date
-                end = period.forecast_start_date - timedelta(days=1)
+                start = period.forecast_start_date
+                end = period.end_date
             hours_method = cls._get_actual_hours
 
-        # Now get days, ranges and daily_hours
+        # Now get days, ranges and hours per day
         days = CalendarDay.objects.in_range(start, end)
         ranges = cls._get_day_ranges(employee.owner)
         daily_hours = hours_method(days, employee, start, end)
@@ -265,29 +292,3 @@ class WorkedHours(OwnedEntity):
                     hour_type=ht, hours=h)
                 for ht, h in hours_per_type.items()]
 
-    @classmethod
-    def _get_actual_hours(cls, days, employee, start_date, end_date):
-        """
-        Get the total actual hours per day for the given employee.
-        """
-        groups = WorkLog.objects.filter(
-            resource=employee.resource_ptr,
-            timesheet__status=TimeSheet.STATUS_APPROVED,
-            timesheet__date__gte=start_date,
-            timesheet__date__lte=end_date
-        ).values('timesheet__date').annotate(hours=models.Sum('hours'))
-        return {wlg.timesheet.date: wlg.hours for wlg in groups}
-
-    @classmethod
-    def _get_forecast_hours(cls, days, employee, start_date, end_date):
-        """
-        Get the total estimated hours per day for the given employee.
-        """
-        day_type_hours = {sh.day_type: sh.hours for sh in
-                          StandardHours.objects.for_owner(employee.owner)}
-        res = {}
-        for day in days:
-            h = day_type_hours.get(day.type)
-            if h:
-                res[day.date] = h
-        return res
