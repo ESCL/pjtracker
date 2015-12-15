@@ -259,6 +259,7 @@ class WorkLog(OwnedEntity):
     def save(self, *args, **kwargs):
         # Update de-normalized attributes
         self.resource.instance.complete_work_log(self)
+        self.owner = self.timesheet.owner
 
         # Save and return
         return super(WorkLog, self).save(*args, **kwargs)

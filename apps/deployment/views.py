@@ -39,8 +39,10 @@ class HoursView(ReadOnlyResourceView):
         return ctx
 
     def filter_objects(cls, user, qs, **kwargs):
-        # We don't need to process the default filters
-        objs = cls.model.objects.get_queryset()._filter_for_querystring(qs)
+        # Apply filters AND groupings (despite method name)
+        # Note: we don't need to process the default filters
+        objs = cls.model.objects.for_user(user)
+        objs = objs._filter_for_querystring(qs)
         objs = objs._group_for_querystring(qs)
 
         # Annotate and return
