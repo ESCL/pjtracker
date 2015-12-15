@@ -21,7 +21,7 @@ class TimeSheetTest(TestCase):
         self.dir = DirectLabourFactory.create()
         self.ind = IndirectLabourFactory.create()
 
-        # Setup teama and create timesheet
+        # Setup teams and create timesheet
         self.timekeeper = UserFactory.create(owner=self.account)
         self.supervisor1 = UserFactory.create(owner=self.account)
         self.supervisor2 = UserFactory.create(owner=self.account)
@@ -165,4 +165,45 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.resources, {e1.resource_ptr.id: e1.resource_ptr,
                                              e2.resource_ptr.id: e2.resource_ptr})
         self.assertEqual(self.ts.activities, {a1.id: a1, a2.id: a2, a3.id: a3})
+
+
+class WorkLogTest(TestCase):
+
+    def setUp(self):
+        super(WorkLogTest, self).setUp()
+
+        # Main setup
+        self.account = UserFactory.create().owner
+        self.ts_settings = self.account.timesheet_settings
+        self.dir = DirectLabourFactory.create()
+        self.ind = IndirectLabourFactory.create()
+
+        # Setup users, teams and create timesheet
+        self.user1 = UserFactory.create(owner=self.account)
+        self.user2 = UserFactory.create()
+        self.team = TeamFactory.create(owner=self.account)
+        self.ts = TimeSheetFactory.create(owner=self.account, team=self.team)
+
+    def test_filter_for_user(self):
+        # Added this because something was failing, which was caused by the
+        # worklog not setting its owner before saving, hehe
+        WorkLog.objects.all().delete()
+        self.assertNotEqual(self.user1.domain, self.user2.domain)
+        self.assertNotEqual(None, self.user2.domain)
+
+        # Create a few workflogs
+        e = EmployeeFactory.create(team=self.team)
+        a = ActivityFactory.create()
+        WorkLog.objects.create(timesheet=self.ts, resource=e.resource_ptr,
+                               activity=a, hours=3, labour_type=self.ind)
+        WorkLog.objects.create(timesheet=self.ts, resource=e.resource_ptr,
+                               activity=a, hours=5, labour_type=self.dir)
+
+        # User1 (in same account) can see the hours
+        res = WorkLog.objects.for_user(self.user1)
+        self.assertEqual(res.count(), 2)
+
+        # User2 (another account) CANNOT see the hours
+        res = WorkLog.objects.for_user(self.user2)
+        self.assertEqual(res.count(), 0)
 

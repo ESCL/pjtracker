@@ -44,6 +44,7 @@ class HoursResource(OwnedResource):
         self._fields.update(request.GET.getlist('group_by'))
 
         # Filter and group
+        qs = qs.for_user(request.user)
         qs = qs._filter_for_querystring(request.GET)
         qs = qs._group_for_querystring(request.GET)
 
