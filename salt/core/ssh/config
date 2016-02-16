@@ -1,4 +1,0 @@
-
-Host bitbucket.org
-StrictHostKeyChecking no
-IdentityFile /home/ubuntu/.ssh/id_rsa
