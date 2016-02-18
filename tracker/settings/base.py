@@ -99,16 +99,26 @@ WSGI_APPLICATION = 'tracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'data', 'db.sqlite3'),
-        'TEST': {
-            'NAME': ':memory:',
-            'SERIALIZE': False
-        }
+db = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': os.path.join(BASE_DIR, 'data', 'db.sqlite3'),
+    'TEST': {
+        'NAME': ':memory:',
+        'SERIALIZE': False
     }
 }
+
+# Override any default values with environment variables
+
+for k in ('ENGINE', 'HOST', 'PORT', 'NAME', 'USER', 'PASSWORD'):
+    v = os.environ.get('DB_{}'.format(k))
+    if v:
+        db[k] = v
+
+import pdb; pdb.set_trace()
+
+DATABASES = {'default': db}
+
 
 
 # Internationalization

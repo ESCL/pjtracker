@@ -23,18 +23,6 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
-# Database connection
-
-DATABASES['default'].update({
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'HOST': 'pjtracker0.c8hyiihqnbry.us-east-1.rds.amazonaws.com',
-    'PORT': 5432,
-    'NAME': 'pjtracker',
-    'USER': 'pjtracker',
-    'PASSWORD': 'tr4ckmypjs'
-})
-
-
 # Database bootstrapping options
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = False
