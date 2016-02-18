@@ -111,14 +111,11 @@ db = {
 # Override any default values with environment variables
 
 for k in ('ENGINE', 'HOST', 'PORT', 'NAME', 'USER', 'PASSWORD'):
-    v = os.environ.get('DB_{}'.format(k))
+    v = os.environ.get('db_{}'.format(k).upper())
     if v:
         db[k] = v
 
-import pdb; pdb.set_trace()
-
 DATABASES = {'default': db}
-
 
 
 # Internationalization
