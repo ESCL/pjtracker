@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
 
+    # Testing facilities
+    'django_nose',
+
     # Apps
     'apps.common',
     'apps.notifications',
@@ -158,3 +161,8 @@ LOGGING = {
         }
     }
 }
+
+
+# Test options
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

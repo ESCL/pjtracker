@@ -18,4 +18,7 @@
 # STATIC_ROOT directory used in production
 /static/
 
-
+# Test reports
+.coverage
+test-results.xml
+test-coverage.xml
