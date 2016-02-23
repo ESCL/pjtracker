@@ -13,12 +13,18 @@ class TimeSheetSettingsForm(forms.ModelForm):
         exclude = ('account',)
 
     def clean(self):
+        """
+        Make sure review policies are compatible to avoid status resolution
+        limbo, which is defined as ALL is only compatible with FIRST.
+        """
         cleaned_data = super(TimeSheetSettingsForm, self).clean()
 
         # Make sure policies are compatible
         app_pol = cleaned_data['approval_policy']
         rej_pol = cleaned_data['rejection_policy']
-        if app_pol == rej_pol == TimeSheet.REVIEW_POLICY_ALL:
+        policies = {app_pol, rej_pol}
+        if TimeSheet.REVIEW_POLICY_ALL in policies and \
+                        TimeSheet.REVIEW_POLICY_FIRST not in policies:
             # They are not, error
             cleaned_data.pop('approval_policy')
             cleaned_data.pop('rejection_policy')
