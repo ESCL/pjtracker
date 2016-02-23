@@ -1,5 +1,6 @@
 
 from datetime import date, timedelta
+import itertools
 
 from django.test import TestCase
 
@@ -7,7 +8,9 @@ from ...accounts.factories import UserFactory
 from ...accounts.utils import create_permissions
 from ...common.test import mock
 from ...organizations.factories import TeamFactory
-from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm
+from ...resources.factories import EmployeeFactory
+from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
+from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm, WorkLogsForm
 from ..factories import TimeSheetFactory
 from ..models import TimeSheet
 
@@ -163,4 +166,64 @@ class TimeSheetSettingsFormTest(TestCase):
         data['rejection_policy'] = TimeSheet.REVIEW_POLICY_FIRST
         f = TimeSheetSettingsForm(data)
         self.assertTrue(f.is_valid())
+
+
+class WorkLogsFormTest(TestCase):
+
+    def setUp(self):
+        # Setup user and team and create timesheet
+        self.user = UserFactory.create()
+        self.user.user_permissions.add(*create_permissions(TimeSheet, ['issue']))
+        self.team = TeamFactory.create(owner=self.user.owner)
+        self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
+
+        # Add labour types
+        self.dir = DirectLabourFactory.create()
+        self.ind = IndirectLabourFactory.create()
+
+    def test_init_alerts(self):
+        # Team has no resources and no acts, should have alerts
+        form = WorkLogsForm(instance=self.ts, user=self.user)
+        self.assertEqual(form.alerts, ['This team has no resources assigned.',
+                                       'This team has no activities assigned.'])
+
+        # Assign activities and employees w/o matching labour types
+        employee = EmployeeFactory.create(team=self.team)
+        employee.position.add_labour_type(self.dir)
+        activity = ActivityFactory.create(labour_types=[self.ind])
+        self.team.activities.add(activity)
+
+        # Now alert should say they don't match
+        self.ts = TimeSheet.objects.get(id=self.ts.id)
+        form = WorkLogsForm(instance=self.ts, user=self.user)
+        self.assertEqual(form.alerts, ['Labour types for activities and resources '
+                                       'assigned to this team do not match.'])
+
+    def test_disabled_fields(self):
+        # Add two employees (one direct, one indirect)
+        emp1 = EmployeeFactory.create(team=self.team)
+        emp1.position.add_labour_type(self.dir)
+        emp2 = EmployeeFactory.create(team=self.team)
+        emp2.position.add_labour_type(self.ind)
+
+        # Add two activities (one direct, one direct+indirect)
+        act1 = ActivityFactory.create(labour_types=[self.dir])
+        act2 = ActivityFactory.create(labour_types=[self.dir, self.ind])
+        self.team.activities.add(act1, act2)
+
+        # Should have no alerts
+        self.ts = TimeSheet.objects.get(id=self.ts.id)
+        form = WorkLogsForm(instance=self.ts, user=self.user)
+        self.assertEqual(form.alerts, [])
+
+        # Check fields names
+        field_names = {'{}.{}'.format(e.id, a.id) for e, a in
+                       itertools.product((emp1, emp2), (act1, act2))}
+        field_names.update({str(emp1.id), str(emp2.id)})
+        self.assertEqual(set(form.fields.keys()), field_names)
+
+        # Check disabled fields, only 2.1 (emp2, act1)
+        disabled_fields = {fn for fn in field_names if
+                           form.fields[fn].widget.attrs.get('disabled') == 'disabled'}
+        self.assertEqual(disabled_fields, {'{}.{}'.format(emp2.id, act1.id)})
 
