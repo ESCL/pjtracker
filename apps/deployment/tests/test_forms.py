@@ -6,7 +6,7 @@ from django.test import TestCase
 from ...accounts.factories import UserFactory
 from ...accounts.utils import create_permissions
 from ...organizations.factories import TeamFactory
-from ..forms import TimeSheetForm, TimeSheetActionForm
+from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm
 from ..models import TimeSheet
 
 
@@ -92,3 +92,24 @@ class TimeSheetActionFormTest(TestCase):
         form = TimeSheetActionForm({'action': 'reject', 'feedback': 'bullshit, they were on stike!'},
                                    instance=self.ts, user=self.user)
         self.assertTrue(form.is_valid())
+
+
+class TimeSheetSettingsFormTest(TestCase):
+
+    def test_validate(self):
+        # Both approval and rejection ALL, invalid
+        data = {'approval_policy': TimeSheet.REVIEW_POLICY_ALL,
+                'rejection_policy': TimeSheet.REVIEW_POLICY_ALL}
+        f = TimeSheetSettingsForm(data)
+        self.assertFalse(f.is_valid())
+
+        # Make rejection majority (see https://github.com/ESCL/pjtracker/issues/1)
+        data['rejection_policy'] = TimeSheet.REVIEW_POLICY_MAJORITY
+        f = TimeSheetSettingsForm(data)
+        self.assertFalse(f.is_valid())
+
+        # Make rejection majority (bug?)
+        data['rejection_policy'] = TimeSheet.REVIEW_POLICY_FIRST
+        f = TimeSheetSettingsForm(data)
+        self.assertTrue(f.is_valid())
+
