@@ -163,7 +163,7 @@ class WorkLogsForm(forms.Form):
                     self.fields[log_name].widget.attrs.update(
                         {'disabled': 'disabled', 'readonly': True}
                     )
-                    pass
+
                 elif not lts_matched:
                     lts_matched = True
 
