@@ -51,9 +51,7 @@ class TimeSheetForm(OwnedEntityForm):
         # we can't have people changing it)
         if self.instance.id:
             self.fields.pop('team', None)
-            print('removed team')
         else:
-            print('removed comments')
             self.fields.pop('comments', None)
 
     def clean(self):

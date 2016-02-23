@@ -5,8 +5,10 @@ from django.test import TestCase
 
 from ...accounts.factories import UserFactory
 from ...accounts.utils import create_permissions
+from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm
+from ..factories import TimeSheetFactory
 from ..models import TimeSheet
 
 
@@ -19,6 +21,24 @@ class TimeSheetFormTest(TestCase):
         self.user = UserFactory.create()
         self.user.user_permissions.add(*create_permissions(TimeSheet, ['create']))
         self.team = TeamFactory.create(owner=self.user.owner)
+
+    def test_init(self):
+        # Init without instance, team and no comments fields
+        form = TimeSheetForm(user=self.user)
+        self.assertTrue('team' in form.fields)
+        self.assertFalse('comments' in form.fields)
+
+        # Init with unsaved instance, team and no comments fields
+        ts = TimeSheetFactory.build(owner=self.user.owner, team=self.team, date=date.today())
+        form = TimeSheetForm(instance=ts, user=self.user)
+        self.assertTrue('team' in form.fields)
+        self.assertFalse('comments' in form.fields)
+
+        # Init with saved instance, team and no comments fields
+        ts.save()
+        form = TimeSheetForm(instance=ts, user=self.user)
+        self.assertFalse('team' in form.fields)
+        self.assertTrue('comments' in form.fields)
 
     def test_validate_unique(self):
         self.assertFalse(TimeSheet.objects.filter(team=self.team, date=date.today()).exists())
@@ -92,6 +112,37 @@ class TimeSheetActionFormTest(TestCase):
         form = TimeSheetActionForm({'action': 'reject', 'feedback': 'bullshit, they were on stike!'},
                                    instance=self.ts, user=self.user)
         self.assertTrue(form.is_valid())
+
+    @mock.patch('apps.deployment.models.TimeSheet.issue', mock.MagicMock())
+    @mock.patch('apps.deployment.models.TimeSheet.approve', mock.MagicMock())
+    @mock.patch('apps.deployment.models.TimeSheet.reject', mock.MagicMock())
+    def test_save(self):
+        # Post an issue, should call issue
+        form = TimeSheetActionForm({'action': 'issue', 'feedback': ''}, instance=self.ts, user=self.user)
+        form.is_valid()
+        form.save()
+        TimeSheet.issue.assert_called_once_with(self.user)
+        self.assertFalse(TimeSheet.approve.called)
+        self.assertFalse(TimeSheet.reject.called)
+        TimeSheet.issue.reset_mock()
+
+        # Post an approval, should call approve
+        self.ts.status = TimeSheet.STATUS_ISSUED
+        form = TimeSheetActionForm({'action': 'approve', 'feedback': ''}, instance=self.ts, user=self.user)
+        form.is_valid()
+        form.save()
+        self.assertFalse(TimeSheet.issue.called)
+        TimeSheet.approve.assert_called_once_with(self.user)
+        self.assertFalse(TimeSheet.reject.called)
+        TimeSheet.approve.reset_mock()
+
+        # Post an rejection, should call reject
+        form = TimeSheetActionForm({'action': 'reject', 'feedback': 'that is so wrong'}, instance=self.ts, user=self.user)
+        form.is_valid()
+        form.save()
+        self.assertFalse(TimeSheet.issue.called)
+        self.assertFalse(TimeSheet.approve.called)
+        TimeSheet.reject.assert_called_once_with(self.user)
 
 
 class TimeSheetSettingsFormTest(TestCase):
