@@ -3,13 +3,14 @@
 # Compiled python binaries
 *.pyc
 
-# KDE cache files
-.directory
-
 
 ## Specific targeting
 
-# JetBrains IDE config files
+# KDE cache
+.directory
+
+# IDE config files
+.p*roject
 /.idea/
 
 # SQLite database file
