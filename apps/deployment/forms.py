@@ -64,7 +64,8 @@ class TimeSheetForm(OwnedEntityForm):
             if TimeSheet.objects.filter(team=team, date=date).exists():
                 cleaned_data.pop('team')
                 cleaned_data.pop('date')
-                raise forms.ValidationError('TimeSheet for team {} and date {} already exists.'.format(team, date))
+                raise forms.ValidationError('TimeSheet for team {} and date {} '
+                                            'already exists.'.format(team, date))
 
         return cleaned_data
 
@@ -75,7 +76,8 @@ class TimeSheetForm(OwnedEntityForm):
 
 
 class TimeSheetSearchForm(ModernForm):
-    team__code__icontains = forms.CharField(max_length=32, required=False, label='Team code')
+    team__code__icontains = forms.CharField(max_length=32, required=False,
+                                            label='Team code')
     date__gte = forms.DateField(label='From date')
     date__lte = forms.DateField(label='Until date')
 
@@ -125,7 +127,16 @@ class TimeSheetActionForm(forms.Form):
 class WorkLogsForm(forms.Form):
 
     def __init__(self, post_data=None, instance=None, user=None, **kwargs):
-        super(WorkLogsForm, self).__init__(post_data)
+        """
+        Build the form fields by using the instance's resources and activities,
+        generating alerts if any issues are detected.
+
+        :param post_data: posted form data (dict-like object)
+        :param instance: TimeSheet instance
+        :param user: User instance interacting with the form
+        """
+        # Note: this is way too long, we need to move some logic out
+        super(WorkLogsForm, self).__init__(post_data, **kwargs)
         self.timesheet = instance
         self.rows = []
         self.alerts = []
@@ -141,6 +152,8 @@ class WorkLogsForm(forms.Form):
             logs = []
 
             # Get labour types for resource and add lt choice field
+            # Note: this won't scale, we need to move this out and do a
+            # single query
             res_lt = resource.get_labour_types_for(self.user)
             self.fields[str(resource.id)] = CustomLabelModelChoiceField(
                 queryset=res_lt, option_label_attr='code', empty_label=None,
@@ -186,13 +199,28 @@ class WorkLogsForm(forms.Form):
                                'assigned to this team do not match.')
 
     def _get_log_for(self, resource, activity):
+        """
+        Get a WorkLog for the given resource and activity for this timesheet,
+        which might be a stored one or a new one.
+
+        :param resource: Resource instance
+        :param activity: Activity instance
+        :return: WorkLog instance (existing or new)
+        """
         return self.timesheet.work_logs_data.get(resource, {}).get(
             activity,
             WorkLog(timesheet=self.timesheet, resource=resource, activity=activity)
         )
 
     def _iter_fields_values(self, cleaned_data):
-        for fname, v in cleaned_data.items():
+        """
+        Iterate field values sorted by their field name, matching the sorting
+        in the template (top resources first, bottom last).
+
+        :param cleaned_data: dict with form cleaned data (validated)
+        :yield: tuple of Resource, Activity, hours
+        """
+        for fname, v in sorted(cleaned_data.items()):
             if '.' in fname:
                 r_id, a_id = fname.split('.')
                 r = self.timesheet.resources[int(r_id)]
@@ -200,29 +228,45 @@ class WorkLogsForm(forms.Form):
                 yield r, a, v
 
     def clean(self):
+        """
+        Ensure that selected labour types match the labour types allowed
+        for the activiesy.
+        """
         cleaned_data = super(WorkLogsForm, self).clean()
         es = []
 
         for resource, activity, value in self._iter_fields_values(cleaned_data):
             if value:
-                # Check that labour types match (this should not really be
-                # necessary since we disable the inputs, but some people use IE)
-                res_lt = self.cleaned_data[str(resource.id)]
+                # Check that labour types match
+                # Note: yes, I know we disable inputs, still
+                res_lt = self.cleaned_data.get(str(resource.id))
                 act_lt = set(activity.labour_types.all())
-                if res_lt not in act_lt:
-                    if not res_lt:
-                        es.append("{} cannot charge hours.".format(resource.instance))
-                    if not act_lt:
-                        es.append("Activity {} does not allow charging hours for any labour types.".format(activity))
 
-                    if not es:
-                        es.append("Activity {} does not allow charging hours for {}.".format(activity, res_lt))
+                # Note: in theory the messages below ARE NOT mutually exclusive,
+                # but displaying more than one per field is too much, so we
+                # sort them by relevance
+                if not res_lt:
+                    es.append("{} cannot charge hours.".format(resource.instance))
+
+                elif not act_lt:
+                    es.append("Activity {} does not allow charging "
+                              "hours.".format(activity))
+
+                elif res_lt not in act_lt:
+                    es.append("Activity {} does not allow charging hours "
+                              "for {}.".format(activity, res_lt))
 
         if es:
             raise forms.ValidationError(es)
+
         return cleaned_data
 
     def save(self):
+        """
+        Save all the resource:activity combinations, which might require an
+        update (if saved hours > 0), a new instance (if not existing) or
+        deleting one (saved hours > 0 and new hours = 0).
+        """
         for resource, activity, value in self._iter_fields_values(self.cleaned_data):
             # Get log (existing or new)
             log = self._get_log_for(resource, activity)

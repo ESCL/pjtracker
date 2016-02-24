@@ -1,6 +1,6 @@
 
-from datetime import date, timedelta
 import itertools
+from datetime import date, timedelta
 
 from django.test import TestCase
 
@@ -12,7 +12,7 @@ from ...resources.factories import EmployeeFactory
 from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
 from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm, WorkLogsForm
 from ..factories import TimeSheetFactory
-from ..models import TimeSheet
+from ..models import TimeSheet, WorkLog
 
 
 class TimeSheetFormTest(TestCase):
@@ -227,3 +227,90 @@ class WorkLogsFormTest(TestCase):
                            form.fields[fn].widget.attrs.get('disabled') == 'disabled'}
         self.assertEqual(disabled_fields, {'{}.{}'.format(emp2.id, act1.id)})
 
+    def test_clean(self):
+        # Add one direct employee and one w/o labour type
+        emp1 = EmployeeFactory.create(team=self.team)
+        emp1.position.add_labour_type(self.dir)
+        emp2 = EmployeeFactory.create(team=self.team)
+
+        # Add three activities (one direct, one indirect, one w/oi labour type)
+        act1 = ActivityFactory.create(labour_types=[self.dir])
+        act2 = ActivityFactory.create(labour_types=[self.ind])
+        act3 = ActivityFactory.create()
+        self.team.activities.add(act1, act2, act3)
+
+        # Attempt failed charge of hours
+        # emp1+act1 : OK, emp1+act2: incompatible emp2+act3: activity cannot charge
+        # emp2+act1: res cannot charge
+        data = {str(emp1.resource_ptr_id): self.dir.id,
+                '{}.{}'.format(emp1.resource_ptr_id, act1.id): 3,
+                '{}.{}'.format(emp1.resource_ptr_id, act2.id): 3,
+                '{}.{}'.format(emp1.resource_ptr_id, act3.id): 2,
+                '{}.{}'.format(emp2.resource_ptr_id, act1.id): 8}
+        form = WorkLogsForm(data, instance=self.ts, user=self.user)
+        self.assertFalse(form.is_valid())
+        nfe1, nfe2, nfe3 = form.non_field_errors()
+
+        # field 2: value missing
+        self.assertEqual(form.errors[str(emp2.resource_ptr_id)],
+                         ['This field is required.'])
+
+        # field 1.2: act1 cannot charge indirect
+        self.assertIn(str(act2), nfe1)
+        self.assertIn('does not allow charging hours', nfe1)
+        self.assertIn(str(self.dir), nfe1)
+
+        # field 1.3: act cannot charge
+        self.assertIn(str(act3), nfe2)
+        self.assertIn('does not allow charging hours', nfe2)
+
+        # field 2.1: res cannot charge
+        self.assertIn(str(emp2), nfe3)
+        self.assertIn('cannot charge hours', nfe3)
+
+    def test_save(self):
+        # Clear all worklogs, just in case
+        WorkLog.objects.all().delete()
+        self.assertEqual(WorkLog.objects.count(), 0)
+
+        # Create one emp and two acts, all compatible
+        emp = EmployeeFactory.create(team=self.team)
+        emp.position.add_labour_type(self.dir)
+        act1 = ActivityFactory.create(labour_types=[self.dir])
+        act2 = ActivityFactory.create(labour_types=[self.dir])
+        self.team.activities.add(act1, act2)
+
+        # Post 4 hours each
+        data = {str(emp.resource_ptr_id): self.dir.id,
+                '{}.{}'.format(emp.resource_ptr_id, act1.id): 4,
+                '{}.{}'.format(emp.resource_ptr_id, act2.id): 4}
+        form = WorkLogsForm(data, instance=self.ts, user=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        # Check work logs created
+        self.assertEqual(WorkLog.objects.count(), 2)
+        wl1, wl2 = WorkLog.objects.all()
+        self.assertEqual(wl1.resource.instance, emp)
+        self.assertEqual(wl1.activity, act1)
+        self.assertEqual(wl1.hours, 4)
+        self.assertEqual(wl2.resource.instance, emp)
+        self.assertEqual(wl2.activity, act2)
+        self.assertEqual(wl2.hours, 4)
+
+        # Post 8 hours for first one
+        self.ts = TimeSheet.objects.get(id=self.ts.id)
+        data.update({
+            '{}.{}'.format(emp.resource_ptr_id, act1.id): 8.0,
+            '{}.{}'.format(emp.resource_ptr_id, act2.id): 0.0
+        })
+        form = WorkLogsForm(data, instance=self.ts, user=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        # Check worklogs: one updated, one removed
+        self.assertEqual(WorkLog.objects.count(), 1)
+        wl = WorkLog.objects.get()
+        self.assertEqual(wl.resource.instance, emp)
+        self.assertEqual(wl.activity, act1)
+        self.assertEqual(wl.hours, 8)
