@@ -20,7 +20,7 @@ class PositionForm(OwnedEntityForm):
 
     class Meta:
         model = Position
-        exclude = ('owner', 'labour_types',)
+        fields = ('name', 'code')
 
     pos_labour_types = forms.ModelMultipleChoiceField(queryset=LabourType.objects.all(),
                                                       required=False, label='Labour types')
@@ -63,7 +63,7 @@ class TeamForm(OwnedEntityForm):
 
         # If it's a saved instance set initial values for related fields
         if self.instance.id:
-            for k in ('employees', 'equipment'):
+            for k in 'employees', 'equipment':
                 f = self.fields.get(k)
                 if f:
                     f.initial = f.queryset.filter(team=self.instance)

@@ -7,9 +7,11 @@ from ...common.test import mock
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import create_permissions
 from ...deployment.models import TimeSheet
+from ...resources.factories import EmployeeFactory, EquipmentFactory
+from ...work.factories import DirectLabourFactory, IndirectLabourFactory
 from ..factories import PositionFactory, CompanyFactory
 from ..forms import TeamForm, PositionForm
-from ..models import Team, Position
+from ..models import Team, Position, PositionLabourType
 
 
 class TeamFormTest(TestCase):
@@ -17,6 +19,7 @@ class TeamFormTest(TestCase):
     def setUp(self):
         super(TeamFormTest, self).setUp()
 
+        # Create user and get account
         self.user = UserFactory.create()
         self.account = self.user.owner
 
@@ -98,19 +101,53 @@ class TeamFormTest(TestCase):
         v = form.is_valid()
         self.assertTrue(v)
 
+    def test_save(self):
+        # Give first full permissions
+        self.user.user_permissions.add(*create_permissions(Team, ['add', 'change']))
+        self.user.user_permissions.add(*create_permissions(TimeSheet, ['issue', 'review']))
+
+        # Create a team with 1 emp and 1 eqp
+        emp = EmployeeFactory.create(owner=self.account)
+        eqp = EquipmentFactory.create(owner=self.account)
+        data = {'name': 'x', 'code': 'X',
+                'company': CompanyFactory.create(owner=self.user.owner).id,
+                'timekeepers': [self.user.id], 'supervisors': [self.user.id],
+                'employees': [emp.id], 'equipment': [eqp.id]}
+        form = TeamForm(data, user=self.user)
+        # import pdb; pdb.set_trace()
+        self.assertTrue(form.is_valid())
+        team = form.save()
+
+        # Assert team was created with correct assignment
+        self.assertEqual([e for e in team.employees], [emp])
+        self.assertEqual([e for e in team.equipment], [eqp])
+
+        # Remove equipment
+        data['equipment'] = []
+        form = TeamForm(data, user=self.user)
+        self.assertTrue(form.is_valid())
+        team = form.save()
+
+        # Assert team was created with correct assignment
+        self.assertEqual([e for e in team.employees], [emp])
+        self.assertEqual([e for e in team.equipment], [])
+
 
 class PositionFormTest(TestCase):
 
     def setUp(self):
         super(PositionFormTest, self).setUp()
 
+        # Create user and account
         self.user = UserFactory.create()
         self.account = self.user.owner
-
-    def test_disabled_fields(self):
-        # Add permissions to edit position
         self.user.user_permissions.add(*create_permissions(Position, ['change']))
 
+        # Add labour types
+        self.dir = DirectLabourFactory.create()
+        self.ind = IndirectLabourFactory.create()
+
+    def test_disabled_fields(self):
         # Render empty form, everything's editable
         form = PositionForm(user=self.user)
         for f in form.fields.values():
@@ -139,3 +176,35 @@ class PositionFormTest(TestCase):
             self.assertTrue('disabled' in f.widget.attrs)
             self.assertTrue('readonly' in f.widget.attrs)
 
+    def test_save(self):
+        # Clear pos labour types to be sure
+        PositionLabourType.objects.all().delete()
+        Position.objects.all().delete()
+
+        # New position with labour types
+        data = {'name': 'Crane Operator', 'code': 'CRO',
+                'pos_labour_types': [self.dir.id, self.ind.id]}
+        form = PositionForm(data, user=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        # Assert pos was added, with two labour types for user
+        self.assertEqual(Position.objects.count(), 1)
+        self.assertEqual(PositionLabourType.objects.count(), 2)
+        pos = Position.objects.get()
+        self.assertEqual(pos.name, 'Crane Operator')
+        self.assertEqual(list(pos.get_labour_types_for(self.user)), [self.dir, self.ind])
+
+        # Update, removing indirect labour type
+        plt_ids = {plt.id for plt in PositionLabourType.objects.all()}
+        data['pos_labour_types'].pop()
+        form = PositionForm(data, instance=pos, user=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        # Assert indirect was removed, direct remains (same id)
+        self.assertEqual(Position.objects.count(), 1)
+        self.assertEqual(PositionLabourType.objects.count(), 1)
+        self.assertIn(PositionLabourType.objects.get().id, plt_ids)
+        pos = Position.objects.get()
+        self.assertEqual(list(pos.get_labour_types_for(self.user)), [self.dir])
