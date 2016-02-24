@@ -4,10 +4,10 @@ from django.conf import settings
 from django.db import models
 from django.dispatch import Signal
 from django.utils.functional import cached_property
+from django_signals_mixin import SignalsMixin
 
 from ..common.db.models import OwnedEntity
 from ..common.exceptions import NotAuthorizedError
-from ..common.signals import SignalsMixin
 from .query import WorkLogQuerySet
 
 

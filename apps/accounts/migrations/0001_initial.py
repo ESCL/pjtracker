@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import apps.common.signals
+import django_signals_mixin
 import django.core.validators
 import apps.accounts.query
 import django.utils.timezone
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=128, help_text='Full name to identify the account.')),
                 ('code', models.CharField(unique=True, max_length=16, help_text='Short code used for users login.')),
             ],
-            bases=(models.Model, apps.common.signals.SignalsMixin),
+            bases=(models.Model, django_signals_mixin.SignalsMixin),
         ),
         migrations.AddField(
             model_name='user',

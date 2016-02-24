@@ -7,9 +7,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.dispatch import Signal
 from django.template import Template, Context
+from django_signals_mixin import SignalsMixin
 
 from .query import NotificationQuerySet
-from ..common.signals import SignalsMixin
 
 
 class Notification(models.Model, SignalsMixin):
