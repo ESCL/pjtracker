@@ -18,7 +18,8 @@
 # STATIC_ROOT directory used in production
 /static/
 
-# Test reports
+# Test reports and sonar cache
+.sonar
 .coverage
 test-results.xml
 test-coverage.xml
