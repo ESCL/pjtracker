@@ -6,6 +6,7 @@
 # KDE cache files
 .directory
 
+.p*roject
 
 ## Specific targeting
 
