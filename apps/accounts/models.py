@@ -3,7 +3,7 @@ import inspect
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from ..common.signals import SignalsMixin
+from django_signals_mixin import SignalsMixin
 from .query import UserManager
 
 

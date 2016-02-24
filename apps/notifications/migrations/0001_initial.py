@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import apps.common.signals
+import django_signals_mixin
 from django.conf import settings
 import datetime
 
@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
                 ('event_target_model', models.ForeignKey(to='contenttypes.ContentType')),
                 ('recipient', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
-            bases=(models.Model, apps.common.signals.SignalsMixin),
+            bases=(models.Model, django_signals_mixin.SignalsMixin),
         ),
     ]

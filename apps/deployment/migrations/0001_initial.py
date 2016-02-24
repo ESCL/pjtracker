@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import datetime
 from django.conf import settings
-import apps.common.signals
+import django_signals_mixin
 
 
 class Migration(migrations.Migration):
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(models.Model, apps.common.signals.SignalsMixin),
+            bases=(models.Model, django_signals_mixin.SignalsMixin),
         ),
         migrations.CreateModel(
             name='TimeSheetAction',

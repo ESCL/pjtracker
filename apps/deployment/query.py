@@ -2,7 +2,8 @@ __author__ = 'kako'
 
 from datetime import datetime
 
-from ..common.db.query import OwnedEntityQuerySet, ValuesGroupMixin
+from django_values_group import ValuesGroupMixin
+from ..common.db.query import OwnedEntityQuerySet
 
 
 class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
