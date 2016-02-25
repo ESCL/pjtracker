@@ -14,9 +14,18 @@ class Command(BaseCommand):
         db = settings.DATABASES['default']
 
         if 'sqlite' in db['ENGINE'].split('.')[-1]:
-            # Remove sqlite database file
-            print("Clearing database schema for {}...".format(db['NAME']))
-            os.remove(db['NAME'])
+            # Ensure path to database parent folder exists
+            parent_dir = os.path.dirname(db['NAME'])
+            if not os.path.isdir(parent_dir):
+                os.makedirs(parent_dir)
+
+            # Remove sqlite database file if it exists
+            if os.path.isfile(db['NAME']):
+                print("Clearing database schema for {}...".format(db['NAME']))
+                os.remove(db['NAME'])
+
+            # Finally, call migrate
             call_command('migrate')
+
         else:
             raise TypeError("You shouldn't be doing this on a real database...")
