@@ -13,7 +13,7 @@ class Project(OwnedEntity):
         max_length=128
     )
     code = models.CharField(
-        max_length=32
+        max_length=8
     )
 
     def __str__(self):
@@ -34,10 +34,10 @@ class Activity(OwnedEntity):
     objects = ActivityQuerySet.as_manager()
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=32
+        max_length=4
     )
     project = models.ForeignKey(
         'Project'
@@ -99,10 +99,10 @@ class Activity(OwnedEntity):
 class ActivityGroup(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=16
+        max_length=4
     )
     type = models.ForeignKey(
         'ActivityGroupType'
