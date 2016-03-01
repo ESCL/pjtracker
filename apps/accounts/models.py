@@ -99,6 +99,10 @@ class User(AbstractUser):
         return disallowed
 
     def save(self, *args, **kwargs):
+        # TODO: fix this, this breaks the factory's get_or_create because
+        # it checks for existence before updating username
+        # Maybe we should move this ot a getattr?
+
         # Store normalized username that includes account code
         username_parts = self.username.split('@')[:1]
         if self.owner:
