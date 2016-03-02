@@ -20,7 +20,9 @@ class UserFactory(DjangoModelFactory):
 
     class Meta:
         model = User
-        django_get_or_create = ('username',)
+        # Note: need to include "owner" or otherwise it's not passed to
+        # manager's get_or_create (weird, huh?)
+        django_get_or_create = ('username', 'owner',)
 
     owner = SubFactory(AccountFactory)
     username = LazyAttribute(lambda obj: obj.first_name.lower())

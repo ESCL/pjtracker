@@ -54,10 +54,24 @@ class User(AbstractUser):
             return None
         return self.owner
 
+    @staticmethod
+    def build_username(username, owner):
+        """
+        Build a username including the owner account's code if it has one,
+        in the format <user>@<account>.
+        """
+        username_parts = username.split('@')[:1]
+        if owner:
+            username_parts.append(owner.code)
+        return '@'.join(username_parts)
+
     def __str__(self):
         return '{} ({})'.format(self.username, self.get_full_name())
 
     def _classify(self, obj):
+        """
+        Return the class of the passed object (itself if it's a class).
+        """
         if not inspect.isclass(obj):
             obj = type(obj)
         return obj
@@ -99,15 +113,8 @@ class User(AbstractUser):
         return disallowed
 
     def save(self, *args, **kwargs):
-        # TODO: fix this, this breaks the factory's get_or_create because
-        # it checks for existence before updating username
-        # Maybe we should move this ot a getattr?
-
         # Store normalized username that includes account code
-        username_parts = self.username.split('@')[:1]
-        if self.owner:
-            username_parts.append(self.owner.code)
-        self.username = '@'.join(username_parts)
+        self.username = self.build_username(self.username, self.owner)
 
         # Return result of normal saves
         return super(User, self).save(*args, **kwargs)
