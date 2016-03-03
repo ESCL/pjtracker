@@ -9,7 +9,6 @@ from django.conf import settings
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-
         # Create superuser
         self.stdout.write("Creating superuser...")
         call_command('createsuperuser')

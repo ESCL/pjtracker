@@ -1,33 +1,59 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, post_generation
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker
 
-from ..organizations.factories import PositionFactory, TeamFactory
-from ..work.factories import ProjectFactory
+from ..accounts.factories import AccountBaseFactory
+from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
+from ..work.factories import ProjectFactory, ProjectBaseFactory
 from .models import Employee, Equipment, EquipmentType
 
 
-class EquipmentTypeFactory(DjangoModelFactory):
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class EquipmentTypeBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = EquipmentType
+
+
+class EmployeeBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Employee
+
+    owner = SubFactory(AccountBaseFactory)
+    position = SubFactory(PositionBaseFactory)
+    company = SubFactory(CompanyBaseFactory)
+    project = SubFactory(ProjectBaseFactory)
+
+
+class EquipmentBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Equipment
+
+    owner = SubFactory(AccountBaseFactory)
+    company = SubFactory(CompanyBaseFactory)
+    type = SubFactory(EquipmentTypeBaseFactory)
+    project = SubFactory(ProjectBaseFactory)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
+
+class EquipmentTypeFactory(EquipmentTypeBaseFactory):
 
     name = 'Earthworks'
 
 
-class EquipmentSubTypeFactory(DjangoModelFactory):
-
-    class Meta:
-        model = EquipmentType
+class EquipmentSubTypeFactory(EquipmentTypeBaseFactory):
 
     name = 'Backhoe'
     parent = SubFactory(EquipmentTypeFactory)
 
 
-class EquipmentFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Equipment
+class EquipmentFactory(EquipmentBaseFactory):
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
@@ -39,10 +65,7 @@ class EquipmentFactory(DjangoModelFactory):
     type = SubFactory(EquipmentSubTypeFactory)
 
 
-class EmployeeFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Employee
+class EmployeeFactory(EmployeeBaseFactory):
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
@@ -53,3 +76,4 @@ class EmployeeFactory(DjangoModelFactory):
     project = SubFactory(ProjectFactory)
     position = SubFactory(PositionFactory)
     team = SubFactory(TeamFactory)
+

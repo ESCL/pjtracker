@@ -6,23 +6,36 @@ from ..common.utils import generate_code_from_name
 from .models import Account, User
 
 
-class AccountFactory(DjangoModelFactory):
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class AccountBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Account
         django_get_or_create = ('code',)
 
-    name = Faker('company')
-    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
-
-
-class UserFactory(DjangoModelFactory):
+class UserBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = User
         # Note: need to include "owner" or otherwise it's not passed to
         # manager's get_or_create (weird, huh?)
         django_get_or_create = ('username', 'owner',)
+
+    owner = SubFactory(AccountBaseFactory)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
+
+class AccountFactory(AccountBaseFactory):
+
+    name = Faker('company')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
+
+
+class UserFactory(UserBaseFactory):
 
     owner = SubFactory(AccountFactory)
     username = LazyAttribute(lambda obj: obj.first_name.lower())

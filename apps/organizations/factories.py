@@ -9,10 +9,26 @@ from ..common.utils import generate_code_from_name
 from .models import Company, Team, Position
 
 
-class CompanyFactory(DjangoModelFactory):
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class CompanyBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Company
+
+
+class PositionBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Position
+        django_get_or_create = ('name',)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
+
+class CompanyFactory(CompanyBaseFactory):
 
     owner = SubFactory(AccountFactory)
     name = Faker('company')
@@ -45,11 +61,7 @@ class TeamFactory(DjangoModelFactory):
             self.activities.add(*values)
 
 
-class PositionFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Position
-        django_get_or_create = ('name',)
+class PositionFactory(PositionBaseFactory):
 
     name = Faker('job')
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))

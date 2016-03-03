@@ -5,10 +5,27 @@ from factory import DjangoModelFactory, Faker, SubFactory, post_generation, Lazy
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 
 
-class ProjectFactory(DjangoModelFactory):
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class ProjectBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Project
+
+
+class ActivityBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Activity
+
+    project = SubFactory(ProjectBaseFactory)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
+
+class ProjectFactory(ProjectBaseFactory):
 
     name = Faker('street_address')
     code = Faker('military_ship')
@@ -32,10 +49,7 @@ class ActivityGroupFactory(DjangoModelFactory):
     type = SubFactory(ActivityGroupTypeFactory)
 
 
-class ActivityFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Activity
+class ActivityFactory(ActivityBaseFactory):
 
     owner = LazyAttribute(lambda obj: obj.project.owner)
     name = 'Foundation 23 Design'
