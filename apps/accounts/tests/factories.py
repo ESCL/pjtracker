@@ -1,9 +1,9 @@
-__author__ = 'kako'
-
-from django.test import TestCase
+__author__ = 'claudio.melendrez'
 
 from ..factories import AccountFactory, UserFactory
 from ..models import Account, User
+
+from django.test import TestCase
 
 
 class UserFactoryTestCase(TestCase):
@@ -30,9 +30,3 @@ class UserFactoryTestCase(TestCase):
         user3 = UserFactory.create(**row)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(user1, user3)
-
-
-class UserImportTestCase(TestCase):
-
-    def setUp(self):
-        self.skipTest('')

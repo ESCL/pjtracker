@@ -95,6 +95,29 @@ class Activity(OwnedEntity):
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
 
+    def __init__(self, *args, **kwargs):
+        """
+        Allow settings parent and project by providing a full_wbs_code.
+        """
+        full_wbs_code = kwargs.pop('full_wbs_code', None)
+        super(Activity, self).__init__(*args, **kwargs)
+
+        # Set parent using full_wbs_code if required
+        if full_wbs_code and not self.parent:
+            # Sanity check: we always need project
+            assert '.' in full_wbs_code, "Incorrect format for WBS code"
+
+            # Parse path from code, remove current activity code
+            wbs_path = full_wbs_code.split('.')
+            wbs_path.pop()
+
+            # Get and set parent and project
+            self.parent = self.__class__.objects.get_by_wbs_path(wbs_path)
+
+        # Set project if we have parent
+        if self.parent:
+            self.project = self.parent.project
+
 
 class ActivityGroup(OwnedEntity):
 

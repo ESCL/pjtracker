@@ -1,6 +1,7 @@
 __author__ = 'kako'
 
-from .test_forms import *
-from .test_imports import *
-from .test_models import *
-from .test_views import *
+from .factories import *
+from .forms import *
+from .imports import *
+from .models import *
+from .views import *

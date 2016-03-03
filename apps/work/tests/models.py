@@ -1,19 +1,30 @@
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ..factories import ActivityFactory, DirectLabourFactory, IndirectLabourFactory
+from ..factories import ProjectFactory, ActivityFactory, DirectLabourFactory, IndirectLabourFactory
 from ..models import Activity, LabourType
 
 
 class ActivityTest(TestCase):
 
-    def setUp(self):
-        super(ActivityTest, self).setUp()
+    def test_init_set_parent(self):
+        # Create a base activity
+        prj = ProjectFactory.create(code='WOW')
+        act1 = ActivityFactory.create(code='CALI', project=prj)
 
-        # Create a user
-        self.user = UserFactory.create()
+        # Now init a child w/o setting project. should set project to parent's
+        act2 = Activity(parent=act1, code='LAX', name='Los Angeles Airport')
+        self.assertEqual(act2.project, prj)
+
+        # Now save it and init a child of that one with WBS code, should set parent and project
+        act2.save()
+        act3 = Activity(full_wbs_code='WOW.CALI.LAX.NODBT', name='No doubt, baby!')
+        self.assertEqual(act3.parent, act2)
+        self.assertEqual(act3.project, prj)
 
     def test_filter_workable(self):
+        self.user = UserFactory.create()
+
         # Create a global and an account activity
         g_act = ActivityFactory.create(owner=None)
         a_act = ActivityFactory.create(owner=self.user.owner)
