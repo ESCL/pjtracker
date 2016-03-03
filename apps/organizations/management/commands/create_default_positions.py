@@ -13,11 +13,11 @@ class Command(BaseCommand):
     FILE_NAME = 'positions.csv'
 
     def handle(self, *args, **options):
-        print('Creating default positions...')
+        self.stdout.write('Creating default positions...')
 
         # Determine file path
         file_path = os.path.join(os.path.dirname(__file__), 'fixtures', self.FILE_NAME)
-        print('Processing file {}...'.format(file_path))
+        self.stdout.write('Processing file {}...'.format(file_path))
         n = 0
         e = 0
 
@@ -34,4 +34,4 @@ class Command(BaseCommand):
                     n += 1
 
         # Print final results
-        print('Created {} positions, with {} errors.'.format(n, e))
+        self.stdout.write('Created {} positions, with {} errors.'.format(n, e))

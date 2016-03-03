@@ -11,7 +11,7 @@ from ...factories import EmployeeFactory, EquipmentFactory
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        print("Creating example resources...")
+        self.stdout.write("Creating example resources...")
         pj = Project.objects.get()
         hr = User.objects.get(username__icontains='hr')
         pcon = User.objects.get(username__icontains='pcon')
@@ -39,4 +39,4 @@ class Command(BaseCommand):
             e.type.update_labour_types([dir, ind], pcon)
 
         # Done, print resources
-        print("Created resources {}.".format(res))
+        self.stdout.write("Created resources {}.".format(res))

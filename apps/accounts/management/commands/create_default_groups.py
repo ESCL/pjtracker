@@ -15,35 +15,35 @@ from ...utils import create_permissions
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        print("Setting up initial groups...")
+        self.stdout.write("Setting up initial groups...")
 
         # Admin group
         name = 'Administrators'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(User, ['change']))
         group.permissions.add(*create_permissions(TimeSheetSettings, ['change']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
 
         # HR grouo
         name = 'Human Resources'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(Company, ['add', 'change']))
         group.permissions.add(*create_permissions(Position, ['add', 'change']))
         group.permissions.add(*create_permissions(Employee, ['add', 'change']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
 
         # Team management
         name = 'Team Management'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(Team, ['add', 'change']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
 
         # PCON group
         name = 'Project Control'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(Team,  ['change activities']))
         group.permissions.add(*create_permissions(Position, ['change labour types']))
@@ -54,18 +54,18 @@ class Command(BaseCommand):
         group.permissions.add(*create_permissions(ActivityGroup, ['add', 'change']))
         group.permissions.add(*create_permissions(ActivityGroupType, ['add', 'change']))
         group.permissions.add(*create_permissions(LabourType, ['add', 'change']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
 
         # Timekeeping group
         name = 'Time-Keeping'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(TimeSheet, ['add', 'change', 'issue']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
 
         # Supervision group
         name = 'Supervision'
-        print("Creating {} group...".format(name))
+        self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name='Supervision')
         group.permissions.add(*create_permissions(TimeSheet, ['review']))
-        print("Group {} created successfully.".format(group))
+        self.stdout.write("Group {} created successfully.".format(group))
