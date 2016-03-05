@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-import csv
+from csv import DictReader, DictWriter
 
 from django.core.management.base import BaseCommand
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         """
         for f in (UserBaseFactory, EmployeeBaseFactory,
                   EquipmentBaseFactory, ActivityBaseFactory):
-            if f.Meta.model.__class__.__name__.lower() == model_name.lower():
+            if f._meta.model.__name__.lower() == model_name.lower():
                 return f
         raise ValueError("No factory found for resource '{}'.".format(model_name))
 
@@ -57,11 +57,11 @@ class Command(BaseCommand):
         with open(options['file'], 'r') as i_file, open(ef_name, 'w') as e_file:
             # Log what we're doing
             self.stdout.write("Importing contents of '{}' as {} for {}..."
-                              "".format(i_file.name, factory_cls.Meta.model, owner))
+                              "".format(i_file.name, factory_cls._meta.model, owner))
 
             # Open reader (for input) and writer (for errors)
-            reader = csv.DictReader(i_file)
-            writer = csv.DictWriter(e_file, reader.fieldnames)
+            reader = DictReader(i_file)
+            writer = DictWriter(e_file, reader.fieldnames)
 
             # For every row (a dict), create using factory
             for row in reader:

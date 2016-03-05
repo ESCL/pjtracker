@@ -6,7 +6,7 @@ from ..factories import ActivityFactory, ProjectFactory
 from ..models import Activity
 
 
-class ActivityQuerySetTestCase(TestCase):
+class ActivityQuerySetTest(TestCase):
 
     def setUp(self):
         self.prj = ProjectFactory.create(code='HMS01')
