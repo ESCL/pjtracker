@@ -20,9 +20,6 @@ class ImportTest(TestCase):
         # We need an account for any import check
         self.account = AccountFactory.create()
 
-        # stringio to capture command stdout
-        self.stdout = StringIO()
-
     def test_error(self):
         # No arguments provided
         self.assertRaises(CommandError, call_command, 'import_data')
@@ -50,15 +47,19 @@ class ImportTest(TestCase):
         i_file = StringIO('a,b,c,d\n1,2,3,4')
         i_file.name = 'users.csv'
         open_mock.return_value = i_file
+        stdout = StringIO()
         call_command('import_data', 'User', i_file.name, self.account.code,
-                     stdout=self.stdout)
+                     stdout=stdout)
 
         # Nothing created, 1 error found
         self.assertEqual(User.objects.filter(owner=self.account).count(), 0)
-        self.assertIn('1 errors', self.stdout.getvalue())
+        self.assertIn('1 errors', stdout.getvalue())
 
         # Failed row was written to error file
-        DictWriter.writerow.assert_called_once_with({'a': '1', 'b': '2', 'c': '3', 'd': '4'})
+        DictWriter.writerow.assert_called_once_with({
+            'a': '1', 'b': '2', 'c': '3', 'd': '4',
+            'error': 'User requires values for: username'
+        })
         DictWriter.writerow.reset_mock()
 
         # Use a correct file, with some broken data
@@ -68,25 +69,52 @@ class ImportTest(TestCase):
             'pepe,pepe@lalal.com,,,p3p3\n'
             # OK: email is not required
             'rincewind,,Rince,Wind,r1nc3\n'
-            # OK: password can be unset
+            # error: password cannot be unset
             'twoflower,,Twoflower,,\n'
             # error: missing username
             ',mike@lalal.com,Mike,Litoris,m1k3\n'
         )
         i_file.name = 'users.csv'
         open_mock.return_value = i_file
+        stdout = StringIO()
         call_command('import_data', 'User', i_file.name, self.account.code,
-                     stdout=self.stdout)
+                     stdout=stdout)
 
-        # Three users created, one error found
-        self.assertEqual(User.objects.filter(owner=self.account).count(), 3)
-        self.assertIn('1 errors', self.stdout.getvalue())
+        # Two users created, two errors found
+        self.assertEqual(User.objects.filter(owner=self.account).count(), 2)
+        self.assertIn('2 errors', stdout.getvalue())
 
-        # Error file should be written once: 4
-        DictWriter.writerow.assert_called_once_with({
-            'username': '', 'email': 'mike@lalal.com', 'first_name': 'Mike',
-            'last_name': 'Litoris', 'password': 'm1k3'
-        })
+        # Two rows written to error file
+        DictWriter.writerow.assert_mock_calls([
+            mock.call({'username': 'twoflower', 'email': '', 'first_name': 'Twoflower',
+                       'last_name': '', 'password': '',
+                       'error': 'User requires values for: password'}),
+            mock.call({'username': '', 'email': 'mike@lalal.com', 'first_name': 'Mike',
+                       'last_name': 'Litoris', 'password': 'm1k3',
+                       'error': 'User requires values for: username'})
+        ])
+        DictWriter.writerow.reset_mock()
+
+        # Simulate fix of error file
+        i_file = StringIO(
+            'username,email,first_name,last_name,password,error\n'
+            # OK
+            'twoflower,,Twoflower,,picturesque,User requires values for: password\n'
+            # OK
+            'mike.litoris,mike@lalal.com,Mike,Litoris,m1k3,User requires values for: username\n'
+        )
+        i_file.name = 'users.errors.csv'
+        open_mock.return_value = i_file
+        stdout = StringIO()
+        call_command('import_data', 'User', i_file.name, self.account.code,
+                     stdout=stdout)
+
+        # Two more users created no errors
+        self.assertEqual(User.objects.filter(owner=self.account).count(), 4)
+        self.assertNotIn('process found', stdout.getvalue())
+
+        # Two rows written to error file
+        self.assertFalse(DictWriter.writerow.called)
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.open', create=True)
@@ -109,16 +137,17 @@ class ImportTest(TestCase):
             # error: missing position
             'lol123,Peter,Capusotto,M,GPS,,,,,\n'
             # error: project name required to create it (code does not match)
-            'lol124,Megatron,Griffin,F,GPS,,SAL,,,\n'
+            'lol124,Megatron,Griffin,F,GPS,,SAL,,TAT,\n'
         )
         i_file.name = 'users.csv'
         open_mock.return_value = i_file
+        stdout = StringIO()
         call_command('import_data', 'Employee', i_file.name, self.account.code,
-                     stdout=self.stdout)
+                     stdout=stdout)
 
-        # Four employees created, 3 errors found
+        # Four employees created, 4 errors found
         self.assertEqual(Employee.objects.filter(owner=self.account).count(), 4)
-        self.assertIn('4 errors', self.stdout.getvalue())
+        self.assertIn('4 errors', stdout.getvalue())
 
         # Check created companies: 3 (GPS, TRU, NAP)
         self.assertEqual(Company.objects.filter(owner=self.account).count(), 3)

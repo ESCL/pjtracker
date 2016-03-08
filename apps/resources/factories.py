@@ -1,6 +1,7 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute
+from django.core.exceptions import ValidationError
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute, post_generation
 
 from ..accounts.factories import AccountBaseFactory
 from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
@@ -27,7 +28,26 @@ class EmployeeBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
     position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+
+    @post_generation
+    def project(self, create, project, **kwargs):
+        """
+        Set the correct project for the employee, which could be passed
+        directly or need to be created.
+        """
+        if project:
+            # We got a project instance already, set it
+            self.project = project
+
+        elif kwargs:
+            # We got some attrs for project, let's build/create it
+            method_name = create and 'create' or 'build'
+            method = getattr(ProjectBaseFactory, method_name)
+            try:
+                self.project = method(owner=self.owner, **kwargs)
+                self.project.full_clean()
+            except KeyError as e:
+                raise ValidationError('Project requires values for {}.'.format(', '.format(e.args)))
 
 
 class EquipmentBaseFactory(DjangoModelFactory):

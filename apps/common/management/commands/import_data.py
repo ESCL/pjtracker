@@ -62,7 +62,8 @@ class Command(BaseCommand):
 
             # Open reader (for input) and writer (for errors)
             reader = DictReader(i_file)
-            writer = DictWriter(e_file, reader.fieldnames)
+            error_headers = reader.fieldnames + ['error']
+            writer = DictWriter(e_file, error_headers)
 
             # For every row (a dict), create using factory
             for row in reader:
@@ -70,12 +71,20 @@ class Command(BaseCommand):
                     # Extract all non-empty data
                     # Note: we do this because factory seems to be ignoring
                     # min_length validation
-                    data = {k: v for k, v in row.items() if v}
+                    data = {k: v for k, v in row.items() if v and k != 'error'}
                     with transaction.atomic():
                         obj = factory_cls.create(owner=owner, **data)
                         obj.full_clean()
+
                 except Exception as e:
-                    print(e)
+                    # Error, make sure message is useful and write it
+                    if isinstance(e, KeyError):
+                        e_msg = '{} requires values for: {}'.format(
+                            factory_cls._get_model_class().__name__, ', '.join(e.args)
+                        )
+                    else:
+                        e_msg = str(e)
+                    row['error'] = e_msg
                     writer.writerow(row)
                     errors += 1
 
