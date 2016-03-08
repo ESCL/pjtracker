@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute
 
 from ..accounts.factories import AccountBaseFactory
 from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
@@ -16,6 +16,8 @@ class EquipmentTypeBaseFactory(DjangoModelFactory):
     class Meta:
         model = EquipmentType
 
+    owner = SubFactory(AccountBaseFactory)
+
 
 class EmployeeBaseFactory(DjangoModelFactory):
 
@@ -23,9 +25,9 @@ class EmployeeBaseFactory(DjangoModelFactory):
         model = Employee
 
     owner = SubFactory(AccountBaseFactory)
-    position = SubFactory(PositionBaseFactory)
-    company = SubFactory(CompanyBaseFactory)
-    project = SubFactory(ProjectBaseFactory)
+    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
+    company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
 
 
 class EquipmentBaseFactory(DjangoModelFactory):
@@ -34,9 +36,9 @@ class EquipmentBaseFactory(DjangoModelFactory):
         model = Equipment
 
     owner = SubFactory(AccountBaseFactory)
-    company = SubFactory(CompanyBaseFactory)
-    type = SubFactory(EquipmentTypeBaseFactory)
-    project = SubFactory(ProjectBaseFactory)
+    company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
+    type = SubFactory(EquipmentTypeBaseFactory, owner=SelfAttribute('..owner'))
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
 
 
 # Smart factories

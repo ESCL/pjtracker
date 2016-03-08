@@ -1,7 +1,8 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute
+from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
 
+from ..accounts.factories import AccountBaseFactory
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 
 
@@ -12,14 +13,19 @@ class ProjectBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Project
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountBaseFactory)
 
 
 class ActivityBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Activity
+        django_get_or_create = ('owner', 'parent', 'code',)
 
-    project = SubFactory(ProjectBaseFactory)
+    owner = SubFactory(AccountBaseFactory)
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
 
 
 # Smart factories

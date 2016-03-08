@@ -15,13 +15,12 @@ class AccountBaseFactory(DjangoModelFactory):
         model = Account
         django_get_or_create = ('code',)
 
+
 class UserBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = User
-        # Note: need to include "owner" or otherwise it's not passed to
-        # manager's get_or_create (weird, huh?)
-        django_get_or_create = ('username', 'owner',)
+        django_get_or_create = ('owner', 'username',)
 
     owner = SubFactory(AccountBaseFactory)
 

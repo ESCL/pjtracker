@@ -44,4 +44,4 @@ LOGGING['loggers']['django']['handlers'] = ['console']
 
 # Test options
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

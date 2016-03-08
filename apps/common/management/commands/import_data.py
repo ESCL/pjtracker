@@ -3,6 +3,7 @@ __author__ = 'kako'
 from csv import DictReader, DictWriter
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from ....accounts.factories import UserBaseFactory
 from ....accounts.models import Account
@@ -27,7 +28,7 @@ class Command(BaseCommand):
         """
         for f in (UserBaseFactory, EmployeeBaseFactory,
                   EquipmentBaseFactory, ActivityBaseFactory):
-            if f._meta.model.__name__.lower() == model_name.lower():
+            if f._get_model_class().__name__.lower() == model_name.lower():
                 return f
         raise ValueError("No factory found for resource '{}'.".format(model_name))
 
@@ -57,7 +58,7 @@ class Command(BaseCommand):
         with open(options['file'], 'r') as i_file, open(ef_name, 'w') as e_file:
             # Log what we're doing
             self.stdout.write("Importing contents of '{}' as {} for {}..."
-                              "".format(i_file.name, factory_cls._meta.model, owner))
+                              "".format(i_file.name, factory_cls._get_model_class(), owner))
 
             # Open reader (for input) and writer (for errors)
             reader = DictReader(i_file)
@@ -66,8 +67,15 @@ class Command(BaseCommand):
             # For every row (a dict), create using factory
             for row in reader:
                 try:
-                    factory_cls.create(owner=owner, **row)
-                except:
+                    # Extract all non-empty data
+                    # Note: we do this because factory seems to be ignoring
+                    # min_length validation
+                    data = {k: v for k, v in row.items() if v}
+                    with transaction.atomic():
+                        obj = factory_cls.create(owner=owner, **data)
+                        obj.full_clean()
+                except Exception as e:
+                    print(e)
                     writer.writerow(row)
                     errors += 1
 

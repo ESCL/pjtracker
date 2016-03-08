@@ -61,11 +61,13 @@ class Resource(OwnedEntity):
     )
     team = models.ForeignKey(
         'organizations.Team',
-        null=True
+        null=True,
+        blank=True
     )
     project = models.ForeignKey(
         'work.Project',
-        null=True
+        null=True,
+        blank=True
     )
     resource_type = models.CharField(
         max_length=32,

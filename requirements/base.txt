@@ -5,7 +5,6 @@ django-tastypie==0.12.2
 # Non-Pypi utils
 -e git+https://github.com/kako-nawao/django-values-group.git#egg=django_values_group
 -e git+https://github.com/kako-nawao/django-signals-mixin.git#egg=django_signals_mixin
--e git+https://github.com/kako-nawao/subfactory-propagated-fields.git#egg=subfactory_propagated_fields
 
 # Factory, required for unit tests and database bootstrapping
 factory_boy==2.6.0
