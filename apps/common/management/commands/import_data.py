@@ -1,7 +1,9 @@
 __author__ = 'kako'
 
+import re
 from csv import DictReader, DictWriter
 
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -12,6 +14,7 @@ from ....work.factories import ActivityBaseFactory
 
 
 class Command(BaseCommand):
+    ERROR_SUB_RE = re.compile('^\w+ ')
 
     def add_arguments(self, parser):
         parser.add_argument('model', type=str)
@@ -67,23 +70,29 @@ class Command(BaseCommand):
 
             # For every row (a dict), create using factory
             for row in reader:
+                e_msg = None
                 try:
                     # Extract all non-empty data
-                    # Note: we do this because factory seems to be ignoring
-                    # min_length validation
+                    # Note: we do this to avoid creating "empty-string instances"
                     data = {k: v for k, v in row.items() if v and k != 'error'}
                     with transaction.atomic():
                         obj = factory_cls.create(owner=owner, **data)
                         obj.full_clean()
 
+                except KeyError as e:
+                    # Error on creation, we need that field
+                    e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
+
+                except ValidationError as e:
+                    # Validation error, we got a dict of field: [error1, ...]
+                    e_msg = ', '.join('{} {}'.format(k, self.ERROR_SUB_RE.sub('', v[0]))
+                                      for k, v in e).replace('.', '')
+
                 except Exception as e:
-                    # Error, make sure message is useful and write it
-                    if isinstance(e, KeyError):
-                        e_msg = '{} requires values for: {}'.format(
-                            factory_cls._get_model_class().__name__, ', '.join(e.args)
-                        )
-                    else:
-                        e_msg = str(e)
+                    # Other error, just print
+                    e_msg = str(e)
+
+                if e_msg:
                     row['error'] = e_msg
                     writer.writerow(row)
                     errors += 1

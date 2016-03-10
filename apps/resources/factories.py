@@ -46,8 +46,10 @@ class EmployeeBaseFactory(DjangoModelFactory):
             try:
                 self.project = method(owner=self.owner, **kwargs)
                 self.project.full_clean()
+
             except KeyError as e:
-                raise ValidationError('Project requires values for {}.'.format(', '.format(e.args)))
+                errors = {a: 'This field is required' for a in e.args}
+                raise ValidationError(errors)
 
 
 class EquipmentBaseFactory(DjangoModelFactory):

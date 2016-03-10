@@ -58,7 +58,7 @@ class ImportTest(TestCase):
         # Failed row was written to error file
         DictWriter.writerow.assert_called_once_with({
             'a': '1', 'b': '2', 'c': '3', 'd': '4',
-            'error': 'User requires values for: username'
+            'error': 'username field cannot be blank'
         })
         DictWriter.writerow.reset_mock()
 
@@ -85,23 +85,24 @@ class ImportTest(TestCase):
         self.assertIn('2 errors', stdout.getvalue())
 
         # Two rows written to error file
-        DictWriter.writerow.assert_mock_calls([
+        expected_calls = [
             mock.call({'username': 'twoflower', 'email': '', 'first_name': 'Twoflower',
                        'last_name': '', 'password': '',
-                       'error': 'User requires values for: password'}),
+                       'error': 'password field cannot be blank'}),
             mock.call({'username': '', 'email': 'mike@lalal.com', 'first_name': 'Mike',
                        'last_name': 'Litoris', 'password': 'm1k3',
-                       'error': 'User requires values for: username'})
-        ])
+                       'error': 'username field cannot be blank'})
+        ]
+        self.assertEqual(DictWriter.writerow.mock_calls, expected_calls)
         DictWriter.writerow.reset_mock()
 
         # Simulate fix of error file
         i_file = StringIO(
             'username,email,first_name,last_name,password,error\n'
             # OK
-            'twoflower,,Twoflower,,picturesque,User requires values for: password\n'
+            'twoflower,,Twoflower,,picturesque,password cannot be blank\n'
             # OK
-            'mike.litoris,mike@lalal.com,Mike,Litoris,m1k3,User requires values for: username\n'
+            'mike.litoris,mike@lalal.com,Mike,Litoris,m1k3,username cannot be blank\n'
         )
         i_file.name = 'users.errors.csv'
         open_mock.return_value = i_file
@@ -148,6 +149,13 @@ class ImportTest(TestCase):
         # Four employees created, 4 errors found
         self.assertEqual(Employee.objects.filter(owner=self.account).count(), 4)
         self.assertIn('4 errors', stdout.getvalue())
+
+        # Check errors
+        errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
+        self.assertEqual(errors, ['identifier field cannot be blank',
+                                  'gender \'Male\' is not a valid choice',
+                                  'code field cannot be blank',
+                                  'name field cannot be blank'])
 
         # Check created companies: 3 (GPS, TRU, NAP)
         self.assertEqual(Company.objects.filter(owner=self.account).count(), 3)
