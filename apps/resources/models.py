@@ -7,7 +7,10 @@ from .query import EmployeeQuerySet, EquipmentQuerySet
 class EquipmentType(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
+    )
+    code = models.CharField(
+        max_length=4,
     )
     parent = models.ForeignKey(
         'self',

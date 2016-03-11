@@ -5,7 +5,7 @@ from csv import DictReader, DictWriter
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from ....accounts.factories import UserBaseFactory
 from ....accounts.models import Account
@@ -83,16 +83,21 @@ class Command(BaseCommand):
                     # Error on creation, we need that field
                     e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
 
+                except IntegrityError as e:
+                    # Error in creation, get field name from model.field
+                    e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
+
                 except ValidationError as e:
                     # Validation error, we got a dict of field: [error1, ...]
                     e_msg = ', '.join('{} {}'.format(k, self.ERROR_SUB_RE.sub('', v[0]))
                                       for k, v in e).replace('.', '')
 
                 except Exception as e:
-                    # Other error, just print
+                    # Other error, just render it
                     e_msg = str(e)
 
                 if e_msg:
+                    # Error message, write to file
                     row['error'] = e_msg
                     writer.writerow(row)
                     errors += 1

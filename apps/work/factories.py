@@ -1,6 +1,7 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
+from django.core.exceptions import ValidationError
+from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, PostGeneration
 
 from ..accounts.factories import AccountBaseFactory
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
@@ -18,6 +19,30 @@ class ProjectBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
 
 
+def set_subfactory_project(container, create, project, **kwargs):
+    """
+    Set the correct project for the container factory, which could be passed
+    directly (project) or need to be created (from kwargs).
+    """
+    if project:
+        # We got a project instance already, set it
+        container.project = project
+
+    elif kwargs:
+        # We got some attrs for project, let's build/create it
+        method_name = create and 'create' or 'build'
+        method = getattr(ProjectBaseFactory, method_name)
+        if 'code' not in kwargs:
+            import pdb; pdb.set_trace()
+        try:
+            container.project = method(owner=container.owner, **kwargs)
+            container.project.full_clean()
+
+        except KeyError as e:
+            errors = {a: 'This field is required' for a in e.args}
+            raise ValidationError(errors)
+
+
 class ActivityBaseFactory(DjangoModelFactory):
 
     class Meta:
@@ -25,7 +50,10 @@ class ActivityBaseFactory(DjangoModelFactory):
         django_get_or_create = ('owner', 'parent', 'code',)
 
     owner = SubFactory(AccountBaseFactory)
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+    project = PostGeneration(lambda obj, create, project, **kwargs: set_subfactory_project)
+
+
+# Helper functions
 
 
 # Smart factories

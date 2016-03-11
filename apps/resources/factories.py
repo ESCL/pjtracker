@@ -1,11 +1,10 @@
 __author__ = 'kako'
 
-from django.core.exceptions import ValidationError
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute, post_generation
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute, PostGeneration
 
 from ..accounts.factories import AccountBaseFactory
 from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
-from ..work.factories import ProjectFactory, ProjectBaseFactory
+from ..work.factories import ProjectFactory, set_subfactory_project
 from .models import Employee, Equipment, EquipmentType
 
 
@@ -16,6 +15,7 @@ class EquipmentTypeBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = EquipmentType
+        django_get_or_create = ('owner', 'code',)
 
     owner = SubFactory(AccountBaseFactory)
 
@@ -24,43 +24,24 @@ class EmployeeBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Employee
+        django_get_or_create = ('owner', 'identifier',)
 
     owner = SubFactory(AccountBaseFactory)
-    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
-
-    @post_generation
-    def project(self, create, project, **kwargs):
-        """
-        Set the correct project for the employee, which could be passed
-        directly or need to be created.
-        """
-        if project:
-            # We got a project instance already, set it
-            self.project = project
-
-        elif kwargs:
-            # We got some attrs for project, let's build/create it
-            method_name = create and 'create' or 'build'
-            method = getattr(ProjectBaseFactory, method_name)
-            try:
-                self.project = method(owner=self.owner, **kwargs)
-                self.project.full_clean()
-
-            except KeyError as e:
-                errors = {a: 'This field is required' for a in e.args}
-                raise ValidationError(errors)
+    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
+    project = PostGeneration(set_subfactory_project)
 
 
 class EquipmentBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Equipment
+        django_get_or_create = ('owner', 'identifier',)
 
     owner = SubFactory(AccountBaseFactory)
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
     type = SubFactory(EquipmentTypeBaseFactory, owner=SelfAttribute('..owner'))
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+    project = PostGeneration(set_subfactory_project)
 
 
 # Smart factories
