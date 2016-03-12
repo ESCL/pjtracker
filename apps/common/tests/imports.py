@@ -254,7 +254,7 @@ class ImportTest(TestCase):
         call_command('import_data', 'Activity', i_file.name, self.account.code,
                      stdout=stdout)
 
-        # Three equipment created, 2 errors found
+        # Four activities created, 3 errors found
         self.assertEqual(Activity.objects.filter(owner=self.account).count(), 4)
         self.assertIn('3 errors', stdout.getvalue())
 
