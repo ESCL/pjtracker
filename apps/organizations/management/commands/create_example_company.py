@@ -10,7 +10,7 @@ from ...factories import CompanyFactory, TeamFactory
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        print('Creating company...')
+        self.stdout.write('Creating company...')
         account = Account.objects.get()
         timekeeper = User.objects.get(username__icontains='timekeeper')
         supervisor = User.objects.get(username__icontains='supervisor')
@@ -29,4 +29,4 @@ class Command(BaseCommand):
                                       activities=Activity.objects.workable())
 
         # Done, print result
-        print('Created company "{}" with teams {}.'.format(cpy, [mgt_team, cst_team]))
+        self.stdout.write('Created company "{}" with teams {}.'.format(cpy, [mgt_team, cst_team]))

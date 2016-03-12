@@ -12,11 +12,11 @@ class Command(BaseCommand):
     """
     def handle(self, **options):
         # Setup generic activity groups
-        print('Setting up labour types...')
+        self.stdout.write('Setting up labour types...')
 
         # Create standard labour types
         types = [ManagementLabourFactory.create(),
                  IndirectLabourFactory.create(),
                  DirectLabourFactory.create()]
 
-        print('Created labour types: {}'.format(types))
+        self.stdout.write('Created labour types: {}'.format(types))

@@ -12,7 +12,7 @@ class Command(BaseCommand):
     """
     def handle(self, **options):
         # Setup generic activity groups
-        print('Setting up activity groups...')
+        self.stdout.write('Setting up activity groups...')
         groups = []
 
         # Create standard phases
@@ -31,4 +31,4 @@ class Command(BaseCommand):
         groups.append(ActivityGroupFactory.create(name='Instrumentation', code='INS', type=ds))
         groups.append(ActivityGroupFactory.create(name='Pipelines', code='PPL', type=ds))
 
-        print('Created activity groups: {}'.format(groups))
+        self.stdout.write('Created activity groups: {}'.format(groups))

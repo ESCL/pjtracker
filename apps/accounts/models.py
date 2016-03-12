@@ -54,10 +54,24 @@ class User(AbstractUser):
             return None
         return self.owner
 
+    @staticmethod
+    def build_username(username, owner):
+        """
+        Build a username including the owner account's code if it has one,
+        in the format <user>@<account>.
+        """
+        proper_username = username.split('@')[0]
+        if proper_username and owner:
+            proper_username += '@{}'.format(owner.code)
+        return proper_username
+
     def __str__(self):
         return '{} ({})'.format(self.username, self.get_full_name())
 
     def _classify(self, obj):
+        """
+        Return the class of the passed object (itself if it's a class).
+        """
         if not inspect.isclass(obj):
             obj = type(obj)
         return obj
@@ -99,11 +113,10 @@ class User(AbstractUser):
         return disallowed
 
     def save(self, *args, **kwargs):
-        # Store normalized username that includes account code
-        username_parts = self.username.split('@')[:1]
-        if self.owner:
-            username_parts.append(self.owner.code)
-        self.username = '@'.join(username_parts)
+        # Store normalized username (and ensure it's not empty)
+        self.username = self.build_username(self.username, self.owner)
+        if not self.username:
+            raise ValueError("User 'username' cannot be empty.")
 
         # Return result of normal saves
         return super(User, self).save(*args, **kwargs)

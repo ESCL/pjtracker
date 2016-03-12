@@ -9,9 +9,8 @@ from django.conf import settings
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-
         # Create superuser
-        print("Creating superuser...")
+        self.stdout.write("Creating superuser...")
         call_command('createsuperuser')
 
         # Set up default global objects
@@ -29,5 +28,5 @@ class Command(BaseCommand):
         if settings.BOOTSTRAP_EXAMPLE_DATA:
             call_command('create_example_data')
 
-        print("Done.")
+        self.stdout.write("Done.")
 

@@ -7,7 +7,10 @@ from .query import EmployeeQuerySet, EquipmentQuerySet
 class EquipmentType(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
+    )
+    code = models.CharField(
+        max_length=4,
     )
     parent = models.ForeignKey(
         'self',
@@ -61,11 +64,13 @@ class Resource(OwnedEntity):
     )
     team = models.ForeignKey(
         'organizations.Team',
-        null=True
+        null=True,
+        blank=True
     )
     project = models.ForeignKey(
         'work.Project',
-        null=True
+        null=True,
+        blank=True
     )
     resource_type = models.CharField(
         max_length=32,

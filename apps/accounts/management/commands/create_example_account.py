@@ -9,7 +9,7 @@ from ...factories import UserFactory, AccountFactory
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        print("Creating example account with users...")
+        self.stdout.write("Creating example account with users...")
         users = []
 
         # Fetch required groups
@@ -32,4 +32,4 @@ class Command(BaseCommand):
         users.append(UserFactory.create(username='supervisor', password='123', owner=account, groups=[sup]))
 
         # Done, print results
-        print('Created account "{}" with users {}.'.format(account, users))
+        self.stdout.write('Created account "{}" with users {}.'.format(account, users))

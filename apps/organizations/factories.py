@@ -1,13 +1,35 @@
 __author__ = 'kako'
 
-import re
-
 from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute
 
-from ..accounts.factories import AccountFactory
+from ..accounts.factories import AccountFactory, AccountBaseFactory
 from ..common.utils import generate_code_from_name
 from .models import Company, Team, Position
 
+
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class CompanyBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Company
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountBaseFactory)
+
+
+class PositionBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Position
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountBaseFactory)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
 
 class CompanyFactory(DjangoModelFactory):
 
@@ -49,8 +71,6 @@ class PositionFactory(DjangoModelFactory):
 
     class Meta:
         model = Position
-        django_get_or_create = ('name',)
 
     name = Faker('job')
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
-

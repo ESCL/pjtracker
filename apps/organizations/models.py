@@ -94,7 +94,6 @@ class Position(OwnedEntity):
     )
     code = models.CharField(
         max_length=4,
-        null=True
     )
     labour_types = models.ManyToManyField(
         'work.LabourType',
