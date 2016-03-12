@@ -24,7 +24,7 @@ class TimeSheetSettingsForm(forms.ModelForm):
         rej_pol = cleaned_data['rejection_policy']
         policies = {app_pol, rej_pol}
         if TimeSheet.REVIEW_POLICY_ALL in policies and \
-                        TimeSheet.REVIEW_POLICY_FIRST not in policies:
+                TimeSheet.REVIEW_POLICY_FIRST not in policies:
             # They are not, error
             cleaned_data.pop('approval_policy')
             cleaned_data.pop('rejection_policy')
@@ -60,7 +60,6 @@ class TimeSheetForm(OwnedEntityForm):
             # New timesheet, ensure it is not a duplicate (team:date)
             team = cleaned_data.get('team')
             date = cleaned_data['date']
-
             if TimeSheet.objects.filter(team=team, date=date).exists():
                 cleaned_data.pop('team')
                 cleaned_data.pop('date')

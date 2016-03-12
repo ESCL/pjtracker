@@ -272,7 +272,6 @@ class TimeSheetSettings(models.Model):
     """
     Settings for timesheets and related entities for a given account.
     """
-    # TODO: Validate poilicies, they must be different to avoid status limbo!!!
     account = models.OneToOneField(
         'accounts.Account',
         related_name='timesheet_settings'
@@ -291,3 +290,4 @@ class TimeSheetSettings(models.Model):
                  (TimeSheet.REVIEW_POLICY_ALL, 'All')),
         default=TimeSheet.REVIEW_POLICY_FIRST
     )
+

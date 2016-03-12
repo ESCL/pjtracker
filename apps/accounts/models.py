@@ -9,10 +9,6 @@ from .query import UserManager
 
 class Account(models.Model, SignalsMixin):
 
-    TIMESHEET_REVIEW_ANY = 'any'
-    TIMESHEET_REVIEW_MAJORITY = 'majority'
-    TIMESHEET_REVIEW_ALL = 'all'
-
     name = models.CharField(
         max_length=128,
         help_text="Full name to identify the account."
