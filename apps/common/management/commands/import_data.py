@@ -90,15 +90,15 @@ class Command(BaseCommand):
                 except ValidationError as e:
                     # Validation error, we got a dict of field: [error1, ...]
                     e_msg = ', '.join('{} {}'.format(k, self.ERROR_SUB_RE.sub('', v[0]))
-                                      for k, v in e).replace('.', '')
+                                      for k, v in e)
 
                 except Exception as e:
                     # Other error, just render it
                     e_msg = str(e)
 
                 if e_msg:
-                    # Error message, write to file
-                    row['error'] = e_msg
+                    # Error message, write to file (lowercased and w/o dots)
+                    row['error'] = e_msg.replace('.', '')
                     writer.writerow(row)
                     errors += 1
 

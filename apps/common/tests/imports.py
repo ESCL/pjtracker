@@ -227,5 +227,60 @@ class ImportTest(TestCase):
         p1 = Project.objects.filter(owner=self.account).all()[0]
         self.assertEqual(p1.name, 'Kingdom of Loathing')
 
-    def test_import_activities(self):
-        self.assertEqual(1, 0)
+    @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
+    @mock.patch('apps.common.management.commands.import_data.open', create=True)
+    def test_import_activities(self, open_mock):
+        # Simulate somewhat heterogeneous file with a few errors
+        i_file = StringIO(
+            'full_wbs_code,name,project__code,project__name\n'
+            # OK: all complete
+            'X01.ENG,Engineering,X01,Some Project\n'
+            # OK: project matched by code
+            'X01.PRT,Procurement,X01,\n'
+            # OK: project and parent matched by WBS code
+            'X01.ENG.T01,Train 1,,\n'
+            # OK: project and parent matched by WBS code
+            'X01.ENG.T01.DES,Design,,\n'
+            # error: w/o wbs we cannot determine parent
+            ',Some activity,X02,Another Project\n'
+            # error: missing name
+            'X02.CST,,X02,Another Project\n'
+            # error: bad wbs format
+            'CST,Construction,X02,Another Project\n'
+        )
+        i_file.name = 'activities.csv'
+        open_mock.return_value = i_file
+        stdout = StringIO()
+        call_command('import_data', 'Activity', i_file.name, self.account.code,
+                     stdout=stdout)
+
+        # Three equipment created, 2 errors found
+        self.assertEqual(Activity.objects.filter(owner=self.account).count(), 4)
+        self.assertIn('3 errors', stdout.getvalue())
+
+        # Check errors
+        errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
+        self.assertEqual(errors, ['parent field cannot be blank',
+                                  'name field cannot be blank',
+                                  'WBS code format is invalid'])
+
+        # Check created projects: 1 (X01)
+        self.assertEqual(Project.objects.filter(owner=self.account).count(), 1)
+        p1 = Project.objects.filter(owner=self.account).all()[0]
+        self.assertEqual(p1.code, 'X01')
+        self.assertEqual(p1.name, 'Some Project')
+
+        # Check parents
+        a1, a2, a3, a4 = Activity.objects.filter(owner=self.account).all()
+        self.assertEqual(a1.code, 'ENG')
+        self.assertEqual(a1.name, 'Engineering')
+        self.assertEqual(a1.parent, None)
+        self.assertEqual(a2.code, 'PRT')
+        self.assertEqual(a2.name, 'Procurement')
+        self.assertEqual(a2.parent, None)
+        self.assertEqual(a3.code, 'T01')
+        self.assertEqual(a3.name, 'Train 1')
+        self.assertEqual(a3.parent, a1)
+        self.assertEqual(a4.code, 'DES')
+        self.assertEqual(a4.name, 'Design')
+        self.assertEqual(a4.parent, a3)

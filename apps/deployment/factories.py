@@ -11,5 +11,5 @@ class TimeSheetFactory(DjangoModelFactory):
     class Meta:
         model = TimeSheet
 
-    owner = LazyAttribute(lambda obj: obj.owner)
+    owner = LazyAttribute(lambda obj: obj.team.owner)
     team = SubFactory(TeamFactory)

@@ -1,7 +1,7 @@
 __author__ = 'kako'
 
 from django.core.exceptions import ValidationError
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, PostGeneration
+from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
 
 from ..accounts.factories import AccountBaseFactory
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
@@ -32,8 +32,6 @@ def set_subfactory_project(container, create, project, **kwargs):
         # We got some attrs for project, let's build/create it
         method_name = create and 'create' or 'build'
         method = getattr(ProjectBaseFactory, method_name)
-        if 'code' not in kwargs:
-            import pdb; pdb.set_trace()
         try:
             container.project = method(owner=container.owner, **kwargs)
             container.project.full_clean()
@@ -49,17 +47,27 @@ class ActivityBaseFactory(DjangoModelFactory):
         model = Activity
         django_get_or_create = ('owner', 'parent', 'code',)
 
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
     owner = SubFactory(AccountBaseFactory)
-    project = PostGeneration(lambda obj, create, project, **kwargs: set_subfactory_project)
 
-
-# Helper functions
+    @classmethod
+    def create(cls, **kwargs):
+        """
+        Process params with wbs_code before creating the object.
+        """
+        full_wbs_code = kwargs.pop('full_wbs_code', None)
+        if full_wbs_code:
+            cls._get_model_class().process_wbs_code_kwargs(full_wbs_code, kwargs)
+        return super(ActivityBaseFactory, cls).create(**kwargs)
 
 
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class ProjectFactory(ProjectBaseFactory):
+class ProjectFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Project
 
     name = Faker('street_address')
     code = Faker('military_ship')
@@ -83,12 +91,26 @@ class ActivityGroupFactory(DjangoModelFactory):
     type = SubFactory(ActivityGroupTypeFactory)
 
 
-class ActivityFactory(ActivityBaseFactory):
+class ActivityFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Activity
 
     owner = LazyAttribute(lambda obj: obj.project.owner)
     name = 'Foundation 23 Design'
     code = 'FND23'
     project = SubFactory(ProjectFactory)
+
+    @classmethod
+    def create(cls, **kwargs):
+        """
+        Assign project kwarg if a parent was supplied before creating instance.
+        """
+        parent = kwargs.get('parent')
+        project = kwargs.get('project')
+        if parent and not project:
+            kwargs['project'] = parent.project
+        return super(ActivityFactory, cls).create(**kwargs)
 
     @post_generation
     def groups(self, create, values):

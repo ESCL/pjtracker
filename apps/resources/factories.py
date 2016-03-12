@@ -47,18 +47,24 @@ class EquipmentBaseFactory(DjangoModelFactory):
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class EquipmentTypeFactory(EquipmentTypeBaseFactory):
+class EquipmentTypeFactory(DjangoModelFactory):
+
+    class Meta:
+        model = EquipmentType
 
     name = 'Earthworks'
 
 
-class EquipmentSubTypeFactory(EquipmentTypeBaseFactory):
+class EquipmentSubTypeFactory(EquipmentTypeFactory):
 
     name = 'Backhoe'
     parent = SubFactory(EquipmentTypeFactory)
 
 
-class EquipmentFactory(EquipmentBaseFactory):
+class EquipmentFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Equipment
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')
@@ -70,7 +76,10 @@ class EquipmentFactory(EquipmentBaseFactory):
     type = SubFactory(EquipmentSubTypeFactory)
 
 
-class EmployeeFactory(EmployeeBaseFactory):
+class EmployeeFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Employee
 
     owner = LazyAttribute(lambda obj: obj.team.owner)
     identifier = Faker('ssn')

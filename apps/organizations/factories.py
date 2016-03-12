@@ -31,7 +31,10 @@ class PositionBaseFactory(DjangoModelFactory):
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class CompanyFactory(CompanyBaseFactory):
+class CompanyFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Company
 
     owner = SubFactory(AccountFactory)
     name = Faker('company')
@@ -64,8 +67,10 @@ class TeamFactory(DjangoModelFactory):
             self.activities.add(*values)
 
 
-class PositionFactory(PositionBaseFactory):
+class PositionFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Position
 
     name = Faker('job')
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
-

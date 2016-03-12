@@ -28,7 +28,10 @@ class UserBaseFactory(DjangoModelFactory):
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class AccountFactory(AccountBaseFactory):
+class AccountFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Account
 
     name = Faker('company')
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
