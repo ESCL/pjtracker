@@ -60,32 +60,31 @@
         {{ timesheets_form.non_field_errors }}
     </div>
 
-    {% comment %}
     <hr>
 
-    <div class="row">
+    <div class="row tight-columns">
         <h5>Payroll</h5>
-        <div class="row">
-            <div class="six columns">
-                <h6>Standard Hours</h6>
-                <div class="row">
-                    <div class="six columns">
-                        {% for field in standard_hours_form %}
-                            {{ field.label_tag }}
-                            {{ field }}
-                        {% endfor %}
-                    </div>
-                    <div class="six columns">
-                        <p>
-                            Standard hours are used to predict the forecast that will be used to complete the
-                            payroll period's hours.
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div class="row header">
+            <div class="two columns"><b>Day</b></div>
+            <div class="two columns"><b>Average Hours</b></div>
+            {% for hour_type in hours_form.hour_types %}
+                <div class="two columns"><b>{{ hour_type }}</b></div>
+            {% endfor %}
         </div>
+        {% for row in hours_form.rows %}
+            <div class="row{% if row.fields.0.errors %} with-errors{% endif %}">
+                <div class="two columns">{{ row.day_type_name|title }}</div>
+                {% for field in row.fields %}
+                    <div class="two columns">
+                        {{ field }}
+                    </div>
+                {% endfor %}
+            </div>
+            {{ row.fields.0.errors }}
+        {% endfor %}
     </div>
-    {% endcomment %}
+
+    <hr>
 
     <div class="buttons">
         <button type="reset">Reset</button>

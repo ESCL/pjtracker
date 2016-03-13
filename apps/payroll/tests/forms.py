@@ -3,65 +3,102 @@ __author__ = 'kako'
 from django.test import TestCase
 
 from ...accounts.factories import AccountFactory
-from ..forms import CalendarDay, StandardHoursForm
-from ..models import StandardHours
+from ..forms import CalendarDay, HoursSettingsForm
+from ..models import HourTypeRange, StandardHours
+from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
 
 
-class StandardHoursFormTest(TestCase):
+class HoursSettingsFormTest(TestCase):
 
     def setUp(self):
+        # Create account and a few hour types
         self.account = AccountFactory.create()
+        self.std = NormalHoursFactory.create(owner=self.account)
+        self.ot150 = Overtime150HoursFactory.create(owner=self.account)
+        self.ot200 = Overtime200HoursFactory.create(owner=self.account)
 
     def test_validate(self):
         # Init form, all fields empty
-        form = StandardHoursForm(account=self.account)
+        form = HoursSettingsForm(account=self.account)
         for k, f in form.fields.items():
             self.assertEqual(f.initial, 0)
 
-        # Post with all fields empty, error
-        form = StandardHoursForm({}, account=self.account)
+        # Post with all fields empty, ok
+        form = HoursSettingsForm({}, account=self.account)
+        self.assertTrue(form.is_valid())
+
+        # Post with average hours and no hour type ranges, invalid
+        d = {'sh-weekdays': 8}
+        form = HoursSettingsForm(d, account=self.account)
         self.assertFalse(form.is_valid())
 
-        # Post with some fields empty, error
-        d = {'weekdays': 5}
-        form = StandardHoursForm(d, account=self.account)
+        # Post with top range below min required (50% above avg), invalid
+        d['htr-weekdays-STD'] = 9
+        form = HoursSettingsForm(d, account=self.account)
         self.assertFalse(form.is_valid())
 
         # Post correctly, OK
-        d = {'weekdays': 5, 'saturdays': 0, 'sundays': 0, 'holidays': 0}
-        form = StandardHoursForm(d, account=self.account)
+        d.update({'htr-weekdays-STD': 8, 'htr-weekdays-OT150': 16})
+        form = HoursSettingsForm(d, account=self.account)
         self.assertTrue(form.is_valid())
 
     def test_save(self):
-        StandardHours.objects.all().delete()
+        # Clear all hours config for account
+        StandardHours.objects.filter(owner=self.account).delete()
+        HourTypeRange.objects.filter(owner=self.account).delete()
 
-        # Post and save with nothing, everything's created anyway
-        d = {'weekdays': 0, 'saturdays': 0, 'sundays': 0, 'holidays': 0}
-        form = StandardHoursForm(d, account=self.account)
-        form.is_valid()
+        # Save empty form
+        form = HoursSettingsForm({}, account=self.account)
+        self.assertTrue(form.is_valid())
         form.save()
-        self.assertEqual(StandardHours.objects.count(), 4)
+
+        # Std hours are always saved (0 hours), ranges are not
         self.assertEqual(StandardHours.objects.filter(owner=self.account).count(), 4)
-        res = {sh.day_type: sh.hours for sh in StandardHours.objects.all()}
-        self.assertEqual(res, {CalendarDay.WEEKDAY: 0, CalendarDay.SATURDAY: 0,
-                               CalendarDay.SUNDAY: 0, CalendarDay.PUBLIC_HOLIDAY: 0})
+        self.assertEqual(StandardHours.objects.filter(owner=self.account, hours=0).count(), 4)
+        self.assertEqual(HourTypeRange.objects.filter(owner=self.account).count(), 0)
+        sh_wd = StandardHours.objects.get(owner=self.account, day_type=CalendarDay.WEEKDAY)
 
-        # Post with single entry, everything's updated
-        d = {'weekdays': 5, 'saturdays': 0, 'sundays': 0, 'holidays': 0}
-        form = StandardHoursForm(d, account=self.account)
-        form.is_valid()
+        # Post 8 std hours and two limits for weekday
+        d = {'sh-weekdays': 8, 'htr-weekdays-STD': 8, 'htr-weekdays-OT150': 16}
+        form = HoursSettingsForm(d, account=self.account)
+        self.assertTrue(form.is_valid())
         form.save()
-        self.assertEqual(StandardHours.objects.count(), 4)
-        res = {sh.day_type: sh.hours for sh in StandardHours.objects.all()}
-        self.assertEqual(res, {CalendarDay.WEEKDAY: 5, CalendarDay.SATURDAY: 0,
-                               CalendarDay.SUNDAY: 0, CalendarDay.PUBLIC_HOLIDAY: 0})
 
-        # Post with all entries, one updated, three created
-        d = {'weekdays': 8, 'saturdays': 4, 'sundays': 2, 'holidays': 1}
-        form = StandardHoursForm(d, account=self.account)
-        form.is_valid()
+        # Should have updated std hours on weekday and created two ranges
+        self.assertEqual(StandardHours.objects.filter(owner=self.account, hours=0).count(), 3)
+        sh1 = StandardHours.objects.get(owner=self.account, day_type=CalendarDay.WEEKDAY)
+        self.assertEqual(sh1, sh_wd)
+        self.assertEqual(sh1.hours, 8)
+        self.assertEqual(HourTypeRange.objects.filter(owner=self.account).count(), 2)
+        htr1, htr2 = HourTypeRange.objects.filter(owner=self.account).order_by('id').all()
+        self.assertEqual(htr1.day_type, CalendarDay.WEEKDAY)
+        self.assertEqual(htr1.hour_type, self.std)
+        self.assertEqual(htr1.limit, 8)
+        self.assertEqual(htr2.day_type, CalendarDay.WEEKDAY)
+        self.assertEqual(htr2.hour_type, self.ot150)
+        self.assertEqual(htr2.limit, 16)
+
+        # Post modifs for weekday limits, add two for saturday
+        d.update({'htr-weekdays-OT150': 12, 'htr-weekdays-OT200': 16,
+                  'htr-saturdays-OT150': 4, 'htr-saturdays-OT200': 8})
+        form = HoursSettingsForm(d, account=self.account)
+        self.assertTrue(form.is_valid())
         form.save()
-        self.assertEqual(StandardHours.objects.count(), 4)
-        res = {sh.day_type: sh.hours for sh in StandardHours.objects.all()}
-        self.assertEqual(res, {CalendarDay.WEEKDAY: 8, CalendarDay.SATURDAY: 4,
-                               CalendarDay.SUNDAY: 2, CalendarDay.PUBLIC_HOLIDAY: 1})
+
+        # Should have updated one (weekday+std) and added three
+        self.assertEqual(HourTypeRange.objects.filter(owner=self.account).count(), 5)
+        htr1b, htr2b, htr3, htr4, htr5 = HourTypeRange.objects.filter(owner=self.account).order_by('id').all()
+        self.assertEqual(htr1b, htr1)
+        self.assertEqual(htr2b, htr2)
+        self.assertEqual(htr2b.day_type, CalendarDay.WEEKDAY)
+        self.assertEqual(htr2b.hour_type, self.ot150)
+        self.assertEqual(htr2b.limit, 12)
+        self.assertEqual(htr3.day_type, CalendarDay.WEEKDAY)
+        self.assertEqual(htr3.hour_type, self.ot200)
+        self.assertEqual(htr3.limit, 16)
+        self.assertEqual(htr4.day_type, CalendarDay.SATURDAY)
+        self.assertEqual(htr4.hour_type, self.ot150)
+        self.assertEqual(htr4.limit, 4)
+        self.assertEqual(htr5.day_type, CalendarDay.SATURDAY)
+        self.assertEqual(htr5.hour_type, self.ot200)
+        self.assertEqual(htr5.limit, 8)

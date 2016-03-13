@@ -153,9 +153,9 @@ form .helptext {
     margin-top: 10em;
 }
 
-.invalid input,input.invalid {
+.invalid input, input.invalid, .row.with-errors input {
     border: 1px solid #f00;
-    box-shadow: 0 0 2px #f00;
+    box-shadow: 0 0 4px #f44;
 }
 
 
@@ -225,3 +225,8 @@ form .helptext {
 .tight-columns .four.columns { width: 32.6666667%; }
 .tight-columns .five.columns { width: 41.0833333%; }
 .tight-columns .six.columns { width: 49.5%;}
+
+/* Adjust width for fields inside tight columns */
+.tight-columns input {
+    width: 100%;
+}
