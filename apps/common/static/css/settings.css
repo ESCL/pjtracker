@@ -15,3 +15,7 @@
 .form-help li {
     margin: 0.25em;
 }
+
+.row.header {
+    margin-bottom: 12px;
+}
