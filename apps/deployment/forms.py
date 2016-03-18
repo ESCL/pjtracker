@@ -19,9 +19,15 @@ class TimeSheetSettingsForm(forms.ModelForm):
         """
         cleaned_data = super(TimeSheetSettingsForm, self).clean()
 
-        # Make sure policies are compatible
-        app_pol = cleaned_data['approval_policy']
-        rej_pol = cleaned_data['rejection_policy']
+        # Get values for approval and rejection policies
+        app_pol = cleaned_data.get('approval_policy')
+        rej_pol = cleaned_data.get('rejection_policy')
+
+        # If we have nothing return, form's already invalid
+        if not (app_pol or rej_pol):
+            return
+
+        # Now make sure policies are compatible
         policies = {app_pol, rej_pol}
         if TimeSheet.REVIEW_POLICY_ALL in policies and \
                 TimeSheet.REVIEW_POLICY_FIRST not in policies:
