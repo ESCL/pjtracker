@@ -47,7 +47,7 @@ class SafeView(View):
         Process the given exception.
         By default, log it and render it to the user.
         """
-        # Determiner status code (500 is terrible)
+        # Determine status code (500 is terrible)
         status_code = getattr(exception, 'status_code', 500)
 
         # Log the exception
