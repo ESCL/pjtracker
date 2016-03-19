@@ -1,0 +1,54 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>worked-hours</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/paginator.html' with list=worked_hours %}
+
+{% if periods %}
+    <table>
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>Phase</th>
+                <th>Employee</th>
+                <th>Hour Type</th>
+                <th>Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wh in worked_hours %}
+                <tr>
+                    <td>{{ wh.period }}</td>
+                    <td>{{ wh.phase }}</td>
+                    <td>{{ wh.employee }}</td>
+                    <td>{{ wh.hour_type }}</td>
+                    <td>{{ wh.hours }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No worked hours found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}

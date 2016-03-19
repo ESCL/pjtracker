@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from ..common.views.base import StandardResourceView
 
-from .models import CalendarDay, HourType, Period
+from .models import CalendarDay, HourType, Period, WorkedHours
 from .forms import (CalendarDayForm, CalendarDaySearchForm,
                     HourTypeForm, HourTypeSearchForm,
                     PeriodForm, PeriodSearchForm)
@@ -35,3 +35,8 @@ class PeriodView(StandardResourceView):
     list_template = 'periods.html'
     detail_template = 'period.html'
     edit_template = 'period-edit.html'
+
+
+class WorkedHoursView(StandardResourceView):
+    model = WorkedHours
+    list_template = 'worked-hours.html'
