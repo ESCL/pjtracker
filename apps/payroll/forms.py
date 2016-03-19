@@ -1,5 +1,6 @@
 __author__ = 'kako'
 
+import itertools
 from collections import OrderedDict
 from decimal import Decimal
 
@@ -7,7 +8,8 @@ from django import forms
 from django.utils.functional import cached_property
 
 from ..common.forms import ModernForm, OwnedEntityForm
-from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours
+from ..resources.models import Employee
+from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours, WorkedHours
 
 
 class CalendarDaySearchForm(ModernForm):
@@ -26,7 +28,11 @@ class PeriodSearchForm(ModernForm):
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class HoursSettingsForm(forms.Form):
+class WorkedHoursSearchForm(ModernForm):
+    pass
+
+
+class HoursSettingsForm(ModernForm):
 
     DAY_TYPES = OrderedDict((
         ('weekdays', CalendarDay.WEEKDAY),
@@ -182,3 +188,20 @@ class PeriodForm(OwnedEntityForm):
     class Meta:
         model = Period
         exclude = ('owner', 'code',)
+
+
+class WorkedHoursForm(forms.Form):
+
+    confirm = forms.ChoiceField(label='Are you sure you want to do that?',
+                                choices=(('no', "No"), ('yes', "Yes")))
+
+    def __init__(self, *args, **kwargs):
+        super(WorkedHoursForm, self).__init__(*args, **kwargs)
+
+    def clean_confirm(self):
+        """
+        Clean confirm field, advising user to go back.
+        """
+        if self.cleaned_data.get('confirm') != 'yes':
+            self.cleaned_data.pop('confirm')
+            raise forms.ValidationError("If you're not sure click on Cancel instead.")

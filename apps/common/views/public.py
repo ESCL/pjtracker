@@ -9,6 +9,10 @@ from .base import SafeView, handle_exception
 class PublicView(SafeView):
     template_base = 'public/{}.html'
 
+    @classmethod
+    def authorize(cls, request, action):
+        return
+
     @handle_exception
     def get(self, request, page):
         try:

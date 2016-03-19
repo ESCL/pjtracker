@@ -2,41 +2,21 @@ __author__ = 'kako'
 
 from django import forms
 
-
-class CustomLabelModelChoiceField(forms.ModelChoiceField):
-
-    def __init__(self, *args, option_label_attr=None, **kwargs):
-        super(CustomLabelModelChoiceField, self).__init__(*args, **kwargs)
-        self.option_label_attr = option_label_attr
-
-    def label_from_instance(self, obj):
-        return getattr(obj, self.option_label_attr)
+from .mixins import ModernFieldsMixin, RestrictedQuerySetsMixin
 
 
-class ModernizeFieldsMixin(object):
-
-    def modernize_fields(self):
-        for k, field in self.fields.items():
-            label = field.label or k.replace('_', '').title()
-            if isinstance(field, forms.DateField):
-                field.widget.attrs['title'] = label
-                field.widget.input_type = 'date'
-            else:
-                field.widget.attrs['title'] = label
-                field.widget.attrs['placeholder'] = label
-
-
-class ModernForm(ModernizeFieldsMixin, forms.Form):
+class ModernForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.Form):
     page_size = forms.IntegerField(required=False, label='Page size',
                                    min_value=10, max_value=50)
 
     def __init__(self, *args, **kwargs):
         super(ModernForm, self).__init__(*args, **kwargs)
+        self.restrict_querysets()
         self.modernize_fields()
         self.fields['page_size'].widget.attrs['step'] = 10
 
 
-class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
+class OwnedEntityForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.ModelForm):
     """
     Base model form for OwnedEntity subclasses, providing automatic disabled
     fields based on permissions, filters for choice fields based on user account
@@ -47,14 +27,16 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
     since they have no side effects by default anyway.
     """
     def __init__(self, *args, **kwargs):
+        # Pop user and init normally
         self.user = kwargs.pop('user')
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
 
         # First set the owner right away if it's a new instance
-        # Note: restrict_fields is simplifier if we set it here
+        # Note: restrict_fields is simplified if we set it here
         if not self.instance.id:
             self.instance.owner = self.user.owner
 
+        # Prepare the form fields and their querysets
         self.restrict_fields()
         self.restrict_querysets()
         self.modernize_fields()
@@ -79,13 +61,3 @@ class OwnedEntityForm(ModernizeFieldsMixin, forms.ModelForm):
                 if f:
                     f.widget.attrs.update({'disabled': 'disabled',
                                            'readonly': True})
-
-    def restrict_querysets(self):
-        """
-        Restrict queryset in all fields for the given user.
-        """
-        for field in self.fields.values():
-            if hasattr(field, 'queryset'):
-                if hasattr(field.queryset, 'for_user'):
-                    field.queryset = field.queryset.for_user(self.user)
-

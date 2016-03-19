@@ -154,7 +154,7 @@ class WorkedHoursTest(TestCase):
 
     def test_calculate_actual(self):
         # Calculate, should result in three WorkedHours instances
-        res = WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp)
+        res = list(WorkedHours.calculate_for_employee(self.period, WorkedHours.PHASE_ACTUAL, self.emp))
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
@@ -178,7 +178,7 @@ class WorkedHoursTest(TestCase):
 
     def test_calculate_forecast(self):
         # Calculate, should result in three WorkedHours instances
-        res = WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp)
+        res = list(WorkedHours.calculate_for_employee(self.period, WorkedHours.PHASE_FORECAST, self.emp))
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
@@ -207,9 +207,9 @@ class WorkedHoursTest(TestCase):
                                              forecast_start_date=date(2016, 1, 25))
 
         # Calculate and save period 1 actual+forecast
-        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp):
+        for wh in WorkedHours.calculate_for_employee(self.period, WorkedHours.PHASE_ACTUAL, self.emp):
             wh.save()
-        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp):
+        for wh in WorkedHours.calculate_for_employee(self.period, WorkedHours.PHASE_FORECAST, self.emp):
             wh.save()
 
         # Now add period 1 retroactive hours (10 on weekdays, 7 on saturday)
@@ -225,11 +225,11 @@ class WorkedHoursTest(TestCase):
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
 
         # Calculate and save period 1 retroactive WorkedHours
-        for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_RETROACTIVE, self.emp):
+        for wh in WorkedHours.calculate_for_employee(self.period, WorkedHours.PHASE_RETROACTIVE, self.emp):
             wh.save()
 
         # Calculate adjustment for period 2
-        res = WorkedHours.calculate(self.period2, WorkedHours.PHASE_ADJUSTMENT, self.emp)
+        res = list(WorkedHours.calculate_for_employee(self.period2, WorkedHours.PHASE_ADJUSTMENT, self.emp))
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 

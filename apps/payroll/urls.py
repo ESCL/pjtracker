@@ -25,8 +25,8 @@ urlpatterns = [
     url(r'^periods/(?P<pk>\d+)/(?P<action>edit)/$', PeriodView.as_view(), name='period'),
 
     # WorkedHours view
-    url(r'^worked-hours/$', WorkedHoursView.as_view(), name='worked-hours'),
-    #url(r'^worked-hours/(?P<action>add)/$', PeriodView.as_view(), name='worked-hours-calculate'),
+    url(r'^periods/(?P<period_pk>\d+)/worked-hours/$', WorkedHoursView.as_view(), name='worked-hours'),
+    url(r'^periods/(?P<period_pk>\d+)/worked-hours/(?P<action>process)/$', WorkedHoursView.as_view(), name='worked-hours'),
     #url(r'^worked-hours/(?P<pk>\d+)/$', PeriodView.as_view(), name='period'),
     #url(r'^worked-hours/(?P<pk>\d+)/(?P<action>edit)/$', PeriodView.as_view(), name='period'),
 ]

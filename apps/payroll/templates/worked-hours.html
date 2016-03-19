@@ -15,7 +15,10 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
+<li><a href="{% url 'periods' %}">periods</a></li>
+<li><a href="{% url 'period' pk=period.id %}">{{ period.code }}</a></li>
 <li><span>worked-hours</span></li>
+<li><a href="{% url 'worked-hours' period_pk=period.id action='process' %}" title="process">+</a></li>
 
 {% endblock %}
 
@@ -24,11 +27,10 @@
 
 {% include 'apps/paginator.html' with list=worked_hours %}
 
-{% if periods %}
+{% if worked_hours %}
     <table>
         <thead>
             <tr>
-                <th>Period</th>
                 <th>Phase</th>
                 <th>Employee</th>
                 <th>Hour Type</th>
@@ -38,8 +40,7 @@
         <tbody>
             {% for wh in worked_hours %}
                 <tr>
-                    <td>{{ wh.period }}</td>
-                    <td>{{ wh.phase }}</td>
+                    <td>{{ wh.get_phase_display }}</td>
                     <td>{{ wh.employee }}</td>
                     <td>{{ wh.hour_type }}</td>
                     <td>{{ wh.hours }}</td>
@@ -48,7 +49,7 @@
         </tbody>
     </table>
 {% else %}
-    <p>No worked hours found matching the current search criteria.</p>
+    <p>No worked hours found matching the current search criteria for the period.</p>
 {% endif %}
 
 {% endblock %}

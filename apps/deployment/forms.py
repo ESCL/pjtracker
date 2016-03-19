@@ -2,7 +2,8 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm, ModernForm, CustomLabelModelChoiceField
+from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.fields import CustomLabelModelChoiceField
 from .models import TimeSheet, WorkLog, TimeSheetSettings
 
 
