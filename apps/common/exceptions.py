@@ -19,3 +19,7 @@ class NotFoundError(Exception):
 
 class MethodNotAllowedError(Exception):
     status_code = 405
+
+
+class InvalidOperationError(Exception):
+    pass

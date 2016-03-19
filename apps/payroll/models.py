@@ -5,7 +5,7 @@ from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity
 from ..deployment.models import WorkLog, TimeSheet
-from .query import CalendarDayQuerySet
+from .query import CalendarDayQuerySet, WorkedHoursQuerySet
 
 
 class CalendarDay(OwnedEntity):
@@ -154,12 +154,19 @@ class Period(OwnedEntity):
 
     @cached_property
     def previous(self):
-        return self.__class__.objects.for_owner(self.owner).get(end_date=self.start_date - timedelta(days=1))
+        """
+        Payroll period immediately before this one.
+        """
+        return self.__class__.objects.for_owner(self.owner)\
+            .get(end_date=self.start_date - timedelta(days=1))
 
     def __str__(self):
         return self.code
 
     def save(self, *args, **kwargs):
+        """
+        Set the code and, if not supplied, before save.
+        """
         self.code = '{:%Y-%m}'.format(self.start_date)
         if not self.name:
             self.name = '{:%b %Y}'.format(self.start_date)
@@ -170,14 +177,13 @@ class Period(OwnedEntity):
 class WorkedHours(OwnedEntity):
     """
     Unique group of period:phase:employee:hour_type.
-
-    Note: instances of this model SHOULD ONLY be created through this model's
-    calculate class method.
     """
     PHASE_ADJUSTMENT = 'D'
     PHASE_ACTUAL = 'A'
     PHASE_FORECAST = 'F'
     PHASE_RETROACTIVE = 'R'
+
+    objects = WorkedHoursQuerySet.as_manager()
 
     period = models.ForeignKey(
         'Period'
@@ -328,4 +334,3 @@ class WorkedHours(OwnedEntity):
         return [cls(employee=employee, period=period, phase=phase,
                     hour_type=ht, hours=h)
                 for ht, h in hours_per_type.items()]
-

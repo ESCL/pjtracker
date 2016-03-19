@@ -4,6 +4,7 @@ from datetime import date
 
 from django.test import TestCase
 
+from ...common.exceptions import InvalidOperationError
 from ...deployment.factories import TimeSheetFactory
 from ...deployment.models import WorkLog, TimeSheet
 from ...resources.factories import EmployeeFactory
@@ -71,17 +72,20 @@ class CalendarDayTest(TestCase):
             self.assertEqual(day.id, None)
             self.assertEqual(day.date, date(2015, 12, d_n))
 
-        # Add the 11th, the first four are the same
+        # Add the 11th, the first four weekdays are the same
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 11))
         self.assertEqual(len(days), 5)
         for day, d_n in zip(days, (7, 8, 9, 10)):
             self.assertEqual(day.id, None)
             self.assertEqual(day.date, date(2015, 12, d_n))
+            self.assertTrue(day.is_a(CalendarDay.WEEKDAY))
 
-        # Last one has id (it's stored)
+        # But friday is stored and a holiday
         day = days[4]
         self.assertEqual(type(day.id), int)
         self.assertEqual(day.date, date(2015, 12, 11))
+        self.assertFalse(day.is_a(CalendarDay.WEEKDAY))
+        self.assertTrue(day.is_a(CalendarDay.PUBLIC_HOLIDAY))
 
 
 class WorkedHoursTest(TestCase):
@@ -111,8 +115,10 @@ class WorkedHoursTest(TestCase):
         HourTypeRange.objects.create(day_type=CalendarDay.SUNDAY, hour_type=self.ot200)
         HourTypeRange.objects.create(day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
 
-        # Make friday a public holiday and create the period
+        # Make friday 25th a public holiday
         CalendarDay.objects.create(date=date(2015, 12, 25), type=CalendarDay.PUBLIC_HOLIDAY)
+
+        # Create a period forecasting the last week (28th to 3rd)
         self.period = Period.objects.create(start_date=date(2015, 12, 5),
                                             end_date=date(2016, 1, 3),
                                             forecast_start_date=date(2015, 12, 28))
@@ -140,49 +146,55 @@ class WorkedHoursTest(TestCase):
         # Approve all timesheets to get the results
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
 
+    def test_create_error(self):
+        # Try to create worked hours instance by queryset method, invalid op
+        self.assertRaises(InvalidOperationError, WorkedHours.objects.create,
+                          period=self.period, employee=self.emp, phase=WorkedHours.PHASE_ACTUAL,
+                          hour_type=self.n, hours=20)
+
     def test_calculate_actual(self):
-        # Now calculate all hours for that employee
+        # Calculate, should result in three WorkedHours instances
         res = WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
-        # Normal hours, 36 in total
+        # Since friday is holiday normal hours = 8+8+4+8+0+0 = 28
         self.assertEqual(wh1.period, self.period)
         self.assertEqual(wh1.employee, self.emp)
         self.assertEqual(wh1.hour_type, self.n)
         self.assertEqual(wh1.hours, 28)
 
-        # Overtime at 150, 10 in total
+        # Overtime at 150 = 0+2+0+4+4+0 = 10
         self.assertEqual(wh2.period, self.period)
         self.assertEqual(wh2.employee, self.emp)
         self.assertEqual(wh2.hour_type, self.ot150)
         self.assertEqual(wh2.hours, 10)
 
-        # Overtime at 200, 6 in total
+        # Overtime at 200 = 0+0+0+0+0+6 = 6
         self.assertEqual(wh3.period, self.period)
         self.assertEqual(wh3.employee, self.emp)
         self.assertEqual(wh3.hour_type, self.ot200)
         self.assertEqual(wh3.hours, 6)
 
     def test_calculate_forecast(self):
-        # Now calculate all hours for that employee
+        # Calculate, should result in three WorkedHours instances
         res = WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
-        # Normal hours, 40 in total
+        # Normal hours = 8+8+8+8+8+0 = 40
         self.assertEqual(wh1.period, self.period)
         self.assertEqual(wh1.employee, self.emp)
         self.assertEqual(wh1.hour_type, self.n)
         self.assertEqual(wh1.hours, 40)
 
-        # Overtime at 150, 9 in total
+        # Overtime at 150 = 1+1+1+1+1+4 = 9
         self.assertEqual(wh2.period, self.period)
         self.assertEqual(wh2.employee, self.emp)
         self.assertEqual(wh2.hour_type, self.ot150)
         self.assertEqual(wh2.hours, 9)
 
-        # Overtime at 200, 2 in total
+        # Overtime at 200 = 0+0+0+0+0+2 = 2
         self.assertEqual(wh3.period, self.period)
         self.assertEqual(wh3.employee, self.emp)
         self.assertEqual(wh3.hour_type, self.ot200)
@@ -194,13 +206,13 @@ class WorkedHoursTest(TestCase):
                                              end_date=date(2016, 2, 1),
                                              forecast_start_date=date(2016, 1, 25))
 
-        # Calculate and save actual+forecast
+        # Calculate and save period 1 actual+forecast
         for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_ACTUAL, self.emp):
             wh.save()
         for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_FORECAST, self.emp):
             wh.save()
 
-        # Now add real hours, 10 on weekdays and 7 on saturday (4+3)
+        # Now add period 1 retroactive hours (10 on weekdays, 7 on saturday)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 29)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.lt, hours=6)
@@ -212,30 +224,29 @@ class WorkedHoursTest(TestCase):
                                labour_type=self.lt, hours=7)
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
 
-        # Calculate retroactive hours for previous
+        # Calculate and save period 1 retroactive WorkedHours
         for wh in WorkedHours.calculate(self.period, WorkedHours.PHASE_RETROACTIVE, self.emp):
             wh.save()
 
-        # Calculate adjustment: normal -35, ot150 -4, nothing for ot200
+        # Calculate adjustment for period 2
         res = WorkedHours.calculate(self.period2, WorkedHours.PHASE_ADJUSTMENT, self.emp)
         self.assertEqual(len(res), 3)
         wh1, wh2, wh3 = res
 
-        # Normal hours: 10 - 40 = -30
+        # Normal hours = 10 - 40 = -30
         self.assertEqual(wh1.period, self.period2)
         self.assertEqual(wh1.employee, self.emp)
         self.assertEqual(wh1.hour_type, self.n)
         self.assertEqual(wh1.hours, -30)
 
-        # Overtime at 150: 4 - 9 = -5
+        # Overtime at 150 = 4 - 9 = -5
         self.assertEqual(wh2.period, self.period2)
         self.assertEqual(wh2.employee, self.emp)
         self.assertEqual(wh2.hour_type, self.ot150)
         self.assertEqual(wh2.hours, -5)
 
-        # Overtime at 200: 3 - 2 = 1
+        # Overtime at 200 = 3 - 2 = 1
         self.assertEqual(wh3.period, self.period2)
         self.assertEqual(wh3.employee, self.emp)
         self.assertEqual(wh3.hour_type, self.ot200)
         self.assertEqual(wh3.hours, 1)
-
