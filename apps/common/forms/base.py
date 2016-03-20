@@ -6,14 +6,11 @@ from .mixins import ModernFieldsMixin, RestrictedQuerySetsMixin
 
 
 class ModernForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.Form):
-    page_size = forms.IntegerField(required=False, label='Page size',
-                                   min_value=10, max_value=50)
 
     def __init__(self, *args, **kwargs):
         super(ModernForm, self).__init__(*args, **kwargs)
         self.restrict_querysets()
         self.modernize_fields()
-        self.fields['page_size'].widget.attrs['step'] = 10
 
 
 class OwnedEntityForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.ModelForm):

@@ -6,11 +6,10 @@ from django.shortcuts import render, redirect
 
 from ..common.utils import Indexable
 from ..common.views.base import SafeView, StandardResourceView
-from ..resources.models import Employee
 from .models import CalendarDay, HourType, Period, WorkedHours
 from .forms import (CalendarDayForm, CalendarDaySearchForm,
                     HourTypeForm, HourTypeSearchForm,
-                    PeriodForm, PeriodSearchForm, WorkedHoursForm)
+                    PeriodForm, PeriodSearchForm, ProcessPayrollForm)
 
 
 class CalendarDayView(StandardResourceView):
@@ -57,9 +56,9 @@ class PeriodView(StandardResourceView):
 
 
 class WorkedHoursView(SafeView):
-    process_form = WorkedHoursForm
+    process_form = ProcessPayrollForm
     list_template = 'worked-hours.html'
-    process_template = 'worked-hours-process.html'
+    process_template = 'payroll-process.html'
 
     @classmethod
     def authorize(cls, request, action):

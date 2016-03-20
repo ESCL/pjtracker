@@ -8,27 +8,27 @@ from django import forms
 from django.utils.functional import cached_property
 
 from ..common.forms import ModernForm, OwnedEntityForm
-from ..resources.models import Employee
-from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours, WorkedHours
+from ..common.forms.mixins import PagedForm
+from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours
 
 
-class CalendarDaySearchForm(ModernForm):
+class CalendarDaySearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     date__gte = forms.DateField(label='From date', required=False)
     date__lte = forms.DateField(label='To date', required=False)
 
 
-class HourTypeSearchForm(ModernForm):
+class HourTypeSearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class PeriodSearchForm(ModernForm):
+class PeriodSearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class WorkedHoursSearchForm(ModernForm):
+class WorkedHoursSearchForm(ModernForm, PagedForm):
     pass
 
 
@@ -190,13 +190,10 @@ class PeriodForm(OwnedEntityForm):
         exclude = ('owner', 'code',)
 
 
-class WorkedHoursForm(forms.Form):
+class ProcessPayrollForm(forms.Form):
 
     confirm = forms.ChoiceField(label='Are you sure you want to do that?',
                                 choices=(('no', "No"), ('yes', "Yes")))
-
-    def __init__(self, *args, **kwargs):
-        super(WorkedHoursForm, self).__init__(*args, **kwargs)
 
     def clean_confirm(self):
         """

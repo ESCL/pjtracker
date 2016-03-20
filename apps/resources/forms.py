@@ -3,6 +3,7 @@ __author__ = 'kako'
 from django import forms
 
 from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.mixins import PagedForm
 from ..work.models import LabourType
 from .models import Employee, Equipment, EquipmentType
 
@@ -52,7 +53,7 @@ class EquipmentTypeForm(OwnedEntityForm):
         return et
 
 
-class EmployeeSearchForm(ModernForm):
+class EmployeeSearchForm(ModernForm, PagedForm):
     identifier = forms.CharField(max_length=16, required=False, label='Employee identifier')
     name = forms.CharField(max_length=32, required=False, label='Employee name')
 
@@ -60,7 +61,7 @@ class EmployeeSearchForm(ModernForm):
         super(EmployeeSearchForm, self).__init__(*args, **kwargs)
 
 
-class EquipmentSearchForm(ModernForm):
+class EquipmentSearchForm(ModernForm, PagedForm):
     identifier = forms.CharField(max_length=16, required=False, label='Equipment identifier')
     type = forms.CharField(max_length=32, required=False, label='Equipment type')
 
@@ -68,6 +69,6 @@ class EquipmentSearchForm(ModernForm):
         super(EquipmentSearchForm, self).__init__(*args, **kwargs)
 
 
-class EquipmentTypeSearchForm(ModernForm):
+class EquipmentTypeSearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(max_length=32, required=False, label='Type name')
 
