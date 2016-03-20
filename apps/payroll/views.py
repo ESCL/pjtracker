@@ -1,8 +1,12 @@
 __author__ = 'kako'
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 
+from ..common.utils import Indexable
 from ..common.views.base import SafeView, StandardResourceView
+from ..resources.models import Employee
 from .models import CalendarDay, HourType, Period, WorkedHours
 from .forms import (CalendarDayForm, CalendarDaySearchForm,
                     HourTypeForm, HourTypeSearchForm,
@@ -37,6 +41,20 @@ class PeriodView(StandardResourceView):
     detail_template = 'period.html'
     edit_template = 'period-edit.html'
 
+    @classmethod
+    def get_instance_context(cls, request, obj):
+        """
+        Override to add worked hours subtotals.
+        """
+        # First get default context
+        ctx = super(PeriodView, cls).get_instance_context(request, obj)
+
+        # Add worked hours and return context
+        ctx['worked_hours'] = WorkedHours.objects.for_payroll(obj)\
+            .values('hour_type__id', 'hour_type__name', 'hour_type__code')\
+            .order_by('hour_type__id').annotate(total_hours=Sum('hours'))
+        return ctx
+
 
 class WorkedHoursView(SafeView):
     process_form = WorkedHoursForm
@@ -54,19 +72,30 @@ class WorkedHoursView(SafeView):
 
         # Select template and update context based on action
         if action == 'process':
+            # Process, add form to context
             ctx['form'] = self.process_form()
             template = self.process_template
         else:
-            # TODO: add filter form
-            # Determine phases to show
-            # Note: real vs. payroll hours
-            mode = request.GET.get('mode')
-            if mode == 'real':
-                phases = [WorkedHours.PHASE_ACTUAL, WorkedHours.PHASE_RETROACTIVE]
-            else:
-                phases = [WorkedHours.PHASE_ADJUSTMENT, WorkedHours.PHASE_ACTUAL, WorkedHours.PHASE_FORECAST]
+            # Viewing the list, get queryset
+            # Note: payroll period values are adj+act+fct
+            worked_hours = WorkedHours.objects.for_payroll(period).consolidated()
+            n_employees = WorkedHours.objects.for_payroll(period).values('employee').distinct().count()
 
-            ctx['worked_hours'] = WorkedHours.objects.filter(period=period, phase__in=phases)
+            # Get pagination querystring and paginate accordingly
+            page_size = request.GET.get('page_size') or 20
+            page_num = request.GET.get('page', 1)
+            # Note: resut is generator, we need to make it Indexable
+            p = Paginator(Indexable(worked_hours, length=n_employees), page_size)
+            try:
+                worked_hours = p.page(page_num)
+            except PageNotAnInteger:
+                worked_hours = p.page(1)
+            except EmptyPage:
+                worked_hours = p.page(p.num_pages)
+
+            # Add to context and set template
+            ctx['worked_hours'] = worked_hours
+            ctx['hour_types'] = HourType.objects.for_user(request.user)
             template = self.list_template
 
         # Render template

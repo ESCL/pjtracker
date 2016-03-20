@@ -17,7 +17,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'periods' %}">periods</a></li>
 <li><a href="{% url 'period' pk=period.id %}">{{ period.code }}</a></li>
-<li><span>worked-hours</span></li>
+<li><span>hours</span></li>
 <li><a href="{% url 'worked-hours' period_pk=period.id action='process' %}" title="process">+</a></li>
 
 {% endblock %}
@@ -31,19 +31,21 @@
     <table>
         <thead>
             <tr>
-                <th>Phase</th>
                 <th>Employee</th>
-                <th>Hour Type</th>
-                <th>Hours</th>
+                {% for ht in hour_types %}
+                    <th title="{{ ht.name }}">{{ ht.code }}</th>
+                {% endfor %}
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
             {% for wh in worked_hours %}
                 <tr>
-                    <td>{{ wh.get_phase_display }}</td>
                     <td>{{ wh.employee }}</td>
-                    <td>{{ wh.hour_type }}</td>
-                    <td>{{ wh.hours }}</td>
+                    {% for ht in hour_types %}
+                        <td>{% lookup wh ht.code default=0 %}</td>
+                    {% endfor %}
+                    <td>{{ wh.total }}</td>
                 </tr>
             {% endfor %}
         </tbody>

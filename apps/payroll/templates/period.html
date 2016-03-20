@@ -35,4 +35,24 @@
     </dl>
 </div>
 
+<hr>
+
+<div class="row">
+    <h5>Hours <small><a href="{% url 'worked-hours' period_pk=period.id %}">View details</a></small></h5>
+    <table>
+        <thead>
+            <tr><th colspan="2">Hour Type</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody>
+            {% for wh in worked_hours %}
+                <tr>
+                    <td>{{ wh.hour_type.code }}</td>
+                    <td>{{ wh.hour_type.name }}</td>
+                    <td>{{ wh.total_hours }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 {% endblock %}

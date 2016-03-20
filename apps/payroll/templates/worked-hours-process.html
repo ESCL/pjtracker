@@ -8,7 +8,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'periods' %}">periods</a></li>
 <li><a href="{% url 'period' pk=period.id %}">{{ period.code }}</a></li>
-<li><a href="{% url 'worked-hours' period_pk=period.id %}">worked hours</a></li>
+<li><a href="{% url 'worked-hours' period_pk=period.id %}">hours</a></li>
 <li><span>+</span></li>
 
 {% endblock %}
