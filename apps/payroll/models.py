@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity
+from ..common.exceptions import BadRequestError
 from ..deployment.models import WorkLog, TimeSheet
 from ..resources.models import Employee
 from .query import CalendarDayQuerySet, WorkedHoursQuerySet
@@ -332,6 +333,8 @@ class WorkedHours(OwnedEntity):
         Yield new WorkedHours instances for the given period, for all
         processing phases and employees.
         """
+        # Get all static-ish data
+        ranges = cls._get_day_ranges(period.owner)
         for period, phase in period.processing_phases:
             for wh in WorkedHours.calculate_for_phase(period, phase):
                 yield wh

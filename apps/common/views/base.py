@@ -267,12 +267,6 @@ class StandardResourceView(ReadOnlyResourceView):
     sub_form = None
     collection_view_name = None
 
-    # Allowed permission per action
-    permissions = {
-        'add': ('add',),
-        'edit': ('change',),
-    }
-
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
 

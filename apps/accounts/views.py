@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-from ..common.exceptions import NotAuthenticatedError, NotAuthorizedError
 from ..common.views.base import SafeView, StandardResourceView
 from ..deployment.forms import TimeSheetSettingsForm
 from ..payroll.forms import HoursSettingsForm
@@ -14,6 +13,7 @@ class SettingsView(SafeView):
     for a few given parameters.
     """
     template_name = 'settings.html'
+    require_login = True
     permissions = {
         'view': ('deployment.change_timesheetsettings',)
     }
@@ -72,5 +72,8 @@ class UserView(StandardResourceView):
     edit_template = 'user-edit.html'
     search_form = UserSearchForm
     main_form = UserForm
-
-
+    require_login = True
+    permissions = {
+        'edit': ('accounts.add_user',
+                 'accounts.change_user',)
+    }

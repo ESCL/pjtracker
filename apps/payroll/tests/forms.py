@@ -21,7 +21,6 @@ class HoursSettingsFormTest(TestCase):
         # Init form, all fields empty
         form = HoursSettingsForm(account=self.account)
         for k, f in form.fields.items():
-            print('{}: {}'.format(k, f.initial))
             self.assertEqual(f.initial, 0)
 
         # Post with all fields empty, ok
