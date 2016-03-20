@@ -1,4 +1,4 @@
-import itertools
+
 from datetime import date, timedelta
 
 from django.db import models

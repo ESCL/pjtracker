@@ -17,5 +17,6 @@ class HomeView(View):
         notifs = notifs.filter(status=Notification.STATUS_ENABLED)
         context = {'user': request.user,
                    'notifications': notifs}
+
         return render(request, self.template_name, context)
 

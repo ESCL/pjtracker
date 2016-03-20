@@ -8,7 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
-from ..exceptions import NotAuthorizedError
+from ..exceptions import NotAuthenticatedError, NotAuthorizedError
 
 
 logger = logging.getLogger('django')
@@ -37,13 +37,36 @@ class SafeView(View):
     error handling.
     """
     error_template = 'apps/error.html'
+    require_login = False
+    permissions = {}
 
     @classmethod
     def authorize(cls, request, action):
         """
-        Authorization checks, to be overridden by subclasses if required.
+        Default authorization mechanism.
         """
-        raise NotImplementedError
+        if not cls.require_login:
+            # Login not required, OK
+            return
+
+        if not request.user.is_authenticated():
+            # Error, user must be authenticated
+            raise NotAuthenticatedError("User must be authenticated to "
+                                        "access this resource.")
+
+        if request.user.is_superuser:
+            # Superuser can do anything
+            return
+
+        action_perms = cls.permissions.get(action)
+        if not action_perms:
+            # No permissions required for action, OK
+            return
+
+        if not request.user.get_all_permissions().intersection(action_perms):
+            # Error, user is not authorized to do action
+            raise NotAuthorizedError("User not authorized to {} this"
+                                     "resource.".format(action))
 
     @classmethod
     def process_exception(cls, request, exception):
@@ -74,7 +97,7 @@ class SafeView(View):
         """
         Wrapper for all requests, authorize and execute the requested method.
         """
-        self.authorize(request, kwargs.get('action'))
+        self.authorize(request, kwargs.get('action', 'view'))
         return super(SafeView, self).dispatch(request, *args, **kwargs)
 
 
@@ -92,13 +115,6 @@ class ReadOnlyResourceView(SafeView):
     search_form = None
 
     # Helper class methods
-
-    @classmethod
-    def authorize(cls, request, action):
-        """
-        All users are allowed in read-only views.
-        """
-        return
 
     @classmethod
     def build_filters(cls, qd, **kwargs):
@@ -256,32 +272,6 @@ class StandardResourceView(ReadOnlyResourceView):
         'add': ('add',),
         'edit': ('change',),
     }
-
-    # Authorization methods for edit views
-
-    @classmethod
-    def authorize(cls, request, action):
-        """
-        Authorize the user by checking that he has access to the given action
-        for the view model. It also allows partial access (to specific fields
-        in the model).
-        """
-        if not action or request.user.is_superuser:
-            # No need to check permissions, OK
-            return
-
-        else:
-            # Check if user is allowed to execute the action
-            if request.user.is_authenticated():
-                for a in request.user.get_allowed_actions_for(cls.model):
-                    if a[0] in cls.permissions[action]:
-                        return
-
-        # If we got this far user is not authorized, raise error
-        raise NotAuthorizedError(
-            'You are not allowed to {} '
-            '{}.'.format(action, cls.model._meta.verbose_name_plural)
-        )
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird

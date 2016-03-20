@@ -59,12 +59,15 @@ class WorkedHoursView(SafeView):
     process_form = ProcessPayrollForm
     list_template = 'worked-hours.html'
     process_template = 'payroll-process.html'
-
-    @classmethod
-    def authorize(cls, request, action):
-        return
+    require_login = True
+    permissions = {
+        'process': ('payroll.add_workedhours',)
+    }
 
     def get(self, request, period_pk, action=None):
+        """
+        HTTP GET request handler.
+        """
         # Get period and build context
         period = Period.objects.get(id=period_pk)
         ctx = {'period': period}
@@ -74,6 +77,7 @@ class WorkedHoursView(SafeView):
             # Process, add form to context
             ctx['form'] = self.process_form()
             template = self.process_template
+
         else:
             # Viewing the list, get queryset
             # Note: payroll period values are adj+act+fct
@@ -101,6 +105,9 @@ class WorkedHoursView(SafeView):
         return render(request, template, ctx)
 
     def post(self, request, period_pk, action):
+        """
+        HTTP POST request handler.
+        """
         # Get period and init form
         period = Period.objects.get(id=period_pk)
         form = self.process_form(request.POST)
