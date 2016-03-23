@@ -11,6 +11,10 @@ class EmployeeView(StandardResourceView):
     edit_template = 'employee-edit.html'
     main_form = EmployeeForm
     search_form = EmployeeSearchForm
+    permissions = {
+        'add': ('resources.add_employee',),
+        'edit': ('resources.change_employee',)
+    }
 
 
 class EquipmentView(StandardResourceView):
@@ -20,6 +24,10 @@ class EquipmentView(StandardResourceView):
     edit_template = 'equipment-edit.html'
     main_form = EquipmentForm
     search_form = EquipmentSearchForm
+    permissions = {
+        'add': ('resources.add_equipment',),
+        'edit': ('resources.change_equipment',)
+    }
     # Override collection view name to incorrect plural
     collection_view_name = 'equipments'
 
@@ -31,5 +39,9 @@ class EquipmentTypeView(StandardResourceView):
     edit_template = 'equipment-type-edit.html'
     main_form = EquipmentTypeForm
     search_form = EquipmentTypeSearchForm
+    permissions = {
+        'add': ('resources.add_equipmenttype',),
+        'edit': ('resources.change_equipmenttype',)
+    }
     # Override default to make it "sluggish"
     collection_view_name = 'equipment-types'
