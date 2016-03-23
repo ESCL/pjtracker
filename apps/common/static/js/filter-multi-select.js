@@ -80,7 +80,7 @@ var FilterMultiSelect = function(field) {
             if (opt.selected) {
                 this.selects.selected.appendChild(newOpt);
             } else {
-                this.selects.available.appendChild(newOpt)
+                this.selects.available.appendChild(newOpt);
             }
         }
     };
@@ -92,7 +92,7 @@ var FilterMultiSelect = function(field) {
         var opt;
         for (var i = 0; i < opts.length; i++) {
             opt = opts[i];
-            if (opt.text.toLowerCase().indexOf(text) == -1) {
+            if (opt.text.toLowerCase().indexOf(text) === -1) {
                 opt.setAttribute('style', 'display: none;');
             } else {
                 opt.setAttribute('style', 'display: block;');
@@ -150,11 +150,11 @@ var FilterMultiSelect = function(field) {
         // Add event listener for filters (filter the selects) as user types
         this.filters.available.addEventListener(
             'keyup',
-            function(ev) {this_.filterOptions(ev, this_.selects.available)}
+            function(ev) {this_.filterOptions(ev, this_.selects.available);}
         );
         this.filters.selected.addEventListener(
             'keyup',
-            function(ev) {this_.filterOptions(ev, this_.selects.selected)}
+            function(ev) {this_.filterOptions(ev, this_.selects.selected);}
         );
     };
 

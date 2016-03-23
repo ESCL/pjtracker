@@ -31,7 +31,7 @@ function get(url, querystring) {
 
         // Handle onload, resolve on status 201, reject on others
         xhr.onload = function() {
-            if (xhr.status == 200) {
+            if (xhr.status === 200) {
                 resolve(xhr.response);
             } else {
                 reject(Error(xhr.statusText));
@@ -40,7 +40,7 @@ function get(url, querystring) {
 
         // Right, network errors are possible as well...
         xhr.onerror = function() {
-            reject(Error("Connection Error"))
+            reject(Error("Connection Error"));
         };
 
         // Finally, send the stuff
@@ -55,7 +55,7 @@ function post(url, data, format, safe) {
         xhr.open("POST", url, true);
 
         // Set headers and format data if needed
-        if (format == 'json') {
+        if (format === 'json') {
             xhr.setRequestHeader("Content-Type", "application/json");
             data = JSON.stringify(data);
         } else {
@@ -67,7 +67,7 @@ function post(url, data, format, safe) {
 
         // Handle onload, resolve on status 201, reject on others
         xhr.onload = function() {
-            if (xhr.status == 201) {
+            if (xhr.status === 201) {
                 resolve(xhr.response);
             } else {
                 reject(Error(xhr.statusText));
