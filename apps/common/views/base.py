@@ -62,7 +62,6 @@ class SafeView(View):
             raise NotAuthorizedError("User not authorized to {} this"
                                      "resource.".format(action))
 
-
     @classmethod
     def process_exception(cls, request, exception):
         """
