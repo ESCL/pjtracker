@@ -59,7 +59,7 @@ class SafeView(View):
         if (action_perms and
                 not request.user.get_all_permissions().intersection(action_perms)):
             # Permissions required not given to user
-            raise NotAuthorizedError("User not authorized to {} this"
+            raise NotAuthorizedError("User not authorized to {} this "
                                      "resource.".format(action))
 
     @classmethod
