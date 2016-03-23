@@ -25,5 +25,6 @@
 # Test reports and sonar cache
 /.coverage
 /.sonar
+/coverage
 /test-results.xml
 /test-coverage.xml

@@ -13,3 +13,6 @@ exclude_lines =
 
 [xml]
 output = test-coverage.xml
+
+[html]
+directory = coverage

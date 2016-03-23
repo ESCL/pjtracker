@@ -37,7 +37,7 @@ class SafeView(View):
     error handling.
     """
     error_template = 'apps/error.html'
-    require_login = False
+    require_login = True
     permissions = {}
 
     @classmethod
