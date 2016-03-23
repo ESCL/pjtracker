@@ -25,7 +25,7 @@ class SettingsView(SafeView):
         # Get account and init forms
         account = request.user.owner
         ts_form = TimeSheetSettingsForm(instance=account.timesheet_settings)
-        hs_form = HoursSettingsForm(account=account)
+        hs_form = HoursSettingsForm(user=request.user)
 
         # Build context and render template with it
         context = {
@@ -42,7 +42,7 @@ class SettingsView(SafeView):
         # Get account and init forms (with posted data)
         account = request.user.owner
         ts_form = TimeSheetSettingsForm(request.POST, instance=account.timesheet_settings)
-        hs_form = HoursSettingsForm(request.POST, account=account)
+        hs_form = HoursSettingsForm(request.POST, user=request.user)
 
         # Validate forms
         if ts_form.is_valid() and hs_form.is_valid():

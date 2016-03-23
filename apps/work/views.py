@@ -19,6 +19,10 @@ class ProjectView(StandardResourceView):
     edit_template = 'project-edit.html'
     search_form = ProjectSearchForm
     main_form = ProjectForm
+    permissions = {
+        'add': ('work.add_project',),
+        'edit': ('work.change_project',)
+    }
 
 
 class ActivityView(StandardResourceView):
@@ -28,6 +32,10 @@ class ActivityView(StandardResourceView):
     edit_template = 'activity-edit.html'
     search_form = ActivitySearchForm
     main_form = ActivityForm
+    permissions = {
+        'add': ('work.add_activity',),
+        'edit': ('work.change_activity',)
+    }
 
 
 class LabourTypeView(StandardResourceView):
@@ -37,6 +45,10 @@ class LabourTypeView(StandardResourceView):
     edit_template = 'labour-type-edit.html'
     search_form = LabourTypeSearchForm
     main_form = LabourTypeForm
+    permissions = {
+        'add': ('work.add_labourtype',),
+        'edit': ('work.change_labourtype',)
+    }
     # Fix collection view for post-save redirect
     collection_view_name = 'labour-types'
 
@@ -48,6 +60,10 @@ class ActivityGroupView(StandardResourceView):
     edit_template = 'activity-group-edit.html'
     search_form = ActivityGroupSearchForm
     main_form = ActivityGroupForm
+    permissions = {
+        'add': ('work.add_activitygroup',),
+        'edit': ('work.change_activitygroup',)
+    }
     # Fix collection view for post-save redirect
     collection_view_name = 'activity-groups'
 
@@ -59,6 +75,10 @@ class ActivityGroupTypeView(StandardResourceView):
     edit_template = 'activity-group-type-edit.html'
     search_form = ActivityGroupTypeSearchForm
     main_form = ActivityGroupTypeForm
+    permissions = {
+        'add': ('work.add_activitygrouptype',),
+        'edit': ('work.change_activitygrouptype',)
+    }
     # Fix collection view for post-save redirect
     collection_view_name = 'activity-group-types'
 

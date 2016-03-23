@@ -6,7 +6,10 @@ from .mixins import ModernFieldsMixin, RestrictedQuerySetsMixin
 
 
 class ModernForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.Form):
-
+    """
+    Base model for all non-model forms with restricted querysets and HTML5
+    widgets for their fields.
+    """
     def __init__(self, *args, **kwargs):
         super(ModernForm, self).__init__(*args, **kwargs)
         self.restrict_querysets()
@@ -24,8 +27,11 @@ class OwnedEntityForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.ModelFo
     since they have no side effects by default anyway.
     """
     def __init__(self, *args, **kwargs):
-        # Pop user and init normally
-        self.user = kwargs.pop('user')
+        """
+        Set owner to new insstance, restrict fields, querysets and
+        modernize fields.
+        """
+        # Note: super sets "user" attribute (RestrictedQuerySetMixin does it)
         super(OwnedEntityForm, self).__init__(*args, **kwargs)
 
         # First set the owner right away if it's a new instance

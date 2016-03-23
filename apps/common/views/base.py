@@ -227,7 +227,7 @@ class ReadOnlyResourceView(SafeView):
         # Build the context (include form if required)
         context = self.get_list_context(request, objs)
         if self.search_form:
-            search_form = self.search_form(request.GET)
+            search_form = self.search_form(request.GET, user=request.user)
             context['search_form'] = search_form
 
         # Finally, render the template
