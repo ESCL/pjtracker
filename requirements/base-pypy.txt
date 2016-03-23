@@ -1,0 +1,7 @@
+-r base-common.txt
+
+# Not yet merged into core lib in PyPy
+mock==1.3.0
+
+# PostgreSQL drivers
+psycopg2cffi==2.7.3

@@ -1,0 +1,4 @@
+-r base-common.txt
+
+# PostgreSQL drivers
+psycopg2==2.6.1

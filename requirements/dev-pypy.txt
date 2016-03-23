@@ -1,4 +1,4 @@
--r base.txt
+-r base-pypy.txt
 
 # Testing functionality (eg, coverage, nose integration, etc)
 coverage==4.0.3

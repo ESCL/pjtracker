@@ -1,0 +1,5 @@
+-r base-cpython.txt
+
+# Testing functionality (eg, coverage, nose integration, etc)
+coverage==4.0.3
+django-nose==1.4.3
