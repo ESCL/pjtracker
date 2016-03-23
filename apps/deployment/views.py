@@ -23,7 +23,8 @@ class TimeSheetActionView(StandardResourceView):
     edit_template = 'timesheet-action-edit.html'
     main_form = TimeSheetActionForm
     permissions = {
-        'add': ('issue', 'review',)
+        'add': ('deployment.issue_timesheet',
+                'deployment.review_timesheet',)
     }
 
 

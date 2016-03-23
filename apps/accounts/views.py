@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-from ..common.exceptions import NotAuthenticatedError, NotAuthorizedError
 from ..common.views.base import SafeView, StandardResourceView
 from ..deployment.forms import TimeSheetSettingsForm
 from ..payroll.forms import HoursSettingsForm
@@ -14,22 +13,10 @@ class SettingsView(SafeView):
     for a few given parameters.
     """
     template_name = 'settings.html'
-    required_permissions = (
-        'deployment.change_timesheetsettings',
-    )
-
-    @classmethod
-    def authorize(cls, request, action):
-        """
-        Check user permissions to authorize access or raise an error.
-        """
-        # Note: watch for anon, it has no owner attr
-        if not getattr(request.user, 'owner', None):
-            raise NotAuthenticatedError('The requested URL is not available.')
-
-        all_perms = request.user.get_all_permissions()
-        if not all_perms.intersection(cls.required_permissions):
-            raise NotAuthorizedError('You are not authorized to edit account settings.')
+    require_login = True
+    permissions = {
+        'view': ('deployment.change_timesheetsettings',)
+    }
 
     def get(self, request):
         """
@@ -85,5 +72,8 @@ class UserView(StandardResourceView):
     edit_template = 'user-edit.html'
     search_form = UserSearchForm
     main_form = UserForm
-
-
+    require_login = True
+    permissions = {
+        'edit': ('accounts.add_user',
+                 'accounts.change_user',)
+    }

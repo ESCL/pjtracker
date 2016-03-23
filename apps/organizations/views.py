@@ -30,6 +30,7 @@ class TeamView(StandardResourceView):
     main_form = TeamForm
     search_form = TeamSearchForm
     permissions = {
-        'add': ('add',),
-        'edit': ('change', 'change activities',)
+        'add': ('organizations.add_team',),
+        'edit': ('organizations.change_team',
+                 'organizations.change_team_activities',)
     }

@@ -1,5 +1,6 @@
 __author__ = 'kako'
 
+import itertools
 from collections import OrderedDict
 from decimal import Decimal
 
@@ -7,26 +8,31 @@ from django import forms
 from django.utils.functional import cached_property
 
 from ..common.forms import ModernForm, OwnedEntityForm
+from ..common.forms.mixins import PagedForm
 from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours
 
 
-class CalendarDaySearchForm(ModernForm):
+class CalendarDaySearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     date__gte = forms.DateField(label='From date', required=False)
     date__lte = forms.DateField(label='To date', required=False)
 
 
-class HourTypeSearchForm(ModernForm):
+class HourTypeSearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class PeriodSearchForm(ModernForm):
+class PeriodSearchForm(ModernForm, PagedForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class HoursSettingsForm(forms.Form):
+class WorkedHoursSearchForm(ModernForm, PagedForm):
+    pass
+
+
+class HoursSettingsForm(ModernForm):
 
     DAY_TYPES = OrderedDict((
         ('weekdays', CalendarDay.WEEKDAY),
@@ -182,3 +188,17 @@ class PeriodForm(OwnedEntityForm):
     class Meta:
         model = Period
         exclude = ('owner', 'code',)
+
+
+class ProcessPayrollForm(forms.Form):
+
+    confirm = forms.ChoiceField(label='Are you sure you want to do that?',
+                                choices=(('no', "No"), ('yes', "Yes")))
+
+    def clean_confirm(self):
+        """
+        Clean confirm field, advising user to go back.
+        """
+        if self.cleaned_data.get('confirm') != 'yes':
+            self.cleaned_data.pop('confirm')
+            raise forms.ValidationError("If you're not sure click on Cancel instead.")

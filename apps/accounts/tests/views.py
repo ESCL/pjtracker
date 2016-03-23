@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from ...common.test import mock
 from ...deployment.models import TimeSheetSettings, TimeSheet
 from ..factories import UserFactory
+from ..models import User
 from ..utils import create_permissions
 
 
@@ -85,7 +86,22 @@ class UserViewTest(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 401)
 
-        # Logged in user, ok (can see but do nothing)
+        # Logged in user, cannot see
         self.assertTrue(self.client.login(username=self.user.username, password='123'))
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        # View user detail, OK
+        url = reverse('user', kwargs={'pk': self.user.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        # Edit user, no access
+        url = reverse('user', kwargs={'pk': self.user.id, 'action': 'edit'})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 403)
+
+        # Make it account admin
+        self.user.user_permissions.add(*create_permissions(User, ['add', 'change']))
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)

@@ -1,0 +1,37 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'periods' %}">periods</a></li>
+<li><a href="{% url 'period' pk=period.id %}">{{ period.code }}</a></li>
+<li><a href="{% url 'worked-hours' period_pk=period.id %}">hours</a></li>
+<li><span>+</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<h3>Process Payroll Period</h3>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    You are about to initialize the processing of payroll period {{ period }}.<br>
+    This will first remove all the processed worked hours for the period and re-process them again.
+
+    {{ form }}
+
+    <div class="buttons">
+        <a class="button" href="{% url 'worked-hours' period_pk=period.id %}">Cancel</a>
+        <button type="submit" class="button-primary">Process</button>
+    </div>
+
+</form>
+
+{% endblock %}

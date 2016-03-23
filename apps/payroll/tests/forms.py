@@ -3,7 +3,7 @@ __author__ = 'kako'
 from django.test import TestCase
 
 from ...accounts.factories import AccountFactory
-from ..forms import CalendarDay, HoursSettingsForm
+from ..forms import CalendarDay, HoursSettingsForm, ProcessPayrollForm
 from ..models import HourTypeRange, StandardHours
 from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
 
@@ -102,3 +102,19 @@ class HoursSettingsFormTest(TestCase):
         self.assertEqual(htr5.day_type, CalendarDay.SATURDAY)
         self.assertEqual(htr5.hour_type, self.ot200)
         self.assertEqual(htr5.limit, 8)
+
+
+class ProcessPayrollFormTest(TestCase):
+
+    def test_validate(self):
+        # Form without data, invalid
+        form = ProcessPayrollForm()
+        self.assertFalse(form.is_valid())
+
+        # Default confirm value, invalid
+        form = ProcessPayrollForm({'confirm': 'no'})
+        self.assertFalse(form.is_valid())
+
+        # Confirm yes, valid
+        form = ProcessPayrollForm({'confirm': 'yes'})
+        self.assertTrue(form.is_valid())

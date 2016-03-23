@@ -1,0 +1,57 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'periods' %}">periods</a></li>
+<li><a href="{% url 'period' pk=period.id %}">{{ period.code }}</a></li>
+<li><span>hours</span></li>
+<li><a href="{% url 'worked-hours' period_pk=period.id action='process' %}" title="process">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/paginator.html' with list=worked_hours %}
+
+{% if worked_hours %}
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                {% for ht in hour_types %}
+                    <th title="{{ ht.name }}">{{ ht.code }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wh in worked_hours %}
+                <tr>
+                    <td>{{ wh.employee }}</td>
+                    {% for ht in hour_types %}
+                        <td>{% lookup wh ht.code default=0 %}</td>
+                    {% endfor %}
+                    <td>{{ wh.total }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No worked hours found matching the current search criteria for the period.</p>
+{% endif %}
+
+{% endblock %}

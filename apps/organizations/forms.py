@@ -4,6 +4,7 @@ from django import forms
 from django.db.models import Q
 
 from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.mixins import PagedForm
 from ..resources.models import Employee, Equipment
 from ..work.models import LabourType
 from .models import Company, Team, Position
@@ -104,17 +105,17 @@ class TeamForm(OwnedEntityForm):
         return team
 
 
-class CompanySearchForm(ModernForm):
+class CompanySearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Company code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Company name')
 
 
-class PositionSearchForm(ModernForm):
+class PositionSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Position code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Position name')
 
 
-class TeamSearchForm(ModernForm):
+class TeamSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Team code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Team name')
     company__code__iexact = forms.CharField(max_length=32, required=False, label='Company')

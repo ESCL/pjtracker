@@ -1,8 +1,11 @@
 __author__ = 'kako'
 
-from .models import HourType
+from datetime import datetime, timedelta
 
-from factory import DjangoModelFactory
+from factory import DjangoModelFactory, LazyAttribute
+
+from .models import HourType, Period
+
 
 
 class HourTypeFactory(DjangoModelFactory):
@@ -25,3 +28,13 @@ class Overtime150HoursFactory(HourTypeFactory):
 class Overtime200HoursFactory(HourTypeFactory):
     name = 'Overtime 200%'
     code = 'OT200'
+
+
+class PeriodFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Period
+
+    start_date = LazyAttribute(lambda obj: datetime.utcnow().date())
+    end_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=30))
+    forecast_start_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=20))

@@ -114,7 +114,6 @@ class TeamFormTest(TestCase):
                 'timekeepers': [self.user.id], 'supervisors': [self.user.id],
                 'employees': [emp.id], 'equipment': [eqp.id]}
         form = TeamForm(data, user=self.user)
-        # import pdb; pdb.set_trace()
         self.assertTrue(form.is_valid())
         team = form.save()
 

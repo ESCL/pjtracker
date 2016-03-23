@@ -8,7 +8,9 @@ from .base import SafeView, handle_exception
 
 class PublicView(SafeView):
     template_base = 'public/{}.html'
+    require_login = False
 
+    # TODO: Do we need this decorator? Isn't dispatch handling it?
     @handle_exception
     def get(self, request, page):
         try:
