@@ -31,7 +31,6 @@ class RestrictedQuerySetsMixin(object):
         Restrict queryset in all fields for the given user.
         """
         for field in self.fields.values():
-            if hasattr(field, 'queryset'):
-                if hasattr(field.queryset, 'for_user'):
-                    field.queryset = field.queryset.for_user(self.user)
-
+            if (hasattr(field, 'queryset') and
+                    hasattr(field.queryset, 'for_user')):
+                field.queryset = field.queryset.for_user(self.user)

@@ -45,28 +45,23 @@ class SafeView(View):
         """
         Default authorization mechanism.
         """
-        if not cls.require_login:
-            # Login not required, OK
+        if not cls.require_login or request.user.is_superuser:
+            # Login not required, or superuser, allow fine
             return
 
-        if not request.user.is_authenticated():
-            # Error, user must be authenticated
+        elif not request.user.is_authenticated():
+            # User not authenticated, error
             raise NotAuthenticatedError("User must be authenticated to "
                                         "access this resource.")
 
-        if request.user.is_superuser:
-            # Superuser can do anything
-            return
-
+        # OK, check permissions
         action_perms = cls.permissions.get(action)
-        if not action_perms:
-            # No permissions required for action, OK
-            return
-
-        if not request.user.get_all_permissions().intersection(action_perms):
-            # Error, user is not authorized to do action
+        if (action_perms and
+                not request.user.get_all_permissions().intersection(action_perms)):
+            # Permissions required not given to user
             raise NotAuthorizedError("User not authorized to {} this"
                                      "resource.".format(action))
+
 
     @classmethod
     def process_exception(cls, request, exception):
