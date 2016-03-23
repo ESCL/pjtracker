@@ -50,6 +50,8 @@ class TeamForm(OwnedEntityForm):
         model = Team
         exclude = ('owner',)
 
+    # TODO: Handle "change employees" and "change equipment" permissions
+
     employees = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(), required=False)
     equipment = forms.ModelMultipleChoiceField(queryset=Equipment.objects.all(), required=False)
 
