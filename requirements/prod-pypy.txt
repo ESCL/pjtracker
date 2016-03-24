@@ -1,4 +1,0 @@
--r base-cpython.txt
-
-# uWSGI application server
-uWSGI==2.0.11.2
