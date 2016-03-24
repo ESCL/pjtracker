@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if labourtype %}Edit{% else %}Add{% endif %} Labour Type</h3>
+
 <form method="POST">
 
     {% csrf_token %}

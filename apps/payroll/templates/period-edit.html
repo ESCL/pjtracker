@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if period %}Edit{% else %}Add{% endif %} Period</h3>
+
 <form method="POST">
 
     {% csrf_token %}

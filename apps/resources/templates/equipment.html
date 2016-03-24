@@ -24,15 +24,11 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main Information</h4>
+    <h3>Equipment</h3>
     <dl>
         <dt>Identifier</dt><dd>{{ equipment.identifier }}</dd>
-        {% if equipment.type.parent %}
-            <dt>Type</dt><dd>{{ equipment.type.parent}} > {{ equipment.type }}</dd>
-        {% else %}
-            <dt>Type</dt><dd>{{ equipment.type }}</dd>
-        {% endif %}
         <dt>Model</dt><dd>{{ equipment.model }}</dd>
+        <dt>Type</dt><dd>{{ equipment.type }}</dd>
         <dt>Year</dt><dd>{{ equipment.year }}</dd>
     </dl>
 </div>
@@ -40,7 +36,7 @@
 <hr>
 
 <div class="row">
-    <h5>Assignment</h5>
+    <h4>Assignment</h4>
     <dl>
         <dt>Company</dt><dd>{{ equipment.company }}</dd>
         <dt>Team</dt><dd>{{ equipment.team|default:'-' }}</dd>

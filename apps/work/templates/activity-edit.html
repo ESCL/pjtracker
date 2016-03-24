@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if activity %}Edit{% else %}Add{% endif %} Activity</h3>
+
 <form method="POST">
 
     {% csrf_token %}

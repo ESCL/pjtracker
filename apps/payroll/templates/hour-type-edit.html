@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if hourtype %}Edit{% else %}Add{% endif %} Hour Type</h3>
+
 <form method="POST">
 
     {% csrf_token %}

@@ -53,11 +53,13 @@ class EquipmentTypeFactory(DjangoModelFactory):
         model = EquipmentType
 
     name = 'Earthworks'
+    code = 'EAR'
 
 
 class EquipmentSubTypeFactory(EquipmentTypeFactory):
 
     name = 'Backhoe'
+    code = 'BKH'
     parent = SubFactory(EquipmentTypeFactory)
 
 
