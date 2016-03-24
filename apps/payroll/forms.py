@@ -44,12 +44,12 @@ class HoursSettingsForm(ModernForm):
     @cached_property
     def standard_hours(self):
         return {sh.day_type: sh for sh in
-                StandardHours.objects.for_owner(self.account)}
+                StandardHours.objects.for_owner(self.user.owner)}
 
     @cached_property
     def hour_type_ranges(self):
         res = {}
-        for htr in HourTypeRange.objects.for_owner(self.account):
+        for htr in HourTypeRange.objects.for_owner(self.user.owner):
             if htr.day_type not in res:
                 res[htr.day_type] = {}
             res[htr.day_type][htr.hour_type.code] = htr
@@ -57,11 +57,9 @@ class HoursSettingsForm(ModernForm):
 
     @cached_property
     def hour_types(self):
-        return HourType.objects.for_owner(self.account)
+        return HourType.objects.for_owner(self.user.owner)
 
     def __init__(self, *args, **kwargs):
-        # Pop account and init standard
-        self.account = kwargs.pop('account')
         super(HoursSettingsForm, self).__init__(*args, **kwargs)
 
         # Reset key order and create fields
@@ -141,7 +139,7 @@ class HoursSettingsForm(ModernForm):
 
             # Get the std hours instance (or create new one), set hours and save
             if not sh:
-                sh = StandardHours(day_type=day_type_code, owner=self.account)
+                sh = StandardHours(day_type=day_type_code, owner=self.user.owner)
             std_hours = self.cleaned_data.get(sh_fname) or 0
             sh.hours = std_hours
             sh.save()
@@ -161,7 +159,7 @@ class HoursSettingsForm(ModernForm):
                 elif limit:
                     # Get or create hour type range and update limit
                     if not htr:
-                        htr = HourTypeRange(day_type=day_type_code, hour_type=ht, owner=self.account)
+                        htr = HourTypeRange(day_type=day_type_code, hour_type=ht, owner=self.user.owner)
                     htr.limit = limit
                     htr.save()
 

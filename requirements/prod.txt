@@ -2,6 +2,3 @@
 
 # uWSGI application server
 uWSGI==2.0.11.2
-
-# PostgreSQL drivers
-psycopg2==2.6.1

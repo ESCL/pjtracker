@@ -14,6 +14,10 @@ class TimeSheetView(StandardResourceView):
     main_form = TimeSheetForm
     sub_form = WorkLogsForm
     search_form = TimeSheetSearchForm
+    permissions = {
+        'add': ('deployment.add_timesheet',),
+        'edit': ('deployment.change_timesheet',)
+    }
 
 
 class TimeSheetActionView(StandardResourceView):

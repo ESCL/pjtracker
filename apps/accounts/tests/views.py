@@ -12,12 +12,36 @@ class AuthViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        # Note: set password to avoid bug (https://github.com/ESCL/pjtracker/issues/40)
+        self.user = UserFactory.create(password='123')
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
 
     def test_login(self):
-        self.skipTest('')
+        # Anon can access
+        res = self.client.get(self.login_url)
+        self.assertEqual(res.status_code, 200)
+
+        # Incorrect login, session key still empty
+        # Note: django returns 200 on error (WTF, right!!!)
+        res = self.client.post(self.login_url, {'username': 'napoleon', 'password': '123'})
+        self.assertEqual(res.status_code, 200)
+
+        # Correct login, redirected to homepage, session key still set
+        res = self.client.post(self.login_url, {'username': self.user.username, 'password': '123'})
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, 'http://testserver{}'.format(reverse('home')))
+        self.assertTrue(self.client.session.session_key)
 
     def test_logout(self):
-        self.skipTest('')
+        # Log in, make sure session key is still set
+        self.client.login(username=self.user.username, password='123')
+        self.assertTrue(self.client.session.session_key)
+
+        # Logout, session key now unset
+        res = self.client.get(reverse('logout'))
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(self.client.session.session_key)
 
 
 class SettingsViewTest(TestCase):

@@ -6,6 +6,9 @@ from django.forms import DateField, IntegerField
 class ModernFieldsMixin(object):
 
     def modernize_fields(self):
+        """
+        Add date type, correct title and placeholders for all fields.
+        """
         for k, field in self.fields.items():
             label = field.label or k.replace('_', '').title()
             if isinstance(field, DateField):
@@ -21,10 +24,21 @@ class PagedForm(object):
                              min_value=10, max_value=50)
 
     def __init__(self, *args, **kwargs):
+        """
+        Set page_size field to int with tenwise steps.
+        """
         self.fields['page_size'].widget.attrs['step'] = 10
+        super(PagedForm, self).__init__(*args, **kwargs)
 
 
 class RestrictedQuerySetsMixin(object):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Pop user from kwarg and store for later use.
+        """
+        self.user = kwargs.pop('user')
+        super(RestrictedQuerySetsMixin, self).__init__(*args, **kwargs)
 
     def restrict_querysets(self):
         """

@@ -57,16 +57,10 @@ class EmployeeSearchForm(ModernForm, PagedForm):
     identifier = forms.CharField(max_length=16, required=False, label='Employee identifier')
     name = forms.CharField(max_length=32, required=False, label='Employee name')
 
-    def __init__(self, *args, **kwargs):
-        super(EmployeeSearchForm, self).__init__(*args, **kwargs)
-
 
 class EquipmentSearchForm(ModernForm, PagedForm):
     identifier = forms.CharField(max_length=16, required=False, label='Equipment identifier')
     type = forms.CharField(max_length=32, required=False, label='Equipment type')
-
-    def __init__(self, *args, **kwargs):
-        super(EquipmentSearchForm, self).__init__(*args, **kwargs)
 
 
 class EquipmentTypeSearchForm(ModernForm, PagedForm):

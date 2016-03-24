@@ -37,7 +37,7 @@ class SafeView(View):
     error handling.
     """
     error_template = 'apps/error.html'
-    require_login = False
+    require_login = True
     permissions = {}
 
     @classmethod
@@ -59,7 +59,7 @@ class SafeView(View):
         if (action_perms and
                 not request.user.get_all_permissions().intersection(action_perms)):
             # Permissions required not given to user
-            raise NotAuthorizedError("User not authorized to {} this"
+            raise NotAuthorizedError("User not authorized to {} this "
                                      "resource.".format(action))
 
     @classmethod
@@ -227,7 +227,7 @@ class ReadOnlyResourceView(SafeView):
         # Build the context (include form if required)
         context = self.get_list_context(request, objs)
         if self.search_form:
-            search_form = self.search_form(request.GET)
+            search_form = self.search_form(request.GET, user=request.user)
             context['search_form'] = search_form
 
         # Finally, render the template

@@ -20,6 +20,10 @@ class CalendarDayView(StandardResourceView):
     detail_template = 'calendar-day.html'
     edit_template = 'calendar-day-edit.html'
     collection_view_name = 'calendar'
+    permissions = {
+        'add': ('payroll.add_calendarday',),
+        'edit': ('payroll.change_calendarday',)
+    }
 
 
 class HourTypeView(StandardResourceView):
@@ -30,6 +34,10 @@ class HourTypeView(StandardResourceView):
     detail_template = 'hour-type.html'
     edit_template = 'hour-type-edit.html'
     collection_view_name = 'hour-types'
+    permissions = {
+        'add': ('payroll.add_hourtype',),
+        'edit': ('payroll.change_hourtype',)
+    }
 
 
 class PeriodView(StandardResourceView):
@@ -39,6 +47,10 @@ class PeriodView(StandardResourceView):
     list_template = 'periods.html'
     detail_template = 'period.html'
     edit_template = 'period-edit.html'
+    permissions = {
+        'add': ('payroll.add_period',),
+        'edit': ('payroll.change_period',)
+    }
 
     @classmethod
     def get_instance_context(cls, request, obj):
@@ -87,7 +99,7 @@ class WorkedHoursView(SafeView):
             # Get pagination querystring and paginate accordingly
             page_size = request.GET.get('page_size') or 20
             page_num = request.GET.get('page', 1)
-            # Note: resut is generator, we need to make it Indexable
+            # Note: result is generator, we need to make it Indexable
             p = Paginator(Indexable(worked_hours, length=n_employees), page_size)
             try:
                 worked_hours = p.page(page_num)
