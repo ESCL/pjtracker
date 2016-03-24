@@ -47,8 +47,9 @@ class HoursView(ReadOnlyResourceView):
         # Apply filters AND groupings (despite method name)
         # Note: we don't need to process the default filters
         objs = cls.model.objects.for_user(user)
-        objs = objs._filter_for_querystring(qs)
-        objs = objs._group_for_querystring(qs)
+        objs = objs.filter_for_querystring(qs)
+        groups = qs.getlist('group_by')
+        objs = objs.group_by(groups)
 
         # Annotate and return
         return objs.annotate(total_hours=Sum('hours'))
