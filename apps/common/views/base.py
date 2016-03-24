@@ -75,7 +75,7 @@ class SafeView(View):
         if status_code == 500:
             logger.exception(exception)
         else:
-            logger.info(exception)
+            logger.debug(exception)
 
         # Build context for error template
         context = {'error': exception.__class__.__name__.replace('Error', ''),
