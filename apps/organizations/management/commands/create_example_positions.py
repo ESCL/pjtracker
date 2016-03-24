@@ -13,7 +13,7 @@ class Command(BaseCommand):
     FILE_NAME = 'positions.csv'
 
     def handle(self, *args, **options):
-        self.stdout.write('Creating default positions...')
+        self.stdout.write('Creating example positions...')
 
         # Determine file path
         file_path = os.path.join(os.path.dirname(__file__), 'fixtures', self.FILE_NAME)

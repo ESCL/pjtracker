@@ -17,8 +17,6 @@ class Command(BaseCommand):
         call_command('create_default_groups')
         call_command('create_default_labour_types')
         call_command('create_default_activity_groups')
-        call_command('create_default_positions')
-        call_command('create_default_equipment_types')
 
         # Create example account if required
         if settings.BOOTSTRAP_EXAMPLE_ACCOUNT:
@@ -26,6 +24,8 @@ class Command(BaseCommand):
 
         # Create example data if required
         if settings.BOOTSTRAP_EXAMPLE_DATA:
+            call_command('create_example_positions')
+            call_command('create_example_equipment_types')
             call_command('create_example_data')
 
         self.stdout.write("Done.")
