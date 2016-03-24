@@ -15,7 +15,7 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'activity-group-types' %}">activity group types</a></li>
-<li><span>{{ activitygrouptype.name }}</span></li>
+<li><span>{{ activitygrouptype.name|upper }}</span></li>
 <li><a href="{% url 'activity-group-type' pk=activitygrouptype.id action='edit' %}">edit</a></li>
 
 {% endblock %}
@@ -24,7 +24,7 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main Information</h4>
+    <h3>Activity Group Type</h3>
     <dl>
         <dt>Name</dt><dd>{{ activitygrouptype.name}}</dd>
     </dl>

@@ -190,11 +190,13 @@ form .helptext {
 }
 
 .action-group li:first-of-type {
+    padding-left: 2px;
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
 }
 
 .action-group li:last-of-type {
+    padding-right: 2px;
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
 }

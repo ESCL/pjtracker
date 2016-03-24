@@ -24,7 +24,7 @@
 {% block body %}
 
 <div class="row">
-    <h4>Personal Information</h4>
+    <h3>Employee</h3>
     <dl>
         <dt>Identifier</dt><dd>{{ employee.identifier }}</dd>
         <dt>Name</dt><dd>{{ employee.full_name }}</dd>
@@ -35,7 +35,7 @@
 <hr>
 
 <div class="row">
-    <h5>Assignment</h5>
+    <h4>Assignment</h4>
     <dl>
         <dt>Company</dt><dd>{{ employee.company }}</dd>
         <dt>Team</dt><dd>{{ employee.team|default:'-' }}</dd>

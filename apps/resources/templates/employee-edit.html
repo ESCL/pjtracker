@@ -17,6 +17,8 @@
 
 {% block body %}
 
+<h3>{% if employee %}Edit{% else %}Add{% endif %} Employee</h3>
+
 <form method="POST">
 
     {% csrf_token %}

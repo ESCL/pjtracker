@@ -25,7 +25,7 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main Information</h4>
+    <h3>Team</h3>
     <dl>
         <dt>Code</dt><dd>{{ team.code }}</dd>
         <dt>Name</dt><dd>{{ team.name }}</dd>
@@ -36,7 +36,7 @@
 <hr>
 
 <div class="row">
-    <h5>Management</h5>
+    <h4>Management</h4>
     <dl>
         <dt>Timekeepers</dt>
         <dd>
@@ -64,7 +64,7 @@
 <hr>
 
 <div class="row">
-    <h5>Assignments</h5>
+    <h4>Assignments</h4>
     <dl>
         <dt>Employees</dt>
         <dd>
@@ -89,8 +89,8 @@
         <dt>Activities</dt>
         <dd>
             <ul>
-                {% for e in team.activities.all %}
-                    <li>{{ e }}</li>
+                {% for a in team.activities.all %}
+                    <li><b>{{ a.full_wbs_code }}</b> - {{ a.name }}</li>
                 {% empty %}
                     -
                 {% endfor %}

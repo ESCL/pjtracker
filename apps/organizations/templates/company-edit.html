@@ -6,7 +6,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'companies' %}">companies</a></li>
 {% if company %}
-    <li><a href="{% url 'company' pk=company.id %}">{{ company }}</a></li>
+    <li><a href="{% url 'company' pk=company.id %}">{{ company.code }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>
@@ -16,6 +16,8 @@
 
 
 {% block body %}
+
+<h3>{% if company %}Edit{% else %}Add{% endif %} Company</h3>
 
 <form method="POST">
 

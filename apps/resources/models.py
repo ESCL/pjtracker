@@ -23,7 +23,7 @@ class EquipmentType(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return '{} ({})'.format(self.name, self.code)
 
     def add_labour_type(self, labour_type, user=None):
         EquipmentTypeLabourType.objects.get_or_create(

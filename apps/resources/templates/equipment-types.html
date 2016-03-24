@@ -31,6 +31,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Code</th>
                 <th>Parent</th>
                 <th>Labour Types</th>
                 <th class="actions">Actions</th>
@@ -40,6 +41,7 @@
             {% for et in equipmenttypes%}
                 <tr>
                     <td>{{ et.name }}</td>
+                    <td>{{ et.code }}</td>
                     <td>{{ et.parent|default:'-' }}</td>
                     <td>
                         {% get et 'labour_types_for' request.user as labour_types %}

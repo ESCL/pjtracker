@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if calendarday %}Edit{% else %}Add{% endif %} Day</h3>
+
 <form method="POST">
 
     {% csrf_token %}
