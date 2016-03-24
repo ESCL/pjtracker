@@ -4,10 +4,11 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 
 
-from ....deployment.models import TimeSheetSettings, TimeSheet
+from ....deployment.models import TimeSheet, TimeSheetSettings
 from ....organizations.models import Company, Team, Position
+from ....payroll.models import CalendarDay, HourType, Period, WorkedHours
 from ....resources.models import Employee, Equipment, EquipmentType
-from ....work.models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
+from ....work.models import Activity, ActivityGroup, ActivityGroupType, LabourType, Project
 from ...models import User
 from ...utils import create_permissions
 
@@ -22,6 +23,8 @@ class Command(BaseCommand):
         self.stdout.write("Creating {} group...".format(name))
         group = Group.objects.create(name=name)
         group.permissions.add(*create_permissions(User, ['change']))
+        # Note: also give access to edit HourTypeRange and StandardHour, since
+        # they're in the same view (should we maybe let HR do that?)
         group.permissions.add(*create_permissions(TimeSheetSettings, ['change']))
         self.stdout.write("Group {} created successfully.".format(group))
 
@@ -32,6 +35,10 @@ class Command(BaseCommand):
         group.permissions.add(*create_permissions(Company, ['add', 'change']))
         group.permissions.add(*create_permissions(Position, ['add', 'change']))
         group.permissions.add(*create_permissions(Employee, ['add', 'change']))
+        group.permissions.add(*create_permissions(CalendarDay, ['add', 'change']))
+        group.permissions.add(*create_permissions(HourType, ['add', 'change']))
+        group.permissions.add(*create_permissions(Period, ['add', 'change']))
+        group.permissions.add(*create_permissions(WorkedHours, ['add']))
         self.stdout.write("Group {} created successfully.".format(group))
 
         # Team management
