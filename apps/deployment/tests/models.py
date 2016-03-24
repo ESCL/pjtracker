@@ -207,3 +207,52 @@ class WorkLogTest(TestCase):
         res = WorkLog.objects.for_user(self.user2)
         self.assertEqual(res.count(), 0)
 
+    def test_group_by(self):
+        # Create a few work logs
+        e1 = EmployeeFactory.create(team=self.team)
+        e2 = EmployeeFactory.create(team=self.team)
+        a1 = ActivityFactory.create()
+        a2 = ActivityFactory.create()
+        WorkLog.objects.create(timesheet=self.ts, resource=e1.resource_ptr,
+                               activity=a1, hours=2, labour_type=self.ind)
+        WorkLog.objects.create(timesheet=self.ts, resource=e1.resource_ptr,
+                               activity=a2, hours=5, labour_type=self.ind)
+        WorkLog.objects.create(timesheet=self.ts, resource=e2.resource_ptr,
+                               activity=a1, hours=3, labour_type=self.dir)
+        WorkLog.objects.create(timesheet=self.ts, resource=e2.resource_ptr,
+                               activity=a2, hours=4, labour_type=self.ind)
+        self.assertEqual(WorkLog.objects.filter(timesheet=self.ts).count(), 4)
+
+        # Group by date, a single work log with only timesheet attr
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['date']).distinct()
+        self.assertEqual(wlogs.count(), 1)
+        wl1 = wlogs.get()
+        self.assertEqual(wl1.timesheet.id, self.ts.id)
+        self.assertFalse(hasattr(wl1, 'resource'))
+        self.assertFalse(hasattr(wl1, 'activity'))
+        self.assertFalse(hasattr(wl1, 'labour_type'))
+
+        # Group by employee only, two logs with only employee set
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['resource']).distinct()
+        self.assertEqual(wlogs.count(), 2)
+        wl1, wl2 = wlogs.all()
+        self.assertEqual(wl1.resource, e1.resource_ptr)
+        self.assertFalse(hasattr(wl1, 'activity'))
+        self.assertFalse(hasattr(wl1, 'labour_type'))
+        self.assertEqual(wl2.resource, e2.resource_ptr)
+        self.assertFalse(hasattr(wl2, 'activity'))
+        self.assertFalse(hasattr(wl2, 'labour_type'))
+
+        # Group by activity+labour type, three logs
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['activity', 'labour_type']).distinct()
+        self.assertEqual(wlogs.count(), 3)
+        wl1, wl2, wl3 = wlogs.all()
+        self.assertFalse(hasattr(wl1, 'resource'))
+        self.assertEqual(wl1.activity, a1)
+        self.assertEqual(wl1.labour_type, self.ind)
+        self.assertFalse(hasattr(wl2, 'resource'))
+        self.assertEqual(wl2.activity, a2)
+        self.assertEqual(wl2.labour_type, self.ind)
+        self.assertFalse(hasattr(wl3, 'resource'))
+        self.assertEqual(wl3.activity, a1)
+        self.assertEqual(wl3.labour_type, self.dir)

@@ -21,7 +21,7 @@ setup(
     name='pjtracker',
 
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.3.0',
+    version='0.5.0',
 
     description='Project resources tracker',
     long_description=long_description,
