@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 
 from ...common.test import mock
 from ...accounts.factories import UserFactory, User
-from ...accounts.utils import create_permissions
+from ...accounts.utils import ensure_permissions
 from ...deployment.models import TimeSheet
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import DirectLabourFactory, IndirectLabourFactory
@@ -35,7 +35,7 @@ class TeamFormTest(TestCase):
 
     def test_limited_permissions(self):
         # Add permissions to edit team activities
-        self.user.user_permissions.add(*create_permissions(Team, ['change activities']))
+        self.user.user_permissions.add(*ensure_permissions(Team, ['change activities']))
 
         # Init the form and calculate what fields should be editable
         form = TeamForm(user=self.user)
@@ -54,7 +54,7 @@ class TeamFormTest(TestCase):
             self.assertEqual(field.widget.attrs['readonly'], True)
 
         # Add full permissions to user
-        self.user.user_permissions.add(*create_permissions(Team, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Team, ['change']))
 
         # Init form, now everything's editable
         self.user = User.objects.get(id=self.user.id)
@@ -65,7 +65,7 @@ class TeamFormTest(TestCase):
 
     def test_limit_timesheet_assignment(self):
         # Make user a team manager to allow setting timekeepers and supervisors
-        self.user.user_permissions.add(*create_permissions(Team, ['add', 'change']))
+        self.user.user_permissions.add(*ensure_permissions(Team, ['add', 'change']))
 
         # Render w/o timekeepers/supervisors, both fields are empty
         form = TeamForm(user=self.user)
@@ -74,11 +74,11 @@ class TeamFormTest(TestCase):
 
         # Add a timekeeper with direct permissions
         tk = UserFactory.create(owner=self.user.owner)
-        tk.user_permissions.add(*create_permissions(TimeSheet, ['issue']))
+        tk.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
 
         # Add a supervisor with indirect permissions (through group)
         g = Group.objects.create(name='supervisors')
-        g.permissions.add(*create_permissions(TimeSheet, ['review']))
+        g.permissions.add(*ensure_permissions(TimeSheet, ['review']))
         s = UserFactory.create(owner=self.user.owner, groups=[g])
 
         # Render form again, they are both options
@@ -103,8 +103,8 @@ class TeamFormTest(TestCase):
 
     def test_save(self):
         # Give first full permissions
-        self.user.user_permissions.add(*create_permissions(Team, ['add', 'change']))
-        self.user.user_permissions.add(*create_permissions(TimeSheet, ['issue', 'review']))
+        self.user.user_permissions.add(*ensure_permissions(Team, ['add', 'change']))
+        self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue', 'review']))
 
         # Create a team with 1 emp and 1 eqp
         emp = EmployeeFactory.create(owner=self.account)
@@ -140,7 +140,7 @@ class PositionFormTest(TestCase):
         # Create user and account
         self.user = UserFactory.create()
         self.account = self.user.owner
-        self.user.user_permissions.add(*create_permissions(Position, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Position, ['change']))
 
         # Add labour types
         self.dir = DirectLabourFactory.create()

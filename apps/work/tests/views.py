@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from ...accounts.factories import UserFactory
-from ...accounts.utils import create_permissions
+from ...accounts.utils import ensure_permissions
 from ..factories import ProjectFactory, ActivityGroupTypeFactory, ActivityGroupFactory, ActivityFactory, IndirectLabourFactory
 from ..models import Project, ActivityGroupType, ActivityGroup, Activity, LabourType
 
@@ -35,7 +35,7 @@ class ProjectViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add project
-        self.user.user_permissions.add(*create_permissions(Project, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Project, ['add']))
         res = self.client.get(reverse('project', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -44,7 +44,7 @@ class ProjectViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit project
-        self.user.user_permissions.add(*create_permissions(Project, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Project, ['change']))
         res = self.client.get(reverse('project', kwargs={'pk': self.p.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -75,7 +75,7 @@ class ActivityViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add activity
-        self.user.user_permissions.add(*create_permissions(Activity, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Activity, ['add']))
         res = self.client.get(reverse('activity', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -84,7 +84,7 @@ class ActivityViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit activity
-        self.user.user_permissions.add(*create_permissions(Activity, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Activity, ['change']))
         res = self.client.get(reverse('activity', kwargs={'pk': self.a.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -115,7 +115,7 @@ class LabourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add labour type
-        self.user.user_permissions.add(*create_permissions(LabourType, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(LabourType, ['add']))
         res = self.client.get(reverse('labour-type', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -124,7 +124,7 @@ class LabourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit labour type
-        self.user.user_permissions.add(*create_permissions(LabourType, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(LabourType, ['change']))
         res = self.client.get(reverse('labour-type', kwargs={'pk': self.lt.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -156,7 +156,7 @@ class ActivityGroupTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add activity group type
-        self.user.user_permissions.add(*create_permissions(ActivityGroupType, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(ActivityGroupType, ['add']))
         res = self.client.get(reverse('activity-group-type', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -165,7 +165,7 @@ class ActivityGroupTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit activity group type
-        self.user.user_permissions.add(*create_permissions(ActivityGroupType, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(ActivityGroupType, ['change']))
         res = self.client.get(reverse('activity-group-type', kwargs={'pk': self.agt.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -196,7 +196,7 @@ class ActivityGroupViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add activity group
-        self.user.user_permissions.add(*create_permissions(ActivityGroup, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(ActivityGroup, ['add']))
         res = self.client.get(reverse('activity-group', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -205,6 +205,6 @@ class ActivityGroupViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit activity group
-        self.user.user_permissions.add(*create_permissions(ActivityGroup, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(ActivityGroup, ['change']))
         res = self.client.get(reverse('activity-group', kwargs={'pk': self.ag.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)

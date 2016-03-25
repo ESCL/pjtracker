@@ -14,7 +14,6 @@ class Command(BaseCommand):
         call_command('createsuperuser')
 
         # Set up default global objects
-        call_command('create_default_groups')
         call_command('create_default_labour_types')
         call_command('create_default_activity_groups')
 
