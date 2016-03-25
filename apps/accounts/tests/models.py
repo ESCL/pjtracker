@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from ..models import Account, User
 from ..factories import UserFactory
-from ..utils import create_permissions
+from ..utils import ensure_permissions
 
 
 class UserTest(TestCase):
@@ -45,7 +45,7 @@ class UserTest(TestCase):
     def test_get_allowed_actions(self):
         # Create an admin that can change anything
         user = UserFactory.create()
-        user.user_permissions.add(*create_permissions(User, ['add', 'change']))
+        user.user_permissions.add(*ensure_permissions(User, ['add', 'change']))
 
         # Actions should be simple
         actions = user.get_allowed_actions_for(User)
@@ -53,7 +53,7 @@ class UserTest(TestCase):
 
         # Create one that can only change usernames
         user = UserFactory.create()
-        user.user_permissions.add(*create_permissions(User, ['change username']))
+        user.user_permissions.add(*ensure_permissions(User, ['change username']))
 
         # Actions should include field name
         actions = user.get_allowed_actions_for(User)
@@ -62,7 +62,7 @@ class UserTest(TestCase):
     def test_get_disallowed_fields(self):
         # Create an admin that can change anything
         user = UserFactory.create()
-        user.user_permissions.add(*create_permissions(User, ['add', 'change']))
+        user.user_permissions.add(*ensure_permissions(User, ['add', 'change']))
 
         # Actions should be simple
         fields = user.get_disallowed_fields_for(User(owner=user.owner))
@@ -70,7 +70,7 @@ class UserTest(TestCase):
 
         # Create one that can only change usernames
         user = UserFactory.create()
-        user.user_permissions.add(*create_permissions(User, ['change username']))
+        user.user_permissions.add(*ensure_permissions(User, ['change username']))
 
         # Check fields, only username is removed
         fields = user.get_disallowed_fields_for(User(owner=user.owner))

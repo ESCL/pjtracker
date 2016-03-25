@@ -5,7 +5,7 @@ from ...common.test import mock
 from ...deployment.models import TimeSheetSettings, TimeSheet
 from ..factories import UserFactory
 from ..models import User
-from ..utils import create_permissions
+from ..utils import ensure_permissions
 
 
 class AuthViewTest(TestCase):
@@ -63,7 +63,7 @@ class SettingsViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add authorization, now user should be able to view
-        self.user.user_permissions.add(*create_permissions(TimeSheetSettings, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(TimeSheetSettings, ['change']))
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, 200)
 
@@ -80,7 +80,7 @@ class SettingsViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Invalid data
-        self.user.user_permissions.add(*create_permissions(TimeSheetSettings, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(TimeSheetSettings, ['change']))
         res = self.client.post(self.url, {})
         self.assertEqual(res.status_code, 400)
         self.assertFalse(hsf_save.called)
@@ -126,6 +126,6 @@ class UserViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Make it account admin
-        self.user.user_permissions.add(*create_permissions(User, ['add', 'change']))
+        self.user.user_permissions.add(*ensure_permissions(User, ['add', 'change']))
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)

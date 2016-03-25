@@ -5,7 +5,7 @@ from datetime import date
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ...accounts.utils import create_permissions
+from ...accounts.utils import ensure_permissions
 from ..forms import CalendarDay, HoursSettingsForm, ProcessPayrollForm, PeriodForm
 from ..models import HourTypeRange, StandardHours, Period
 from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
@@ -112,7 +112,7 @@ class PeriodFormTest(TestCase):
     def setUp(self):
         # Create use with permissions to add a period
         self.user = UserFactory.create()
-        self.user.user_permissions.add(*create_permissions(Period, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Period, ['add']))
 
     def test_validate(self):
         # No dates, error since they're all required

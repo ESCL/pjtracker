@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from ...accounts.factories import UserFactory
-from ...accounts.utils import create_permissions
+from ...accounts.utils import ensure_permissions
 from ..factories import EmployeeFactory, EquipmentFactory, EquipmentTypeFactory
 from ..models import Employee, Equipment, EquipmentType
 
@@ -35,7 +35,7 @@ class EmployeeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add employees, OK now
-        self.user.user_permissions.add(*create_permissions(Employee, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Employee, ['add']))
         res = self.client.get(reverse('employee', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -44,7 +44,7 @@ class EmployeeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, OK now
-        self.user.user_permissions.add(*create_permissions(Employee, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Employee, ['change']))
         res = self.client.get(reverse('employee', kwargs={'pk': self.e.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -75,7 +75,7 @@ class EquipmentViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, now user can add equipment
-        self.user.user_permissions.add(*create_permissions(Equipment, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Equipment, ['add']))
         res = self.client.get(reverse('equipment', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -84,7 +84,7 @@ class EquipmentViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit equipment
-        self.user.user_permissions.add(*create_permissions(Equipment, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Equipment, ['change']))
         res = self.client.get(reverse('equipment', kwargs={'pk': self.e.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
@@ -115,7 +115,7 @@ class EquipmentTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to add, user can now add type
-        self.user.user_permissions.add(*create_permissions(EquipmentType, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(EquipmentType, ['add']))
         res = self.client.get(reverse('equipment-type', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -124,7 +124,7 @@ class EquipmentTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit type
-        self.user.user_permissions.add(*create_permissions(EquipmentType, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(EquipmentType, ['change']))
         res = self.client.get(reverse('equipment-type', kwargs={'pk': self.et.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 

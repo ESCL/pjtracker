@@ -3,7 +3,7 @@ __author__ = 'kako'
 from django.test import TestCase
 
 from apps.accounts.factories import UserFactory
-from apps.accounts.utils import create_permissions
+from apps.accounts.utils import ensure_permissions
 from apps.notifications.models import Notification
 from apps.deployment.factories import TimeSheetFactory
 from apps.deployment.models import TimeSheet
@@ -14,10 +14,10 @@ class TimeSheetNotificationsTest(TestCase):
 
     def setUp(self):
         # Create one timekeeper and two reviewers
-        self.tk = UserFactory.create(user_permissions=create_permissions(TimeSheet, ['add', 'issue']))
+        self.tk = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['add', 'issue']))
         self.account = self.tk.owner
-        self.r1 = UserFactory.create(user_permissions=create_permissions(TimeSheet, ['review']), owner=self.account)
-        self.r2 = UserFactory.create(user_permissions=create_permissions(TimeSheet, ['review']), owner=self.account)
+        self.r1 = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
+        self.r2 = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
 
         # Create one team and and a timesheet
         self.team = TeamFactory.create(owner=self.account, timekeepers=[self.tk], supervisors=[self.r1, self.r2])

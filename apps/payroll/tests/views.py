@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from ...accounts.factories import UserFactory
-from ...accounts.utils import create_permissions
+from ...accounts.utils import ensure_permissions
 from ...deployment.models import WorkLog
 from ...resources.factories import EmployeeFactory
 from ..factories import PeriodFactory, NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
@@ -41,7 +41,7 @@ class CalendarDayViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to add, can now add
-        self.user.user_permissions.add(*create_permissions(CalendarDay, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(CalendarDay, ['add']))
         res = self.client.get(reverse('calendar-day', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -50,7 +50,7 @@ class CalendarDayViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to edit, can edit ok
-        self.user.user_permissions.add(*create_permissions(CalendarDay, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(CalendarDay, ['change']))
         res = self.client.get(reverse('calendar-day', kwargs={'action': 'edit', 'pk': self.cd.id}))
         self.assertEqual(res.status_code, 200)
 
@@ -81,7 +81,7 @@ class HourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to add, can now add
-        self.user.user_permissions.add(*create_permissions(HourType, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(HourType, ['add']))
         res = self.client.get(reverse('hour-type', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -90,7 +90,7 @@ class HourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to edit, can edit ok
-        self.user.user_permissions.add(*create_permissions(HourType, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(HourType, ['change']))
         res = self.client.get(reverse('hour-type', kwargs={'action': 'edit', 'pk': self.ht.id}))
         self.assertEqual(res.status_code, 200)
 
@@ -121,7 +121,7 @@ class PeriodViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to add, can now add
-        self.user.user_permissions.add(*create_permissions(Period, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(Period, ['add']))
         res = self.client.get(reverse('period', kwargs={'action': 'add'}))
         self.assertEqual(res.status_code, 200)
 
@@ -130,7 +130,7 @@ class PeriodViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Give access to edit, can edit ok
-        self.user.user_permissions.add(*create_permissions(Period, ['change']))
+        self.user.user_permissions.add(*ensure_permissions(Period, ['change']))
         res = self.client.get(reverse('period', kwargs={'action': 'edit', 'pk': self.period.id}))
         self.assertEqual(res.status_code, 200)
 
@@ -188,14 +188,14 @@ class WorkedHoursViewTest(TestCase):
         self.assertEqual(res.status_code, 403)
 
         # Add permission to do it, should view it now
-        self.user.user_permissions.add(*create_permissions(WorkedHours, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(WorkedHours, ['add']))
         url = reverse('worked-hours', kwargs={'period_pk': self.period.id, 'action': 'process'})
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
     def test_process(self):
         # Give permissions and login
-        self.user.user_permissions.add(*create_permissions(WorkedHours, ['add']))
+        self.user.user_permissions.add(*ensure_permissions(WorkedHours, ['add']))
         self.client.login(username=self.user.username, password='123')
 
         # Check that setUp worked hours are there
