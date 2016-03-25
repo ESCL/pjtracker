@@ -198,13 +198,13 @@ class PeriodForm(OwnedEntityForm):
         end = cleaned_data.get('end_date')
 
         # If we have all dates, make sure forecast is between start and end
-        if start and forecast_start and end:
-            if not(start <= forecast_start <= end):
-                cleaned_data.pop('forecast_start_date')
-                raise forms.ValidationError(
-                    'Invalid dates, forecast must be after start date'
-                    'and before end date.'
-                )
+        if start and forecast_start and end and \
+                not start <= forecast_start <= end:
+            cleaned_data.pop('forecast_start_date')
+            raise forms.ValidationError(
+                'Invalid dates, forecast must be after start date'
+                'and before end date.'
+            )
 
         # Return all cleaned data
         return cleaned_data
