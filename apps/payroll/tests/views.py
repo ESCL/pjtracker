@@ -168,7 +168,6 @@ class WorkedHoursViewTest(TestCase):
         WorkedHours(phase=WorkedHours.PHASE_ACTUAL, hour_type=self.ot150, hours=10, **d).save()
         WorkedHours(phase=WorkedHours.PHASE_ACTUAL, hour_type=self.ot200, hours=6, **d).save()
         WorkedHours(phase=WorkedHours.PHASE_FORECAST, hour_type=self.std, hours=56, **d).save()
-        print(WorkedHours.objects.values_list('id', flat=True))
 
     def test_view(self):
         url = reverse('worked-hours', kwargs={'period_pk': self.period.id})
