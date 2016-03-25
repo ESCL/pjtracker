@@ -17,13 +17,13 @@ class ActivityFormTest(TestCase):
         self.user.user_permissions.add(*ensure_permissions(Activity, ['add', 'change']))
         self.pj = ProjectFactory.create(owner=self.user.owner)
 
-        # Create two phase groups
-        self.eng = ActivityGroupFactory.create()
-        self.cst = ActivityGroupFactory.create(code='CST', name='Construction', type=self.eng.type)
+        # Get two phase groups
+        self.eng = ActivityGroup.objects.get(code='ENG')
+        self.cst = ActivityGroup.objects.get(code='CST')
 
-        # Create two discipline groups
-        self.civ = ActivityGroupFactory.create(code='CIV', name='Civil', type__name='Discipline')
-        self.mec = ActivityGroupFactory.create(code='MEC', name='Mechanical', type=self.civ.type)
+        # Get two discipline groups
+        self.civ = ActivityGroup.objects.get(code='CIV')
+        self.mec = ActivityGroup.objects.get(code='MEC')
 
     def test_groups(self):
         # Render form for new activity
@@ -39,7 +39,8 @@ class ActivityFormTest(TestCase):
         self.assertEqual(set(f_disc.queryset), set(ActivityGroup.objects.filter(type=self.civ.type)))
 
         # Post and save
-        data = {'project': self.pj.id, 'name': 'x', 'code': 'X', 'group_phase': self.eng.id, 'group_discipline': self.civ.id}
+        data = {'project': self.pj.id, 'name': 'x', 'code': 'X',
+                'group_phase': self.eng.id, 'group_discipline': self.civ.id}
         form = ActivityForm(data, user=self.user)
         form.is_valid()
         form.save()
@@ -56,7 +57,8 @@ class ActivityFormTest(TestCase):
         self.assertEqual(f_disc.initial, self.civ.id)
 
         # Edit and select other groups, make sure they are updated
-        data = {'project': self.pj.id, 'name': 'x', 'code': 'X', 'group_phase': None, 'group_discipline': self.mec.id}
+        data = {'project': self.pj.id, 'name': 'x', 'code': 'X',
+                'group_phase': None, 'group_discipline': self.mec.id}
         form = ActivityForm(data, instance=act, user=self.user)
         form.is_valid()
         form.save()
@@ -64,4 +66,3 @@ class ActivityFormTest(TestCase):
         # Make sure the right groups were added
         act = Activity.objects.get(pk=act.id)
         self.assertEqual(set(act.groups.all()), {self.mec})
-

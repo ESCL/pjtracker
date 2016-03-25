@@ -13,10 +13,6 @@ class Command(BaseCommand):
         self.stdout.write("Creating superuser...")
         call_command('createsuperuser')
 
-        # Set up default global objects
-        call_command('create_default_labour_types')
-        call_command('create_default_activity_groups')
-
         # Create example account if required
         if settings.BOOTSTRAP_EXAMPLE_ACCOUNT:
             call_command('create_example_account')
@@ -28,4 +24,3 @@ class Command(BaseCommand):
             call_command('create_example_data')
 
         self.stdout.write("Done.")
-

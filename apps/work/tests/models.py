@@ -37,17 +37,18 @@ class ActivityTest(TestCase):
         a_act = ActivityFactory.create(owner=self.user.owner)
 
         # Nothing workable
-        self.assertEqual(LabourType.objects.count(), 0)
         self.assertEqual(Activity.objects.for_user(self.user).workable().count(), 0)
 
         # Allow indirect in global, is now selected filtered
-        g_act.labour_types.add(IndirectLabourFactory.create())
+        ind = LabourType.objects.get(code='IN')
+        g_act.labour_types.add(ind)
         qs = Activity.objects.for_user(self.user).workable()
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs[0], g_act)
 
         # Allow account act direct, selected as well
-        a_act.labour_types.add(DirectLabourFactory.create())
+        dir = LabourType.objects.get(code='DI')
+        a_act.labour_types.add(dir)
         qs = Activity.objects.for_user(self.user).workable()
         self.assertEqual(qs.count(), 2)
         self.assertEqual(set(qs), {a_act, g_act})
