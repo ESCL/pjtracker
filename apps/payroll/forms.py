@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-import itertools
+
 from collections import OrderedDict
 from decimal import Decimal
 
@@ -187,6 +187,27 @@ class PeriodForm(OwnedEntityForm):
         model = Period
         exclude = ('owner', 'code',)
 
+    def clean(self):
+        """
+        Make sure forecast date is between start and end.
+        """
+        # Clean data and get all dates
+        cleaned_data = super(PeriodForm, self).clean()
+        start = cleaned_data.get('start_date')
+        forecast_start = cleaned_data.get('forecast_start_date')
+        end = cleaned_data.get('end_date')
+
+        # If we have all dates, make sure forecast is between start and end
+        if start and forecast_start and end:
+            if not(start <= forecast_start <= end):
+                cleaned_data.pop('forecast_start_date')
+                raise forms.ValidationError(
+                    'Incorrect dates, forecast must be greater than start '
+                    'and smaller than end.'
+                )
+
+        # Return all cleaned data
+        return cleaned_data
 
 class ProcessPayrollForm(forms.Form):
 

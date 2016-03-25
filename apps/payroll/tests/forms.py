@@ -1,10 +1,13 @@
 __author__ = 'kako'
 
+from datetime import date
+
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ..forms import CalendarDay, HoursSettingsForm, ProcessPayrollForm
-from ..models import HourTypeRange, StandardHours
+from ...accounts.utils import create_permissions
+from ..forms import CalendarDay, HoursSettingsForm, ProcessPayrollForm, PeriodForm
+from ..models import HourTypeRange, StandardHours, Period
 from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
 
 
@@ -104,11 +107,49 @@ class HoursSettingsFormTest(TestCase):
         self.assertEqual(htr5.limit, 8)
 
 
+class PeriodFormTest(TestCase):
+
+    def setUp(self):
+        # Create use with permissions to add a period
+        self.user = UserFactory.create()
+        self.user.user_permissions.add(*create_permissions(Period, ['add']))
+
+    def test_validate(self):
+        # No dates, error since they're all required
+        d = {}
+        form = PeriodForm(d, user=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(set(form.errors.keys()),
+                         {'name', 'start_date', 'forecast_start_date', 'end_date'})
+
+        # Forecast date < start date, error
+        d = {'name': 'January 2016', 'start_date': date(2016, 1, 1),
+             'forecast_start_date': date(2015, 12, 25),
+             'end_date': date(2016, 1, 31)}
+        form = PeriodForm(d, user=self.user)
+        self.assertFalse(form.is_valid())
+
+        # Forecast date > end date, error
+        d['forecast_start_date'] = date(2016, 2, 25)
+        form = PeriodForm(d, user=self.user)
+        self.assertFalse(form.is_valid())
+
+        # Start <= Forecast date <= end date, OK
+        d['forecast_start_date'] = date(2016, 1, 25)
+        form = PeriodForm(d, user=self.user)
+        self.assertTrue(form.is_valid())
+
+        # Invert start and end, error
+        d.update({'start_date': d.pop('end_date'), 'end_date': d.pop('start_date')})
+        form = PeriodForm(d, user=self.user)
+        self.assertFalse(form.is_valid())
+
+
 class ProcessPayrollFormTest(TestCase):
 
     def test_validate(self):
         # Form without data, invalid
-        form = ProcessPayrollForm()
+        form = ProcessPayrollForm({})
         self.assertFalse(form.is_valid())
 
         # Default confirm value, invalid
