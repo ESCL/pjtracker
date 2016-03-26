@@ -1,6 +1,7 @@
 __author__ = 'kako'
 
 import re
+import itertools
 
 
 RE_NAME_REPLACE = re.compile(r'[\(\)-/]')
@@ -33,3 +34,34 @@ def generate_code_from_name(name, max_len=3):
 
     # Return it upper-cased and truncated
     return ''.join(code_parts).upper()[:max_len]
+
+
+class Indexable(object):
+    """
+    Wrapper to allow indexing (and thus, slicing) an iterator, that also
+    caches the values as it iterates.
+    """
+    def __init__(self, iterator, length=100):
+        self.iterator = iterator
+        self.cache = []
+        self.length = length
+
+    def __iter__(self):
+        for e in self.iterator:
+            self.cache.append(e)
+            yield e
+
+    def __getitem__(self, index):
+        try:
+            max_idx = index.stop
+
+        except AttributeError:
+            max_idx = index
+
+        n = max_idx - len(self.cache) + 1
+        if n > 0:
+            self.cache.extend(itertools.islice(self.iterator, n))
+        return self.cache[index]
+
+    def __len__(self):
+        return self.length

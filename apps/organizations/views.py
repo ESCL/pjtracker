@@ -11,6 +11,10 @@ class CompanyView(StandardResourceView):
     edit_template = 'company-edit.html'
     main_form = CompanyForm
     search_form = CompanySearchForm
+    permissions = {
+        'add': ('organizations.add_company',),
+        'edit': ('organizations.change_company',),
+    }
 
 
 class PositionView(StandardResourceView):
@@ -20,6 +24,11 @@ class PositionView(StandardResourceView):
     edit_template = 'position-edit.html'
     main_form = PositionForm
     search_form = PositionSearchForm
+    permissions = {
+        'add': ('organizations.add_position',),
+        'edit': ('organizations.change_position',
+                 'organizations.change_position_labour_types'),
+    }
 
 
 class TeamView(StandardResourceView):
@@ -30,6 +39,7 @@ class TeamView(StandardResourceView):
     main_form = TeamForm
     search_form = TeamSearchForm
     permissions = {
-        'add': ('add',),
-        'edit': ('change', 'change activities',)
+        'add': ('organizations.add_team',),
+        'edit': ('organizations.change_team',
+                 'organizations.change_team_activities',)
     }

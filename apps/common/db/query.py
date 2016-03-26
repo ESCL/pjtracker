@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from django.db.models.query import QuerySet, ValuesQuerySet
+from django.db.models.query import QuerySet
 
 from ..exceptions import NotAuthenticatedError
 
@@ -35,3 +35,4 @@ class OwnedEntityQuerySet(QuerySet):
 
     def for_owner(self, owner):
         return self.filter(owner=owner)
+

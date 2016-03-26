@@ -4,33 +4,34 @@ from django import forms
 from django.template.defaultfilters import slugify
 
 from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.mixins import PagedForm
 from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
 
 
 # Search forms for list views
 
-class ProjectSearchForm(ModernForm):
+class ProjectSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Project name')
 
 
-class ActivitySearchForm(ModernForm):
+class ActivitySearchForm(ModernForm, PagedForm):
     project__code__iexact = forms.CharField(max_length=16, required=False, label='Project code')
     name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Activity name')
 
 
-class ActivityGroupSearchForm(ModernForm):
+class ActivityGroupSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Group code')
     name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Group name')
     type = forms.ModelChoiceField(queryset=ActivityGroupType.objects.all(), label='Type')
 
 
-class ActivityGroupTypeSearchForm(ModernForm):
+class ActivityGroupTypeSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Type code')
     name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Type name')
 
 
-class LabourTypeSearchForm(ModernForm):
+class LabourTypeSearchForm(ModernForm, PagedForm):
     code__iexact = forms.CharField(max_length=16, required=False, label='Labour type code')
     name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Labour type name')
 

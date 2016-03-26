@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><a href="{% url 'equipments' %}">equipments</a></li>
+<li><a href="{% url 'equipments' %}">equipment</a></li>
 {% if equipment %}
     <li><a href="{% url 'equipment' pk=equipment.id %}">{{ equipment.identifier }}</a></li>
     <li><span>edit</span></li>
@@ -16,6 +16,8 @@
 
 
 {% block body %}
+
+<h3>{% if equipment %}Edit{% else %}Add{% endif %} Equipment</h3>
 
 <form method="POST">
 

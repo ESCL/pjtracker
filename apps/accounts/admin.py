@@ -6,11 +6,11 @@ from .forms import AdminUserCreationForm
 
 
 class AccountAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('code', 'name',)
 
 
 class UserAdmin(UserAdminBase):
-    list_display = ('username', 'owner', 'email', 'first_name', 'last_name', 'is_staff',)
+    list_display = ('owner', 'username', 'email', 'first_name', 'last_name', 'is_staff',)
     add_form = AdminUserCreationForm
     add_fieldsets = (
         (None, {

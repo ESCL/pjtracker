@@ -8,7 +8,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'activity-group-types' %}">activity group types</a></li>
 {% if activitygrouptype %}
-    <li><a href="{% url 'activity-group-type' pk=activitygrouptype.id %}">{{ activitygrouptype.name }}</a></li>
+    <li><a href="{% url 'activity-group-type' pk=activitygrouptype.id %}">{{ activitygrouptype.name|upper }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>
@@ -18,6 +18,8 @@
 
 
 {% block body %}
+
+<h3>{% if activitygrouptype %}Edit{% else %}Add{% endif %} Activity Group Type</h3>
 
 <form method="POST">
 

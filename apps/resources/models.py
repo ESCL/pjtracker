@@ -7,7 +7,10 @@ from .query import EmployeeQuerySet, EquipmentQuerySet
 class EquipmentType(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
+    )
+    code = models.CharField(
+        max_length=4,
     )
     parent = models.ForeignKey(
         'self',
@@ -20,7 +23,7 @@ class EquipmentType(OwnedEntity):
     )
 
     def __str__(self):
-        return self.name
+        return '{} ({})'.format(self.name, self.code)
 
     def add_labour_type(self, labour_type, user=None):
         EquipmentTypeLabourType.objects.get_or_create(
@@ -61,11 +64,13 @@ class Resource(OwnedEntity):
     )
     team = models.ForeignKey(
         'organizations.Team',
-        null=True
+        null=True,
+        blank=True
     )
     project = models.ForeignKey(
         'work.Project',
-        null=True
+        null=True,
+        blank=True
     )
     resource_type = models.CharField(
         max_length=32,
@@ -162,40 +167,3 @@ class Equipment(Resource):
 
     def __str__(self):
         return '{} {} ({})'.format(self.model, self.type, self.identifier)
-
-
-class ResourceHistory(History):
-
-    class Meta:
-        abstract = True
-
-
-class CompanyHistory(ResourceHistory):
-
-    team = models.ForeignKey(
-        'organizations.Company'
-    )
-
-
-class TeamHistory(ResourceHistory):
-
-    team = models.ForeignKey(
-        'organizations.Team'
-    )
-
-
-class ProjectHistory(ResourceHistory):
-
-    team = models.ForeignKey(
-        'work.Project'
-    )
-
-
-class PositionHistory(History):
-
-    employee = models.ForeignKey(
-        'Employee'
-    )
-    position = models.ForeignKey(
-        'organizations.Position'
-    )

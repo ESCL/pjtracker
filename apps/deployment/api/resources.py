@@ -45,8 +45,9 @@ class HoursResource(OwnedResource):
 
         # Filter and group
         qs = qs.for_user(request.user)
-        qs = qs._filter_for_querystring(request.GET)
-        qs = qs._group_for_querystring(request.GET)
+        qs = qs.filter_for_querystring(request.GET)
+        groups = request.GET.getlist('group_by')
+        qs = qs.group_by(groups)
 
         # Annotate hours and return qs
         return qs.annotate(total_hours=Sum('hours'))

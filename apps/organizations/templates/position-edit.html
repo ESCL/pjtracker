@@ -19,6 +19,8 @@
 
 {% block body %}
 
+<h3>{% if position %}Edit{% else %}Add{% endif %} Position</h3>
+
 <form method="POST">
 
     {% csrf_token %}

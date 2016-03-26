@@ -1,17 +1,21 @@
 __author__ = 'kako'
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.template import TemplateDoesNotExist
-from django.http import Http404
-from .base import SafeView, handle_exception
+from .base import SafeView
+from ..exceptions import NotFoundError
 
 
 class PublicView(SafeView):
     template_base = 'public/{}.html'
+    require_login = False
 
-    @handle_exception
     def get(self, request, page):
+        """
+        HTTP GET handler, attempts to render the template for the given page
+        and raises a 404 if it's not found.
+        """
         try:
             return render(request, self.template_base.format(page), {})
         except TemplateDoesNotExist:
-            raise Http404()
+            raise NotFoundError("The requested resources does not exist.")

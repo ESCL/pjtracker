@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django.conf.urls import url
 
-from .views import CalendarDayView, HourTypeView, PeriodView
+from .views import CalendarDayView, HourTypeView, PeriodView, WorkedHoursView
 
 
 urlpatterns = [
@@ -23,4 +23,8 @@ urlpatterns = [
     url(r'^periods/(?P<action>add)/$', PeriodView.as_view(), name='period'),
     url(r'^periods/(?P<pk>\d+)/$', PeriodView.as_view(), name='period'),
     url(r'^periods/(?P<pk>\d+)/(?P<action>edit)/$', PeriodView.as_view(), name='period'),
+
+    # WorkedHours view
+    url(r'^periods/(?P<period_pk>\d+)/hours/$', WorkedHoursView.as_view(), name='worked-hours'),
+    url(r'^periods/(?P<period_pk>\d+)/hours/(?P<action>process)/$', WorkedHoursView.as_view(), name='worked-hours'),
 ]

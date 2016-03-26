@@ -13,7 +13,7 @@ class Project(OwnedEntity):
         max_length=128
     )
     code = models.CharField(
-        max_length=32
+        max_length=8
     )
 
     def __str__(self):
@@ -34,10 +34,10 @@ class Activity(OwnedEntity):
     objects = ActivityQuerySet.as_manager()
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=32
+        max_length=4
     )
     project = models.ForeignKey(
         'Project'
@@ -92,17 +92,92 @@ class Activity(OwnedEntity):
     def wbs_code(self):
         return '.'.join(self.wbs_path)
 
+    @classmethod
+    def _get_activity_and_project(cls, wbs_path):
+        """
+        Get the activity and project matching the given wbs path.
+        If we get an activity, we use its project, otherwise we get the project.
+        """
+        # Get the activity using wbs_path
+        activity = cls.objects.get_by_wbs_path(wbs_path)
+        if activity:
+            # Use activity's project
+            project = activity.project
+
+        else:
+            # No activity, need to get the project
+            try:
+                project = Project.objects.get(code=wbs_path[0])
+            except Project.DoesNotExist:
+                # Ok, project's also None
+                project = None
+
+        # Return both
+        return activity, project
+
+    @staticmethod
+    def _split_wbs_code(wbs_code):
+        """
+        Split given wbs_code in parent:child wbs paths.
+
+        :return: tuple with wbs path for parent and code for child
+        """
+        # Sanity check: at least project and current wbs are required
+        if '.' not in wbs_code:
+            raise ValueError("WBS code format is invalid.")
+
+        # Split in parent path (list of codes) and child code
+        wbs_parts = wbs_code.split('.')
+        parent = wbs_parts[:-1]
+        child = wbs_parts[-1]
+
+        # Return both
+        return parent, child
+
+    @classmethod
+    def process_wbs_code_kwargs(cls, wbs_code, kwargs):
+        """
+        Process project, parent and code from full_wbs_code if provided.
+        """
+        # Get parent activity and project for the given code
+        parent_path, own_code = cls._split_wbs_code(wbs_code)
+        parent, project = cls._get_activity_and_project(parent_path)
+
+        # Set code, project and parent kwargs
+        kwargs['code'] = own_code
+        if not kwargs.get('parent'):
+            kwargs['parent'] = parent
+        if project and not kwargs.get('project'):
+            kwargs['project'] = project
+
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Allow settings parent and project by providing a full_wbs_code.
+        """
+        # Pop wbs code and process kwargs if a wbs_code was passed
+        wbs_code = kwargs.pop('full_wbs_code', None)
+        if wbs_code:
+            self.process_wbs_code_kwargs(wbs_code, kwargs)
+
+        # Now init the other values
+        super(Activity, self).__init__(*args, **kwargs)
+
+        # Now override project and owner
+        if self.parent:
+            self.project = self.parent.project
+            self.owner = self.project.owner
 
 
 class ActivityGroup(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=16
+        max_length=4
     )
     type = models.ForeignKey(
         'ActivityGroupType'

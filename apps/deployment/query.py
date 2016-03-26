@@ -8,7 +8,7 @@ from ..common.db.query import OwnedEntityQuerySet
 
 class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
 
-    def _filter_for_querystring(self, querystring):
+    def filter_for_querystring(self, querystring):
         """
         Apply a bunch of filters according to the passed querystring.
         """
@@ -38,29 +38,30 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
         # Apply all filters and return
         return self.filter(**filters)
 
-    def _group_for_querystring(self, querystring):
+    def group_by(self, main_groups):
         """
         Apply a bunch of group_bys according to the passed querystring.
         """
-        groups = set()
-        group_by = querystring.getlist('group_by')
+        groups = []
 
         # Default to grouping by project if no grouping is defined
-        if not group_by or 'project' in group_by:
-            groups.update({'activity__project_id'})
+        if not main_groups or 'project' in main_groups:
+            groups.append('activity__project_id')
 
         # Check other grouping options
-        if 'activity' in group_by:
-            groups.update({'activity__id', 'activity__parent_id', 'activity__code',
-                           'activity__name', 'activity__project_id'})
-        if 'labour_type' in group_by:
-            groups.update({'labour_type__id', 'labour_type__code',
-                           'labour_type__name'})
-        if 'resource' in group_by:
-            groups.update({'resource__id', 'resource__identifier',
-                           'resource__resource_type'})
-        if 'date' in group_by:
-            groups.update({'timesheet__date'})
+        if 'activity' in main_groups:
+            groups.extend(('activity__id', 'activity__parent_id',
+                           'activity__code', 'activity__name',
+                           'activity__project_id',))
+        if 'labour_type' in main_groups:
+            groups.extend(('labour_type__id', 'labour_type__code',
+                           'labour_type__name',))
+        if 'resource' in main_groups:
+            groups.extend(('resource__id', 'resource__identifier',
+                           'resource__resource_type',))
+        if 'date' in main_groups:
+            groups.extend(('timesheet__id', 'timesheet__date',
+                           'timesheet__status',))
 
         # Return grouped queryset (a ValuesGroupQuerySet)
         return self.values(*groups)

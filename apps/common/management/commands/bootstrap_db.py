@@ -9,17 +9,9 @@ from django.conf import settings
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-
         # Create superuser
-        print("Creating superuser...")
+        self.stdout.write("Creating superuser...")
         call_command('createsuperuser')
-
-        # Set up default global objects
-        call_command('create_default_groups')
-        call_command('create_default_labour_types')
-        call_command('create_default_activity_groups')
-        call_command('create_default_positions')
-        call_command('create_default_equipment_types')
 
         # Create example account if required
         if settings.BOOTSTRAP_EXAMPLE_ACCOUNT:
@@ -27,7 +19,8 @@ class Command(BaseCommand):
 
         # Create example data if required
         if settings.BOOTSTRAP_EXAMPLE_DATA:
+            call_command('create_example_positions')
+            call_command('create_example_equipment_types')
             call_command('create_example_data')
 
-        print("Done.")
-
+        self.stdout.write("Done.")

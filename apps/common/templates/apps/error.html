@@ -10,11 +10,11 @@
 
 {% block body %}
 
-<h1>{{ error|split_camelcase }} ({{ status }})</h1>
+<h3>{{ error|split_camelcase }} ({{ status }})</h3>
 <p>{{ message }}</p>
 
 {% if status == 401 %}
-<p>You need to <a href="/admin/login/?next=/"><b>log in</b></a> to view this resource.</p>
+<p>You need to <a href="{% url 'login' %}?next={{ request.path }}"><b>log in</b></a> to view this resource.</p>
 {% endif %}
 
 {% endblock %}

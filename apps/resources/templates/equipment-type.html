@@ -17,7 +17,7 @@
 
 <li><a href="/">home</a></li>
 <li><a href="{% url 'equipment-types' %}">equipment types</a></li>
-<li><span>{{ equipmenttype.name }}</span></li>
+<li><span>{{ equipmenttype.code }}</span></li>
 <li><a href="{% url 'equipment-type' pk=equipmenttype.id action='edit' %}">edit</a></li>
 
 {% endblock %}
@@ -26,9 +26,10 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main Information</h4>
+    <h3>Equipment Type</h3>
     <dl>
-        <dt>Name</dt><dd>{{ equipmenttype.name}}</dd>
+        <dt>Name</dt><dd>{{ equipmenttype.name }}</dd>
+        <dt>Code</dt><dd>{{ equipmenttype.code }}</dd>
         <dt>Parent</dt><dd>{{ equipmenttype.parent|default:'-' }}</dd>
         <dt>Labour Types</dt>
         <dd>

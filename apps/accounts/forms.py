@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
 from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.mixins import PagedForm
 
 
 class UserForm(OwnedEntityForm):
@@ -21,7 +22,7 @@ class AdminUserCreationForm(UserCreationForm):
         fields = ('username', 'email', 'owner',)
 
 
-class UserSearchForm(ModernForm):
+class UserSearchForm(ModernForm, PagedForm):
     username__icontains = forms.CharField(max_length=32, label='Username')
     first_name__icontains = forms.CharField(max_length=32, label='First name')
     last_name__icontains = forms.CharField(max_length=32, label='Last name')

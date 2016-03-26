@@ -48,6 +48,7 @@
                         <ul class="action-group">
                             <li><a href="{% url 'period' pk=p.id %}">view</a></li>
                             <li><a href="{% url 'period' pk=p.id action='edit' %}">edit</a></li>
+                            <li><a href="{% url 'worked-hours' period_pk=p.id %}">hours</a></li>
                         </ul>
                     </td>
                 </tr>

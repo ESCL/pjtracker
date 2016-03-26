@@ -1,11 +1,51 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, post_generation
+from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute, PostGeneration
 
-from ..organizations.factories import PositionFactory, TeamFactory
-from ..work.factories import ProjectFactory
+from ..accounts.factories import AccountBaseFactory
+from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
+from ..work.factories import ProjectFactory, set_subfactory_project
 from .models import Employee, Equipment, EquipmentType
 
+
+# Base factories
+# These generate no fake data, they are used for imports and as base classes
+
+class EquipmentTypeBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = EquipmentType
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountBaseFactory)
+
+
+class EmployeeBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Employee
+        django_get_or_create = ('owner', 'identifier',)
+
+    owner = SubFactory(AccountBaseFactory)
+    company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
+    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
+    project = PostGeneration(set_subfactory_project)
+
+
+class EquipmentBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Equipment
+        django_get_or_create = ('owner', 'identifier',)
+
+    owner = SubFactory(AccountBaseFactory)
+    company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
+    type = SubFactory(EquipmentTypeBaseFactory, owner=SelfAttribute('..owner'))
+    project = PostGeneration(set_subfactory_project)
+
+
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
 
 class EquipmentTypeFactory(DjangoModelFactory):
 
@@ -13,14 +53,13 @@ class EquipmentTypeFactory(DjangoModelFactory):
         model = EquipmentType
 
     name = 'Earthworks'
+    code = 'EAR'
 
 
-class EquipmentSubTypeFactory(DjangoModelFactory):
-
-    class Meta:
-        model = EquipmentType
+class EquipmentSubTypeFactory(EquipmentTypeFactory):
 
     name = 'Backhoe'
+    code = 'BKH'
     parent = SubFactory(EquipmentTypeFactory)
 
 
@@ -53,3 +92,4 @@ class EmployeeFactory(DjangoModelFactory):
     project = SubFactory(ProjectFactory)
     position = SubFactory(PositionFactory)
     team = SubFactory(TeamFactory)
+

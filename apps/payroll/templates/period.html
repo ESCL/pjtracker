@@ -25,7 +25,7 @@
 {% block body %}
 
 <div class="row">
-    <h4>Main Information</h4>
+    <h3>Period</h3>
     <dl>
         <dt>Name</dt><dd>{{ period.name }}</dd>
         <dt>Code</dt><dd>{{ period.code }}</dd>
@@ -33,6 +33,26 @@
         <dt>End</dt><dd>{{ period.end_date }}</dd>
         <dt>Forecast Dates</dt><dd>{{ period.forecast_start_date }} - {{ period.end_date }}</dd>
     </dl>
+</div>
+
+<hr>
+
+<div class="row">
+    <h4>Hours <small><a href="{% url 'worked-hours' period_pk=period.id %}">View details</a></small></h4>
+    <table>
+        <thead>
+            <tr><th colspan="2">Hour Type</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody>
+            {% for wh in worked_hours %}
+                <tr>
+                    <td>{{ wh.hour_type.code }}</td>
+                    <td>{{ wh.hour_type.name }}</td>
+                    <td>{{ wh.total_hours }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}

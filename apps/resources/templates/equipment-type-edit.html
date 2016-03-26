@@ -6,7 +6,7 @@
 <li><a href="/">home</a></li>
 <li><a href="{% url 'equipment-types' %}">equipment types</a></li>
 {% if equipmenttype %}
-    <li><a href="{% url 'equipment-type' pk=equipmenttype.id %}">{{ equipmenttype.name }}</a></li>
+    <li><a href="{% url 'equipment-type' pk=equipmenttype.id %}">{{ equipmenttype.code }}</a></li>
     <li><span>edit</span></li>
 {% else %}
     <li><span>add</span></li>
@@ -16,6 +16,8 @@
 
 
 {% block body %}
+
+<h3>{% if equipmenttype %}Edit{% else %}Add{% endif %} Equipment Type</h3>
 
 <form method="POST">
 

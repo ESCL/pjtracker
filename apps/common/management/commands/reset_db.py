@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
             # Remove sqlite database file if it exists
             if os.path.isfile(db['NAME']):
-                print("Clearing database schema for {}...".format(db['NAME']))
+                self.stdout.write("Clearing database schema for {}...".format(db['NAME']))
                 os.remove(db['NAME'])
 
             # Finally, call migrate

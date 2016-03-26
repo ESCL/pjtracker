@@ -10,10 +10,10 @@ class Company(OwnedEntity):
         verbose_name_plural = 'companies'
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=8
+        max_length=4
     )
 
     def __str__(self):
@@ -26,7 +26,7 @@ class Team(OwnedEntity):
         max_length=128
     )
     code = models.CharField(
-        max_length=16,
+        max_length=8,
     )
     company = models.ForeignKey(
         'organizations.Company'
@@ -90,11 +90,10 @@ class Team(OwnedEntity):
 class Position(OwnedEntity):
 
     name = models.CharField(
-        max_length=128
+        max_length=64
     )
     code = models.CharField(
-        max_length=3,
-        null=True
+        max_length=4,
     )
     labour_types = models.ManyToManyField(
         'work.LabourType',

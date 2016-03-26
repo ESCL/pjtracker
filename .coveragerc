@@ -1,0 +1,18 @@
+[run]
+branch = True
+source = apps
+omit =
+    apps/*/migrations/*
+    apps/*/tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise AssertionError
+    raise NotImplementedError
+
+[xml]
+output = test-coverage.xml
+
+[html]
+directory = coverage

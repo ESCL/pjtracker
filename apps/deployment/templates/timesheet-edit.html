@@ -27,18 +27,18 @@
 
 {% block body %}
 
+<h3>{% if timesheet %}Edit{% else %}Add{% endif %} Time-Sheet</h3>
+
 <form method="POST">
     <div class="row">
-        <h4>{{ timesheet.team }} <small>time-sheet</small></h4>
         {% csrf_token %}
         {{ main_form }}
     </div>
 
-    <hr>
-
     {% if sub_form %}
+    <hr>
     <div class="row">
-        <h5>Work</h5>
+        <h4>Work</h4>
         {% include 'worklogs-form.html' %}
     </div>
     {% endif %}
@@ -48,6 +48,5 @@
     </div>
 
 </form>
-
 
 {% endblock %}

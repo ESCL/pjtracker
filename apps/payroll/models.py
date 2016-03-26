@@ -1,11 +1,14 @@
+
 from datetime import date, timedelta
 
 from django.db import models
 from django.utils.functional import cached_property
 
 from ..common.db.models import OwnedEntity
+from ..common.exceptions import BadRequestError
 from ..deployment.models import WorkLog, TimeSheet
-from .query import CalendarDayQuerySet
+from ..resources.models import Employee
+from .query import CalendarDayQuerySet, WorkedHoursQuerySet
 
 
 class CalendarDay(OwnedEntity):
@@ -154,12 +157,44 @@ class Period(OwnedEntity):
 
     @cached_property
     def previous(self):
-        return self.__class__.objects.for_owner(self.owner).get(end_date=self.start_date - timedelta(days=1))
+        """
+        Payroll period immediately before this one.
+        """
+        try:
+            return self.__class__.objects.for_owner(self.owner)\
+                .get(end_date=self.start_date - timedelta(days=1))
+        except self.__class__.DoesNotExist:
+            return None
+
+    @cached_property
+    def processing_phases(self):
+        """
+        List of periods and phases for the period's worked hours as a list
+        of tuples for processing.
+
+        Note: for processing, on of the phases is actually taken from the
+        previous period (retroactive).
+        """
+        # Get current period and build period:phase args list
+        args_list = [(self, WorkedHours.PHASE_ACTUAL),
+                     (self, WorkedHours.PHASE_FORECAST)]
+
+        # Get previous period, add args if it exists
+        prev_period = self.previous
+        if prev_period:
+            args_list.insert(0, (prev_period, WorkedHours.PHASE_RETROACTIVE))
+            args_list.insert(1, (self, WorkedHours.PHASE_ADJUSTMENT))
+
+        # Return args list
+        return args_list
 
     def __str__(self):
         return self.code
 
     def save(self, *args, **kwargs):
+        """
+        Set the code and, if not supplied, before save.
+        """
         self.code = '{:%Y-%m}'.format(self.start_date)
         if not self.name:
             self.name = '{:%b %Y}'.format(self.start_date)
@@ -170,14 +205,13 @@ class Period(OwnedEntity):
 class WorkedHours(OwnedEntity):
     """
     Unique group of period:phase:employee:hour_type.
-
-    Note: instances of this model SHOULD ONLY be created through this model's
-    calculate class method.
     """
     PHASE_ADJUSTMENT = 'D'
     PHASE_ACTUAL = 'A'
     PHASE_FORECAST = 'F'
     PHASE_RETROACTIVE = 'R'
+
+    objects = WorkedHoursQuerySet.as_manager()
 
     period = models.ForeignKey(
         'Period'
@@ -198,7 +232,7 @@ class WorkedHours(OwnedEntity):
     )
     hours = models.DecimalField(
         decimal_places=2,
-        max_digits=4
+        max_digits=5
     )
 
     @staticmethod
@@ -286,9 +320,40 @@ class WorkedHours(OwnedEntity):
         return {wh.hour_type: wh.hours for wh in cls.objects.raw(sql, params)}
 
     @classmethod
-    def calculate(cls, period, phase, employee):
+    def clear_for_period(cls, period):
         """
-        Get new WorkedHours instances for the given period, employee and phase.
+        Delete all the worked hours for the period's processing phases.
+        """
+        for period, phase in period.processing_phases:
+            WorkedHours.objects.filter(period=period, phase=phase).delete()
+
+    @classmethod
+    def calculate_for_period(cls, period):
+        """
+        Yield new WorkedHours instances for the given period, for all
+        processing phases and employees.
+        """
+        # Get all static-ish data
+        ranges = cls._get_day_ranges(period.owner)
+        for period, phase in period.processing_phases:
+            for wh in WorkedHours.calculate_for_phase(period, phase):
+                yield wh
+
+    @classmethod
+    def calculate_for_phase(cls, period, phase):
+        """
+        Yield new WorkedHours instances for the given period and phase, for
+        all employees.
+        """
+        for e in Employee.objects.filter(owner=period.owner):
+            for wh in cls.calculate_for_employee(period, phase, e):
+                yield wh
+
+    @classmethod
+    def calculate_for_employee(cls, period, phase, employee):
+        """
+        Yield new WorkedHours instances for the given period, phase
+        and employee.
         """
         if phase == cls.PHASE_ADJUSTMENT:
             # Adjustment phase, set directly
@@ -324,8 +389,7 @@ class WorkedHours(OwnedEntity):
                 for ht, h in hpt.items():
                     hours_per_type[ht] = hours_per_type.get(ht, 0) + h
 
-        # Now return the list, one per type:hours
-        return [cls(employee=employee, period=period, phase=phase,
-                    hour_type=ht, hours=h)
-                for ht, h in hours_per_type.items()]
-
+        # Yield one new instance per hour_type
+        for ht, h in hours_per_type.items():
+            yield cls(employee=employee, period=period, phase=phase,
+                      hour_type=ht, hours=h, owner=period.owner)

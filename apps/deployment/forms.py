@@ -2,7 +2,9 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm, ModernForm, CustomLabelModelChoiceField
+from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms.fields import CustomLabelModelChoiceField
+from ..common.forms.mixins import PagedForm
 from .models import TimeSheet, WorkLog, TimeSheetSettings
 
 
@@ -19,12 +21,18 @@ class TimeSheetSettingsForm(forms.ModelForm):
         """
         cleaned_data = super(TimeSheetSettingsForm, self).clean()
 
-        # Make sure policies are compatible
-        app_pol = cleaned_data['approval_policy']
-        rej_pol = cleaned_data['rejection_policy']
+        # Get values for approval and rejection policies
+        app_pol = cleaned_data.get('approval_policy')
+        rej_pol = cleaned_data.get('rejection_policy')
+
+        # If we have nothing return, form's already invalid
+        if not (app_pol or rej_pol):
+            return
+
+        # Now make sure policies are compatible
         policies = {app_pol, rej_pol}
         if TimeSheet.REVIEW_POLICY_ALL in policies and \
-                        TimeSheet.REVIEW_POLICY_FIRST not in policies:
+                TimeSheet.REVIEW_POLICY_FIRST not in policies:
             # They are not, error
             cleaned_data.pop('approval_policy')
             cleaned_data.pop('rejection_policy')
@@ -60,7 +68,6 @@ class TimeSheetForm(OwnedEntityForm):
             # New timesheet, ensure it is not a duplicate (team:date)
             team = cleaned_data.get('team')
             date = cleaned_data['date']
-
             if TimeSheet.objects.filter(team=team, date=date).exists():
                 cleaned_data.pop('team')
                 cleaned_data.pop('date')
@@ -75,7 +82,7 @@ class TimeSheetForm(OwnedEntityForm):
         return super(TimeSheetForm, self).save(commit=commit)
 
 
-class TimeSheetSearchForm(ModernForm):
+class TimeSheetSearchForm(ModernForm, PagedForm):
     team__code__icontains = forms.CharField(max_length=32, required=False,
                                             label='Team code')
     date__gte = forms.DateField(label='From date')
@@ -283,7 +290,7 @@ class WorkLogsForm(forms.Form):
                     log.delete()
 
 
-class HoursSearchForm(ModernForm):
+class HoursSearchForm(ModernForm, PagedForm):
     # Filters
     from_date = forms.DateField(label='From date', required=False)
     to_date = forms.DateField(label='To date', required=False)

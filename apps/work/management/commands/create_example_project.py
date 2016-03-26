@@ -17,7 +17,7 @@ class Command(BaseCommand):
     :return: created project
     """
     def handle(self, **options):
-        print('Creating project...')
+        self.stdout.write('Creating project...')
         account = Account.objects.get()
         mgt = LabourType.objects.get(code='MG')
         ind = LabourType.objects.get(code='IN')
@@ -85,4 +85,4 @@ class Command(BaseCommand):
                                groups=[ph_cst, ds_pip])
 
         # Done, print result
-        print('Created project "{}" with activities {}.'.format(proj, proj.activity_set.all()))
+        self.stdout.write('Created project "{}" with activities {}.'.format(proj, proj.activity_set.all()))

@@ -9,18 +9,18 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('resources', '0001_initial'),
-        ('accounts', '0002_auto_20151129_1728'),
+        ('accounts', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='CalendarDay',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
                 ('date', models.DateField(default=datetime.date.today)),
                 ('name', models.CharField(max_length=128)),
-                ('type', models.CharField(choices=[('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3, db_index=True)),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('type', models.CharField(max_length=3, choices=[('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], db_index=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'abstract': False,
@@ -29,10 +29,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HourType',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=6)),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'abstract': False,
@@ -41,11 +41,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HourTypeRange',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('day_type', models.CharField(choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3)),
-                ('limit', models.DecimalField(decimal_places=2, default=24, max_digits=4)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('day_type', models.CharField(max_length=3, choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')])),
+                ('limit', models.DecimalField(max_digits=4, decimal_places=2, default=24)),
                 ('hour_type', models.ForeignKey(to='payroll.HourType')),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'ordering': ('day_type', 'limit'),
@@ -54,13 +54,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Period',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=10)),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),
                 ('forecast_start_date', models.DateField()),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
             options={
                 'abstract': False,
@@ -69,21 +69,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StandardHours',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('day_type', models.CharField(choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3)),
-                ('hours', models.DecimalField(decimal_places=2, max_digits=4)),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('day_type', models.CharField(max_length=3, choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')])),
+                ('hours', models.DecimalField(max_digits=4, decimal_places=2)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
             ],
         ),
         migrations.CreateModel(
             name='WorkedHours',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('phase', models.CharField(choices=[('A', 'Actual'), ('F', 'Forecast'), ('R', 'Retroactive')], max_length=1, db_index=True)),
-                ('hours', models.DecimalField(decimal_places=2, max_digits=4)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
+                ('phase', models.CharField(max_length=1, choices=[('D', 'Adjustment'), ('A', 'Actual'), ('F', 'Forecast'), ('R', 'Retroactive')], db_index=True)),
+                ('hours', models.DecimalField(max_digits=5, decimal_places=2)),
                 ('employee', models.ForeignKey(to='resources.Employee')),
                 ('hour_type', models.ForeignKey(to='payroll.HourType')),
-                ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
+                ('owner', models.ForeignKey(null=True, to='accounts.Account', blank=True)),
                 ('period', models.ForeignKey(to='payroll.Period')),
             ],
             options={

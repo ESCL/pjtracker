@@ -6,12 +6,15 @@
 # KDE cache files
 .directory
 
-.p*roject
 
 ## Specific targeting
 
-# JetBrains IDE config files
+# Wiki (I like to keep it inside the project dir)
+/wiki/
+
+# IDE files (JetBrains, Eclipse)
 /.idea/
+/.p*roject
 
 # SQLite database file
 /data/db.*
@@ -20,7 +23,8 @@
 /static/
 
 # Test reports and sonar cache
-.sonar
-.coverage
-test-results.xml
-test-coverage.xml
+/.coverage
+/.sonar
+/coverage
+/test-results.xml
+/test-coverage.xml

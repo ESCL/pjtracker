@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Activity',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=32)),
             ],
@@ -25,10 +25,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('code', models.CharField(max_length=16)),
-                ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,
@@ -37,9 +37,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityGroupType',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
-                ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,
@@ -48,10 +48,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LabourType',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=32)),
                 ('code', models.CharField(max_length=2)),
-                ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,
@@ -60,10 +60,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Project',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
-                ('code', models.CharField(max_length=32)),
-                ('owner', models.ForeignKey(to='accounts.Account', blank=True, null=True)),
+                ('code', models.CharField(max_length=8)),
+                ('owner', models.ForeignKey(blank=True, null=True, to='accounts.Account')),
             ],
             options={
                 'abstract': False,
@@ -87,16 +87,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activity',
             name='owner',
-            field=models.ForeignKey(to='accounts.Account', blank=True, null=True),
+            field=models.ForeignKey(blank=True, null=True, to='accounts.Account'),
         ),
         migrations.AddField(
             model_name='activity',
             name='parent',
-            field=models.ForeignKey(to='work.Activity', blank=True, null=True),
+            field=models.ForeignKey(blank=True, null=True, to='work.Activity'),
         ),
         migrations.AddField(
             model_name='activity',
             name='project',
             field=models.ForeignKey(to='work.Project'),
+        ),
+        migrations.AlterField(
+            model_name='activity',
+            name='code',
+            field=models.CharField(max_length=4),
+        ),
+        migrations.AlterField(
+            model_name='activity',
+            name='name',
+            field=models.CharField(max_length=64),
+        ),
+        migrations.AlterField(
+            model_name='activitygroup',
+            name='code',
+            field=models.CharField(max_length=4),
+        ),
+        migrations.AlterField(
+            model_name='activitygroup',
+            name='name',
+            field=models.CharField(max_length=64),
         ),
     ]
