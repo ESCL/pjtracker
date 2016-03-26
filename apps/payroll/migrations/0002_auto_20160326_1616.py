@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ('payroll', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='owner',
-            field=models.ForeignKey(blank=True, to='accounts.Account', related_name='users', null=True),
+            model_name='workedhours',
+            name='hours',
+            field=models.DecimalField(decimal_places=2, max_digits=5),
         ),
     ]

@@ -8,8 +8,8 @@ import datetime
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('accounts', '0001_initial'),
         ('resources', '0001_initial'),
-        ('accounts', '0002_auto_20151129_1728'),
     ]
 
     operations = [
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('date', models.DateField(default=datetime.date.today)),
                 ('name', models.CharField(max_length=128)),
-                ('type', models.CharField(choices=[('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3, db_index=True)),
+                ('type', models.CharField(max_length=3, choices=[('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], db_index=True)),
                 ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
             ],
             options={
@@ -42,8 +42,8 @@ class Migration(migrations.Migration):
             name='HourTypeRange',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('day_type', models.CharField(choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3)),
-                ('limit', models.DecimalField(decimal_places=2, default=24, max_digits=4)),
+                ('day_type', models.CharField(max_length=3, choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')])),
+                ('limit', models.DecimalField(default=24, max_digits=4, decimal_places=2)),
                 ('hour_type', models.ForeignKey(to='payroll.HourType')),
                 ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
             ],
@@ -70,8 +70,8 @@ class Migration(migrations.Migration):
             name='StandardHours',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('day_type', models.CharField(choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')], max_length=3)),
-                ('hours', models.DecimalField(decimal_places=2, max_digits=4)),
+                ('day_type', models.CharField(max_length=3, choices=[('WD', 'Weekday'), ('SAT', 'Saturday'), ('SUN', 'Sunday'), ('PH', 'Public Holiday'), ('NH', 'National Holiday'), ('SH', 'State Holiday')])),
+                ('hours', models.DecimalField(max_digits=4, decimal_places=2)),
                 ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
             ],
         ),
@@ -79,8 +79,8 @@ class Migration(migrations.Migration):
             name='WorkedHours',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
-                ('phase', models.CharField(choices=[('A', 'Actual'), ('F', 'Forecast'), ('R', 'Retroactive')], max_length=1, db_index=True)),
-                ('hours', models.DecimalField(decimal_places=2, max_digits=4)),
+                ('phase', models.CharField(max_length=1, choices=[('D', 'Adjustment'), ('A', 'Actual'), ('F', 'Forecast'), ('R', 'Retroactive')], db_index=True)),
+                ('hours', models.DecimalField(max_digits=4, decimal_places=2)),
                 ('employee', models.ForeignKey(to='resources.Employee')),
                 ('hour_type', models.ForeignKey(to='payroll.HourType')),
                 ('owner', models.ForeignKey(to='accounts.Account', null=True, blank=True)),
