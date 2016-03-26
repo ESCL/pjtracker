@@ -51,7 +51,7 @@ def create_default_activity_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('work', '0001_squashed_0002_auto_20160301_2035'),
+        ('work', '0001_initial'),
     ]
 
     operations = [

@@ -106,13 +106,13 @@ def bootstrap_default_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_squashed_0002_auto_20151129_1728'),
+        ('accounts', '0001_initial'),
         ('deployment', '0001_initial'),
-        ('notifications', '0001_squashed_0003_auto_20151205_1819'),
-        ('organizations', '0001_squashed_0003_auto_20160311_1135'),
-        ('payroll', '0001_squashed_0002_auto_20151208_1846'),
-        ('resources', '0001_squashed_0002_auto_20160311_1135'),
-        ('work', '0001_squashed_0002_auto_20160301_2035'),
+        ('notifications', '0001_initial'),
+        ('organizations', '0001_initial'),
+        ('payroll', '0001_initial'),
+        ('resources', '0001_initial'),
+        ('work', '0001_initial'),
     ]
 
     operations = [
