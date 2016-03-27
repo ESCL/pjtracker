@@ -5,7 +5,7 @@ from django.test import TestCase
 from ...accounts.utils import ensure_permissions
 from ...accounts.factories import UserFactory
 from ..models import Activity, ActivityGroup
-from ..factories import ActivityGroupFactory, ProjectFactory
+from ..factories import ProjectFactory
 from ..forms import ActivityForm
 
 

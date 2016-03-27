@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ...work.factories import DirectLabourFactory, IndirectLabourFactory
+from ...work.models import LabourType
 from ..models import PositionLabourType
 from ..factories import PositionFactory
 
@@ -13,8 +13,8 @@ class PositionTest(TestCase):
 
         # Create a global position and labour types
         self.pos = PositionFactory.create()
-        self.dir = DirectLabourFactory.create()
-        self.ind = IndirectLabourFactory.create()
+        self.dir = LabourType.objects.get(code='DI')
+        self.ind = LabourType.objects.get(code='IN')
 
     def test_add_labour_type(self):
         # Create two users with diff. accounts

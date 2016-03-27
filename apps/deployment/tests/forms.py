@@ -9,7 +9,8 @@ from ...accounts.utils import ensure_permissions
 from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory
-from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
+from ...work.factories import ActivityFactory
+from ...work.models import LabourType
 from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm, WorkLogsForm
 from ..factories import TimeSheetFactory
 from ..models import TimeSheet, WorkLog
@@ -178,8 +179,8 @@ class WorkLogsFormTest(TestCase):
         self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
 
         # Add labour types
-        self.dir = DirectLabourFactory.create()
-        self.ind = IndirectLabourFactory.create()
+        self.dir = LabourType.objects.get(code='DI')
+        self.ind = LabourType.objects.get(code='IN')
 
     def test_init_alerts(self):
         # Team has no resources and no acts, should have alerts

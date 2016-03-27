@@ -73,24 +73,6 @@ class ProjectFactory(DjangoModelFactory):
     code = Faker('military_ship')
 
 
-class ActivityGroupTypeFactory(DjangoModelFactory):
-
-    class Meta:
-        model = ActivityGroupType
-
-    name = 'Phase'
-
-
-class ActivityGroupFactory(DjangoModelFactory):
-
-    class Meta:
-        model = ActivityGroup
-
-    name = 'Engineering'
-    code = 'ENG'
-    type = SubFactory(ActivityGroupTypeFactory)
-
-
 class ActivityFactory(DjangoModelFactory):
 
     class Meta:
@@ -121,30 +103,3 @@ class ActivityFactory(DjangoModelFactory):
     def labour_types(self, create, values):
         if create and values:
             self.labour_types.add(*values)
-
-
-class ManagementLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Management'
-    code = 'MG'
-
-
-class IndirectLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Indirect'
-    code = 'IN'
-
-
-class DirectLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Direct'
-    code = 'DI'
