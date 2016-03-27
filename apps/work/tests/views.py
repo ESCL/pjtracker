@@ -5,7 +5,7 @@ from django.test import TestCase, Client
 
 from ...accounts.factories import UserFactory
 from ...accounts.utils import ensure_permissions
-from ..factories import ProjectFactory, ActivityGroupTypeFactory, ActivityGroupFactory, ActivityFactory
+from ..factories import ProjectFactory, ActivityFactory
 from ..models import Project, ActivityGroupType, ActivityGroup, Activity, LabourType
 
 
@@ -135,7 +135,7 @@ class ActivityGroupTypeViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = UserFactory.create(password='123')
-        self.agt = ActivityGroupTypeFactory.create(owner=self.user.owner)
+        self.agt = ActivityGroupType.objects.get(name='Phase')
 
     def test_get(self):
         # Anon user, cannot view list of activity group types
@@ -175,7 +175,7 @@ class ActivityGroupViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = UserFactory.create(password='123')
-        self.ag = ActivityGroupFactory.create(owner=self.user.owner)
+        self.ag = ActivityGroup.objects.get(code='ENG')
 
     def test_get(self):
         # Anon user, cannot view list of activity groups
