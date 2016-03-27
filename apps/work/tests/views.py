@@ -5,7 +5,7 @@ from django.test import TestCase, Client
 
 from ...accounts.factories import UserFactory
 from ...accounts.utils import ensure_permissions
-from ..factories import ProjectFactory, ActivityGroupTypeFactory, ActivityGroupFactory, ActivityFactory, IndirectLabourFactory
+from ..factories import ProjectFactory, ActivityGroupTypeFactory, ActivityGroupFactory, ActivityFactory
 from ..models import Project, ActivityGroupType, ActivityGroup, Activity, LabourType
 
 
@@ -94,7 +94,7 @@ class LabourTypeViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = UserFactory.create(password='123')
-        self.lt = IndirectLabourFactory.create(owner=self.user.owner)
+        self.ind = LabourType.objects.get(code='IN')
 
     def test_get(self):
         # Anon user, cannot view list of labour types
@@ -107,7 +107,7 @@ class LabourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 200)
 
         # And also individual labour type
-        res = self.client.get(reverse('labour-type', kwargs={'pk': self.lt.id}))
+        res = self.client.get(reverse('labour-type', kwargs={'pk': self.ind.id}))
         self.assertEqual(res.status_code, 200)
 
         # User cannot add labour type
@@ -120,12 +120,12 @@ class LabourTypeViewTest(TestCase):
         self.assertEqual(res.status_code, 200)
 
         # User cannot edit labour type
-        res = self.client.get(reverse('labour-type', kwargs={'pk': self.lt.id, 'action': 'edit'}))
+        res = self.client.get(reverse('labour-type', kwargs={'pk': self.ind.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 403)
 
         # Add permission to edit, user can now edit labour type
         self.user.user_permissions.add(*ensure_permissions(LabourType, ['change']))
-        res = self.client.get(reverse('labour-type', kwargs={'pk': self.lt.id, 'action': 'edit'}))
+        res = self.client.get(reverse('labour-type', kwargs={'pk': self.ind.id, 'action': 'edit'}))
         self.assertEqual(res.status_code, 200)
 
 

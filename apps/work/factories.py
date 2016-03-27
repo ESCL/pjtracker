@@ -121,30 +121,3 @@ class ActivityFactory(DjangoModelFactory):
     def labour_types(self, create, values):
         if create and values:
             self.labour_types.add(*values)
-
-
-class ManagementLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Management'
-    code = 'MG'
-
-
-class IndirectLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Indirect'
-    code = 'IN'
-
-
-class DirectLabourFactory(DjangoModelFactory):
-
-    class Meta:
-        model = LabourType
-
-    name = 'Direct'
-    code = 'DI'

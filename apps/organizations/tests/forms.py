@@ -8,7 +8,7 @@ from ...accounts.factories import UserFactory, User
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import TimeSheet
 from ...resources.factories import EmployeeFactory, EquipmentFactory
-from ...work.factories import DirectLabourFactory, IndirectLabourFactory
+from ...work.models import LabourType
 from ..factories import PositionFactory, CompanyFactory
 from ..forms import TeamForm, PositionForm
 from ..models import Team, Position, PositionLabourType
@@ -143,8 +143,8 @@ class PositionFormTest(TestCase):
         self.user.user_permissions.add(*ensure_permissions(Position, ['change']))
 
         # Add labour types
-        self.dir = DirectLabourFactory.create()
-        self.ind = IndirectLabourFactory.create()
+        self.ind = LabourType.objects.get(code='IN')
+        self.dir = LabourType.objects.get(code='DI')
 
     def test_disabled_fields(self):
         # Render empty form, everything's editable
@@ -192,7 +192,7 @@ class PositionFormTest(TestCase):
         self.assertEqual(PositionLabourType.objects.count(), 2)
         pos = Position.objects.get()
         self.assertEqual(pos.name, 'Crane Operator')
-        self.assertEqual(list(pos.get_labour_types_for(self.user)), [self.dir, self.ind])
+        self.assertEqual(set(pos.get_labour_types_for(self.user)), {self.dir, self.ind})
 
         # Update, removing indirect labour type
         plt_ids = {plt.id for plt in PositionLabourType.objects.all()}

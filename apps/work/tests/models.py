@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory, AccountFactory
-from ..factories import ProjectFactory, ActivityFactory, DirectLabourFactory, IndirectLabourFactory
+from ..factories import ProjectFactory, ActivityFactory
 from ..models import Activity, LabourType
 
 
