@@ -8,7 +8,8 @@ from ...common.exceptions import InvalidOperationError
 from ...deployment.factories import TimeSheetFactory
 from ...deployment.models import WorkLog, TimeSheet
 from ...resources.factories import EmployeeFactory
-from ...work.factories import ActivityFactory, ManagementLabourFactory
+from ...work.factories import ActivityFactory
+from ...work.models import LabourType
 from ..models import CalendarDay, HourTypeRange, Period, WorkedHours, StandardHours
 from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
 
@@ -92,8 +93,8 @@ class WorkedHoursTest(TestCase):
 
     def setUp(self):
         # Create an activity and an employee
-        self.lt = ManagementLabourFactory.create()
-        self.act = ActivityFactory.create(labour_types=[self.lt])
+        self.mgt = LabourType.objects.get(code='MG')
+        self.act = ActivityFactory.create(labour_types=[self.mgt])
         self.acc = self.act.owner
         self.emp = EmployeeFactory.create(owner=self.acc)
         self.team = self.emp.team
@@ -126,22 +127,22 @@ class WorkedHoursTest(TestCase):
         # Now add hours for the current week
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 21)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=8)
+                               labour_type=self.mgt, hours=8)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 22)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=10)
+                               labour_type=self.mgt, hours=10)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 23)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=4)
+                               labour_type=self.mgt, hours=4)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 24)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=12)
+                               labour_type=self.mgt, hours=12)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 25)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=4)
+                               labour_type=self.mgt, hours=4)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 26)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=6)
+                               labour_type=self.mgt, hours=6)
 
         # Approve all timesheets to get the results
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
@@ -215,13 +216,13 @@ class WorkedHoursTest(TestCase):
         # Now add period 1 retroactive hours (10 on weekdays, 7 on saturday)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 29)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=6)
+                               labour_type=self.mgt, hours=6)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 30)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=4)
+                               labour_type=self.mgt, hours=4)
         WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2016, 1, 2)),
                                resource=self.emp.resource_ptr, activity=self.act,
-                               labour_type=self.lt, hours=7)
+                               labour_type=self.mgt, hours=7)
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)
 
         # Calculate and save period 1 retroactive WorkedHours

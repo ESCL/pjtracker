@@ -5,7 +5,8 @@ from ...accounts.factories import UserFactory
 from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
-from ...work.factories import ActivityFactory, IndirectLabourFactory, DirectLabourFactory
+from ...work.factories import ActivityFactory
+from ...work.models import LabourType
 from ..factories import TimeSheetFactory
 from ..models import TimeSheet, TimeSheetAction, WorkLog, NotAuthorizedError
 
@@ -18,8 +19,8 @@ class TimeSheetTest(TestCase):
         # Main setup
         self.account = UserFactory.create().owner
         self.ts_settings = self.account.timesheet_settings
-        self.dir = DirectLabourFactory.create()
-        self.ind = IndirectLabourFactory.create()
+        self.dir = LabourType.objects.get(code='DI')
+        self.ind = LabourType.objects.get(code='IN')
 
         # Setup teams and create timesheet
         self.timekeeper = UserFactory.create(owner=self.account)
@@ -175,8 +176,8 @@ class WorkLogTest(TestCase):
         # Main setup
         self.account = UserFactory.create().owner
         self.ts_settings = self.account.timesheet_settings
-        self.dir = DirectLabourFactory.create()
-        self.ind = IndirectLabourFactory.create()
+        self.dir = LabourType.objects.get(code='DI')
+        self.ind = LabourType.objects.get(code='IN')
 
         # Setup users, teams and create timesheet
         self.user1 = UserFactory.create(owner=self.account)
