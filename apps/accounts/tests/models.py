@@ -8,20 +8,6 @@ from ..utils import ensure_permissions
 
 class UserTest(TestCase):
 
-    def test_user_factory(self):
-        # Just testing the behaviour
-        self.assertEqual(User.objects.count(), 0)
-        self.assertEqual(Account.objects.count(), 0)
-
-        # Create a user, should add a profile and an account
-        user = UserFactory.create()
-        self.assertIsNotNone(user.owner)
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(Account.objects.count(), 1)
-
-        # Account should also add settings through signals
-        self.assertIsNotNone(user.owner.timesheet_settings)
-
     def test_user_filter(self):
         # Create three users with two different accounts
         user1 = UserFactory.create()
