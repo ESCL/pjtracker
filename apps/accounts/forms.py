@@ -12,7 +12,7 @@ class UserForm(OwnedEntityForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'groups', )
+        fields = ('username', 'password', 'first_name', 'last_name', 'email', 'groups', )
 
 
 class AdminUserCreationForm(UserCreationForm):

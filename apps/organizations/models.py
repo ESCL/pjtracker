@@ -20,6 +20,15 @@ class Company(OwnedEntity):
         return '{} ({})'.format(self.code, self.name)
 
 
+class Department(OwnedEntity):
+
+    name = models.CharField(max_length=128)
+    code = models.CharField(max_length=8)
+
+    def __str__(self):
+        return '{}  ({})'.format(self.code, self.name)
+
+
 class Team(OwnedEntity):
 
     name = models.CharField(

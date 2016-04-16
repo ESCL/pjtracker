@@ -2,11 +2,11 @@ __author__ = 'kako'
 
 from csv import DictWriter
 from io import StringIO
+from unittest import mock
 
 from django.core.management import call_command, CommandError
 from django.test import TestCase
 
-from ..test import mock
 from ...accounts.factories import AccountFactory
 from ...accounts.models import Account, User
 from ...organizations.models import Company, Position
@@ -207,7 +207,7 @@ class ImportTest(TestCase):
         # Check errors
         errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
         self.assertEqual(errors, ['identifier field cannot be blank',
-                                  'year field cannot be blank',
+                                  'year field cannot be null',
                                   'code field cannot be blank'])
 
         # Check created companies: 2 (GPS, NAP)

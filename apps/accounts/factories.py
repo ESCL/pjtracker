@@ -1,6 +1,6 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation
+from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation, PostGeneration
 
 from ..common.utils import generate_code_from_name
 from .models import Account, User
@@ -40,8 +40,9 @@ class AccountFactory(DjangoModelFactory):
 class UserFactory(UserBaseFactory):
 
     owner = SubFactory(AccountFactory)
-    username = LazyAttribute(lambda obj: obj.first_name.lower())
+    username = Faker('user_name')
     first_name = Faker('first_name')
+    password = '123'
 
     @post_generation
     def groups(self, created, value):
@@ -49,12 +50,13 @@ class UserFactory(UserBaseFactory):
             self.groups.add(*value)
 
     @post_generation
-    def password(self, created, value):
-        if created and value:
-            self.set_password(value)
-            self.save()
-
-    @post_generation
     def user_permissions(self, created, value):
         if created and value:
             self.user_permissions.add(*value)
+
+    @classmethod
+    def create(cls, **kwargs):
+        user = super(UserFactory, cls).create(**kwargs)
+        user.set_password(user.password)
+        user.save()
+        return user

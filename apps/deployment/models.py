@@ -210,6 +210,7 @@ class TimeSheetAction(SignalsMixin, OwnedEntity):
                  (APPROVED, 'Approved'))
     )
     feedback = models.TextField(
+        blank=True
     )
     timestamp = models.DateTimeField(
         default=datetime.utcnow
@@ -245,15 +246,29 @@ class WorkLog(OwnedEntity):
         max_digits=4
     )
 
-    # De-normalization, keep attrs that can change in an employee
-    company = models.ForeignKey('organizations.Company')
+    # De-normalization, keep attrs that can change in a resource
+    company = models.ForeignKey(
+        'organizations.Company'
+    )
+    location = models.ForeignKey(
+        'geo.Location',
+        null=True,
+        blank=True
+    )
+    department = models.ForeignKey(
+        'organizations.Department',
+        null=True,
+        blank=True
+    )
     position = models.ForeignKey(
         'organizations.Position',
-        null=True
+        null=True,
+        blank=True
     )
     equipment_type = models.ForeignKey(
         'resources.EquipmentType',
-        null=True
+        null=True,
+        blank=True
     )
 
     def save(self, *args, **kwargs):

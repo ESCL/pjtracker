@@ -11,7 +11,8 @@ from ...resources.factories import EmployeeFactory
 from ...work.factories import ActivityFactory
 from ...work.models import LabourType
 from ..models import CalendarDay, HourTypeRange, Period, WorkedHours, StandardHours
-from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
+from ..factories import (CalendarDayFactory, NormalHoursFactory,
+                         Overtime150HoursFactory, Overtime200HoursFactory)
 
 
 class CalendarDayTest(TestCase):
@@ -64,7 +65,7 @@ class CalendarDayTest(TestCase):
 
     def test_filter_in_range(self):
         # Make friday a public holiday
-        CalendarDay.objects.create(date=date(2015, 12, 11), type=CalendarDay.PUBLIC_HOLIDAY)
+        CalendarDayFactory.create(date=date(2015, 12, 11))
 
         # Filter from the 7th to the 10th, all non-stored dates
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 10))
@@ -109,15 +110,15 @@ class WorkedHoursTest(TestCase):
         StandardHours.objects.create(day_type=CalendarDay.SATURDAY, hours=6, owner=self.acc)
 
         # Set normal ranges
-        HourTypeRange.objects.create(day_type=CalendarDay.WEEKDAY, hour_type=self.n, limit=8)
-        HourTypeRange.objects.create(day_type=CalendarDay.WEEKDAY, hour_type=self.ot150)
-        HourTypeRange.objects.create(day_type=CalendarDay.SATURDAY, hour_type=self.ot150, limit=4)
-        HourTypeRange.objects.create(day_type=CalendarDay.SATURDAY, hour_type=self.ot200)
-        HourTypeRange.objects.create(day_type=CalendarDay.SUNDAY, hour_type=self.ot200)
-        HourTypeRange.objects.create(day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.WEEKDAY, hour_type=self.n, limit=8)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.WEEKDAY, hour_type=self.ot150)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.SATURDAY, hour_type=self.ot150, limit=4)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.SATURDAY, hour_type=self.ot200)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.SUNDAY, hour_type=self.ot200)
+        HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
 
         # Make friday 25th a public holiday
-        CalendarDay.objects.create(date=date(2015, 12, 25), type=CalendarDay.PUBLIC_HOLIDAY)
+        CalendarDayFactory.create(owner=self.acc, date=date(2015, 12, 25))
 
         # Create a period forecasting the last week (28th to 3rd)
         self.period = Period.objects.create(start_date=date(2015, 12, 5),

@@ -1,9 +1,13 @@
 from django.contrib import admin
 
-from .models import Company, Team, Position, PositionLabourType
+from .models import Company, Department, Team, Position, PositionLabourType
 
 
 class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'code', 'name',)
+
+
+class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('owner', 'code', 'name',)
 
 
@@ -21,6 +25,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Company, CompanyAdmin)
+admin.site.register(Department, DepartmentAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(PositionLabourType, PositionLabourTypeAdmin)
 admin.site.register(Team, TeamAdmin)

@@ -1,9 +1,10 @@
 __author__ = 'kako'
 
+from unittest import mock
+
 from django.test import TestCase
 from django.contrib.auth.models import Group
 
-from ...common.test import mock
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import TimeSheet
@@ -20,7 +21,7 @@ class TeamFormTest(TestCase):
         super(TeamFormTest, self).setUp()
 
         # Create user and get account
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.account = self.user.owner
 
     @mock.patch('apps.work.query.ActivityQuerySet.workable',
@@ -138,7 +139,7 @@ class PositionFormTest(TestCase):
         super(PositionFormTest, self).setUp()
 
         # Create user and account
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.account = self.user.owner
         self.user.user_permissions.add(*ensure_permissions(Position, ['change']))
 

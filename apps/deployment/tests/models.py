@@ -1,8 +1,8 @@
+from unittest import mock
 
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
-from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory, EquipmentFactory
 from ...work.factories import ActivityFactory
@@ -17,15 +17,15 @@ class TimeSheetTest(TestCase):
         super(TimeSheetTest, self).setUp()
 
         # Main setup
-        self.account = UserFactory.create().owner
+        self.account = UserFactory.create(password='123').owner
         self.ts_settings = self.account.timesheet_settings
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 
         # Setup teams and create timesheet
-        self.timekeeper = UserFactory.create(owner=self.account)
-        self.supervisor1 = UserFactory.create(owner=self.account)
-        self.supervisor2 = UserFactory.create(owner=self.account)
+        self.timekeeper = UserFactory.create(owner=self.account, password='123')
+        self.supervisor1 = UserFactory.create(owner=self.account, password='123')
+        self.supervisor2 = UserFactory.create(owner=self.account, password='123')
         self.team = TeamFactory.create(owner=self.account,
                                        timekeepers=[self.timekeeper],
                                        supervisors=[self.supervisor1, self.supervisor2])
@@ -174,14 +174,14 @@ class WorkLogTest(TestCase):
         super(WorkLogTest, self).setUp()
 
         # Main setup
-        self.account = UserFactory.create().owner
+        self.account = UserFactory.create(password='123').owner
         self.ts_settings = self.account.timesheet_settings
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 
         # Setup users, teams and create timesheet
-        self.user1 = UserFactory.create(owner=self.account)
-        self.user2 = UserFactory.create()
+        self.user1 = UserFactory.create(owner=self.account, password='123')
+        self.user2 = UserFactory.create(password='123')
         self.team = TeamFactory.create(owner=self.account)
         self.ts = TimeSheetFactory.create(owner=self.account, team=self.team)
 

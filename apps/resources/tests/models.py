@@ -19,8 +19,8 @@ class EquipmentTypeTest(TestCase):
 
     def test_add_labour_type(self):
         # Create two users with diff. accounts
-        self.user1 = UserFactory.create()
-        self.user2 = UserFactory.create()
+        self.user1 = UserFactory.create(password='123')
+        self.user2 = UserFactory.create(password='123')
 
         # Add direct as global
         self.et.add_labour_type(self.dir)
@@ -46,7 +46,7 @@ class EquipmentTypeTest(TestCase):
         self.assertEqual(self.et.get_labour_types_for(self.user2).count(), 1)
 
     def test_update_labour_types(self):
-        self.user1 = UserFactory.create()
+        self.user1 = UserFactory.create(password='123')
 
         # Update type adding only direct, should have created one for account
         self.et.update_labour_types([self.dir], self.user1)

@@ -30,7 +30,7 @@ class ActivityTest(TestCase):
         self.assertEqual(act3.owner, self.account)
 
     def test_filter_workable(self):
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
 
         # Create a global and an account activity
         g_act = ActivityFactory.create(owner=None)

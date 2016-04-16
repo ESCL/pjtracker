@@ -1,10 +1,15 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute, Faker, SelfAttribute, PostGeneration
+from factory import DjangoModelFactory, SubFactory, Faker, SelfAttribute
 
-from ..accounts.factories import AccountBaseFactory
-from ..organizations.factories import CompanyBaseFactory, PositionFactory, PositionBaseFactory, TeamFactory
-from ..work.factories import ProjectFactory, set_subfactory_project
+from ..common.factories import NullableSubFactory
+from ..accounts.factories import AccountBaseFactory, AccountFactory
+from ..geo.factories import LocationBaseFactory, LocationFactory
+from ..organizations.factories import (
+    CompanyBaseFactory, CompanyFactory, DepartmentBaseFactory,
+    DepartmentFactory, PositionFactory, PositionBaseFactory, TeamFactory
+)
+from ..work.factories import ProjectBaseFactory, ProjectFactory
 from .models import Employee, Equipment, EquipmentType
 
 
@@ -29,7 +34,9 @@ class EmployeeBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
     position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
-    project = PostGeneration(set_subfactory_project)
+    department = NullableSubFactory(DepartmentBaseFactory, owner=SelfAttribute('..owner'))
+    project = NullableSubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+    location = NullableSubFactory(LocationBaseFactory, owner=SelfAttribute('..owner'))
 
 
 class EquipmentBaseFactory(DjangoModelFactory):
@@ -41,7 +48,8 @@ class EquipmentBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
     type = SubFactory(EquipmentTypeBaseFactory, owner=SelfAttribute('..owner'))
-    project = PostGeneration(set_subfactory_project)
+    project = NullableSubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+    location = NullableSubFactory(LocationBaseFactory, owner=SelfAttribute('..owner'))
 
 
 # Smart factories
@@ -68,14 +76,16 @@ class EquipmentFactory(DjangoModelFactory):
     class Meta:
         model = Equipment
 
-    owner = LazyAttribute(lambda obj: obj.team.owner)
+    owner = SubFactory(AccountFactory)
     identifier = Faker('ssn')
     model = 'Komatsu WB140'
     year = 2005
-    company = LazyAttribute(lambda obj: obj.team.company)
-    team = SubFactory(TeamFactory)
-    project = SubFactory(ProjectFactory)
-    type = SubFactory(EquipmentSubTypeFactory)
+    company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
+    project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
+    type = SubFactory(EquipmentSubTypeFactory, owner=SelfAttribute('..owner'))
+    team = SubFactory(TeamFactory, owner=SelfAttribute('..owner'),
+                      company=SelfAttribute('..company'))
+    location = SubFactory(LocationFactory, owner=SelfAttribute('..owner'))
 
 
 class EmployeeFactory(DjangoModelFactory):
@@ -83,13 +93,16 @@ class EmployeeFactory(DjangoModelFactory):
     class Meta:
         model = Employee
 
-    owner = LazyAttribute(lambda obj: obj.team.owner)
+    owner = SubFactory(AccountFactory)
     identifier = Faker('ssn')
     first_name = Faker('first_name_male')
     last_name = Faker('last_name')
     gender = 'M'
-    company = LazyAttribute(lambda obj: obj.team.company)
-    project = SubFactory(ProjectFactory)
-    position = SubFactory(PositionFactory)
-    team = SubFactory(TeamFactory)
+    company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
+    department = SubFactory(DepartmentFactory, owner=SelfAttribute('..owner'))
+    project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
+    position = SubFactory(PositionFactory, owner=SelfAttribute('..owner'))
+    team = SubFactory(TeamFactory, owner=SelfAttribute('..owner'),
+                      company=SelfAttribute('..company'))
+    location = SubFactory(LocationFactory, owner=SelfAttribute('..owner'))
 

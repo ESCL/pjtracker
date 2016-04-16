@@ -1,12 +1,12 @@
 
 import itertools
 from datetime import date, timedelta
+from unittest import mock
 
 from django.test import TestCase
 
 from ...accounts.factories import UserFactory
 from ...accounts.utils import ensure_permissions
-from ...common.test import mock
 from ...organizations.factories import TeamFactory
 from ...resources.factories import EmployeeFactory
 from ...work.factories import ActivityFactory
@@ -22,7 +22,7 @@ class TimeSheetFormTest(TestCase):
         super(TimeSheetFormTest, self).setUp()
 
         # Setup user and team
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['create']))
         self.team = TeamFactory.create(owner=self.user.owner)
 
@@ -88,7 +88,7 @@ class TimeSheetActionFormTest(TestCase):
         super(TimeSheetActionFormTest, self).setUp()
 
         # Setup user and team and create timesheet
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
         self.team = TeamFactory.create(owner=self.user.owner)
         self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
@@ -173,7 +173,7 @@ class WorkLogsFormTest(TestCase):
 
     def setUp(self):
         # Setup user and team and create timesheet
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
         self.team = TeamFactory.create(owner=self.user.owner)
         self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())

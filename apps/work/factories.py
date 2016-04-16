@@ -1,10 +1,10 @@
 __author__ = 'kako'
 
-from django.core.exceptions import ValidationError
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
+from factory import (DjangoModelFactory, Faker, SubFactory,
+                     LazyAttribute, SelfAttribute, post_generation)
 
-from ..accounts.factories import AccountBaseFactory
-from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
+from ..accounts.factories import AccountBaseFactory, AccountFactory
+from .models import Project, Activity, LabourType
 
 
 # Base factories
@@ -19,36 +19,14 @@ class ProjectBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
 
 
-def set_subfactory_project(container, create, project, **kwargs):
-    """
-    Set the correct project for the container factory, which could be passed
-    directly (project) or need to be created (from kwargs).
-    """
-    if project:
-        # We got a project instance already, set it
-        container.project = project
-
-    elif kwargs:
-        # We got some attrs for project, let's build/create it
-        method_name = create and 'create' or 'build'
-        method = getattr(ProjectBaseFactory, method_name)
-        try:
-            container.project = method(owner=container.owner, **kwargs)
-            container.project.full_clean()
-
-        except KeyError as e:
-            errors = {a: 'This field is required' for a in e.args}
-            raise ValidationError(errors)
-
-
 class ActivityBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Activity
         django_get_or_create = ('owner', 'parent', 'code',)
 
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
     owner = SubFactory(AccountBaseFactory)
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
 
     @classmethod
     def create(cls, **kwargs):
@@ -64,11 +42,20 @@ class ActivityBaseFactory(DjangoModelFactory):
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
+
+class LabourTypeFactory(DjangoModelFactory):
+
+    class Meta:
+        model = LabourType
+        django_get_or_create = ('owner', 'code',)
+
+
 class ProjectFactory(DjangoModelFactory):
 
     class Meta:
         model = Project
 
+    owner = SubFactory(AccountFactory)
     name = Faker('street_address')
     code = Faker('military_ship')
 
@@ -78,10 +65,11 @@ class ActivityFactory(DjangoModelFactory):
     class Meta:
         model = Activity
 
+    # Note: due to its hierarchical nature, we need to get always from project
     owner = LazyAttribute(lambda obj: obj.project.owner)
-    name = 'Foundation 23 Design'
-    code = 'FND23'
     project = SubFactory(ProjectFactory)
+    name = 'Foundation 23 Design'
+    code = 'FND2'
 
     @classmethod
     def create(cls, **kwargs):

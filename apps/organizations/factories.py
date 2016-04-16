@@ -1,10 +1,10 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute
+from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute, SelfAttribute
 
 from ..accounts.factories import AccountFactory, AccountBaseFactory
 from ..common.utils import generate_code_from_name
-from .models import Company, Team, Position
+from .models import Company, Department, Team, Position
 
 
 # Base factories
@@ -14,6 +14,15 @@ class CompanyBaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Company
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountBaseFactory)
+
+
+class DepartmentBaseFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Department
         django_get_or_create = ('owner', 'code',)
 
     owner = SubFactory(AccountBaseFactory)
@@ -41,15 +50,25 @@ class CompanyFactory(DjangoModelFactory):
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
 
 
+class DepartmentFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Department
+
+    owner = SubFactory(AccountFactory)
+    name = Faker('color_name')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
+
+
 class TeamFactory(DjangoModelFactory):
 
     class Meta:
         model = Team
 
-    owner = LazyAttribute(lambda obj: obj.company.owner)
+    owner = SubFactory(AccountFactory)
     name = Faker('sentence', nb_words=2)
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
-    company = SubFactory(CompanyFactory)
+    company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
 
     @post_generation
     def timekeepers(self, create, values):
