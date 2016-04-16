@@ -13,7 +13,7 @@ class ActivityFormTest(TestCase):
 
     def setUp(self):
         # Create one user with full permission to activities and a project
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(Activity, ['add', 'change']))
         self.pj = ProjectFactory.create(owner=self.user.owner)
 

@@ -1,7 +1,8 @@
+from unittest import mock
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from ...common.test import mock
 from ...deployment.models import TimeSheetSettings, TimeSheet
 from ..factories import UserFactory
 from ..models import User

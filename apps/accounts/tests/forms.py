@@ -15,7 +15,7 @@ class UserFormTest(TestCase):
         admin.user_permissions.add(*ensure_permissions(User, ['add']))
 
         # Render and submit the form
-        form = UserForm({'username': 'karina'}, user=admin)
+        form = UserForm({'username': 'karina', 'password': '123'}, user=admin)
         self.assertTrue(form.is_valid())
         form.save()
 

@@ -1,7 +1,8 @@
 
 from ..common.views.base import StandardResourceView
-from .forms import CompanyForm, TeamForm, CompanySearchForm, TeamSearchForm, PositionForm, PositionSearchForm
-from .models import Company, Team, Position
+from .forms import (CompanyForm, DepartmentForm, TeamForm, CompanySearchForm,
+                    TeamSearchForm, PositionForm, PositionSearchForm, DepartmentSearchForm)
+from .models import Company, Department, Team, Position
 
 
 class CompanyView(StandardResourceView):
@@ -14,6 +15,19 @@ class CompanyView(StandardResourceView):
     permissions = {
         'add': ('organizations.add_company',),
         'edit': ('organizations.change_company',),
+    }
+
+
+class DepartmentView(StandardResourceView):
+    model = Department
+    list_template = 'departments.html'
+    detail_template = 'department.html'
+    edit_template = 'department-edit.html'
+    main_form = DepartmentForm
+    search_form = DepartmentSearchForm
+    permissions = {
+        'add': ('organizations.add_department',),
+        'edit': ('organizations.change_department',),
     }
 
 

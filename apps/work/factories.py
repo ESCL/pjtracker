@@ -1,10 +1,9 @@
 __author__ = 'kako'
 
-from django.core.exceptions import ValidationError
 from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
 
 from ..accounts.factories import AccountBaseFactory
-from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourType
+from .models import Project, Activity, LabourType
 
 
 # Base factories
@@ -17,28 +16,6 @@ class ProjectBaseFactory(DjangoModelFactory):
         django_get_or_create = ('owner', 'code',)
 
     owner = SubFactory(AccountBaseFactory)
-
-
-def set_subfactory_project(container, create, project, **kwargs):
-    """
-    Set the correct project for the container factory, which could be passed
-    directly (project) or need to be created (from kwargs).
-    """
-    if project:
-        # We got a project instance already, set it
-        container.project = project
-
-    elif kwargs:
-        # We got some attrs for project, let's build/create it
-        method_name = create and 'create' or 'build'
-        method = getattr(ProjectBaseFactory, method_name)
-        try:
-            container.project = method(owner=container.owner, **kwargs)
-            container.project.full_clean()
-
-        except KeyError as e:
-            errors = {a: 'This field is required' for a in e.args}
-            raise ValidationError(errors)
 
 
 class ActivityBaseFactory(DjangoModelFactory):
@@ -64,6 +41,14 @@ class ActivityBaseFactory(DjangoModelFactory):
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
+
+class LabourTypeFactory(DjangoModelFactory):
+
+    class Meta:
+        model = LabourType
+        django_get_or_create = ('owner', 'code',)
+
+
 class ProjectFactory(DjangoModelFactory):
 
     class Meta:
@@ -80,7 +65,7 @@ class ActivityFactory(DjangoModelFactory):
 
     owner = LazyAttribute(lambda obj: obj.project.owner)
     name = 'Foundation 23 Design'
-    code = 'FND23'
+    code = 'FND2'
     project = SubFactory(ProjectFactory)
 
     @classmethod

@@ -38,7 +38,7 @@ class HomeViewTest(TestCase):
     def setUp(self):
         # Create client and user
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFactory.create(username='pepitomadueno')
 
     def test_view(self):
         url = reverse('home')
@@ -52,5 +52,3 @@ class HomeViewTest(TestCase):
         self.client.login(username=self.user.username, password='123')
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
-
-

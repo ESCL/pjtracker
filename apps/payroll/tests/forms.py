@@ -15,7 +15,7 @@ class HoursSettingsFormTest(TestCase):
 
     def setUp(self):
         # Create account and a few hour types
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.std = NormalHoursFactory.create(owner=self.user.owner)
         self.ot150 = Overtime150HoursFactory.create(owner=self.user.owner)
         self.ot200 = Overtime200HoursFactory.create(owner=self.user.owner)
@@ -111,7 +111,7 @@ class PeriodFormTest(TestCase):
 
     def setUp(self):
         # Create use with permissions to add a period
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(Period, ['add']))
 
     def test_validate(self):

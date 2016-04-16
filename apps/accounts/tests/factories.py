@@ -18,7 +18,7 @@ class UserFactoryTest(TestCase):
         self.assertEqual(Account.objects.count(), 0)
 
         # Create a user, should add a profile and an account
-        user = UserFactory.create()
+        user = UserFactory.create(password='123')
         self.assertIsNotNone(user.owner)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Account.objects.count(), 1)

@@ -15,6 +15,7 @@ class EquipmentType(OwnedEntity):
     parent = models.ForeignKey(
         'self',
         null=True,
+        blank=True,
         related_name='subtypes',
     )
     labour_types = models.ManyToManyField(
@@ -119,6 +120,11 @@ class Employee(Resource):
         choices=(('F', 'Female'),
                  ('M', 'Male'))
     )
+    department = models.ForeignKey(
+        'organizations.Department',
+        null=True,
+        blank=True
+    )
     position = models.ForeignKey(
         'organizations.Position'
     )
@@ -133,6 +139,7 @@ class Employee(Resource):
 
     def complete_work_log(self, work_log):
         super(Employee, self).complete_work_log(work_log)
+        work_log.department = self.department
         work_log.position = self.position
 
     def get_labour_types_for(self, user):

@@ -64,7 +64,7 @@ class CalendarDayTest(TestCase):
 
     def test_filter_in_range(self):
         # Make friday a public holiday
-        CalendarDay.objects.create(date=date(2015, 12, 11), type=CalendarDay.PUBLIC_HOLIDAY)
+        CalendarDay.objects.create(name='lol', date=date(2015, 12, 11), type=CalendarDay.PUBLIC_HOLIDAY)
 
         # Filter from the 7th to the 10th, all non-stored dates
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 10))
@@ -117,7 +117,7 @@ class WorkedHoursTest(TestCase):
         HourTypeRange.objects.create(day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
 
         # Make friday 25th a public holiday
-        CalendarDay.objects.create(date=date(2015, 12, 25), type=CalendarDay.PUBLIC_HOLIDAY)
+        CalendarDay.objects.create(name='lol', date=date(2015, 12, 25), type=CalendarDay.PUBLIC_HOLIDAY)
 
         # Create a period forecasting the last week (28th to 3rd)
         self.period = Period.objects.create(start_date=date(2015, 12, 5),
