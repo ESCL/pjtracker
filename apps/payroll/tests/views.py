@@ -9,7 +9,7 @@ from ...common.test import PermissionTestMixin
 from ...accounts.factories import UserFactory
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import WorkLog
-from ...resources.factories import EmployeeFactory
+from ...resources.factories import EmployeeFakeFactory
 from ..factories import (CalendarDayFactory, PeriodFactory, NormalHoursFactory,
                          Overtime150HoursFactory, Overtime200HoursFactory)
 from ..models import WorkedHours, HourType, HourTypeRange, CalendarDay, Period
@@ -61,7 +61,7 @@ class WorkedHoursViewTest(TestCase):
         WorkLog.objects.all().delete()
 
         # Nor create employee with a few processed hours
-        self.e = EmployeeFactory.create(owner=self.period.owner)
+        self.e = EmployeeFakeFactory.create(owner=self.period.owner)
         d = {'owner': self.period.owner, 'period': self.period, 'employee': self.e}
         WorkedHours(phase=WorkedHours.PHASE_ADJUSTMENT, hour_type=self.std, hours=-15, **d).save()
         WorkedHours(phase=WorkedHours.PHASE_ADJUSTMENT, hour_type=self.ot150, hours=-4, **d).save()

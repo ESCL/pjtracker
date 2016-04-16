@@ -8,7 +8,7 @@ from django.test import TestCase
 from ...accounts.factories import UserFactory
 from ...accounts.utils import ensure_permissions
 from ...organizations.factories import TeamFactory
-from ...resources.factories import EmployeeFactory
+from ...resources.factories import EmployeeFakeFactory
 from ...work.factories import ActivityFactory
 from ...work.models import LabourType
 from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm, WorkLogsForm
@@ -189,7 +189,7 @@ class WorkLogsFormTest(TestCase):
                                        'This team has no activities assigned.'])
 
         # Assign activities and employees w/o matching labour types
-        employee = EmployeeFactory.create(team=self.team)
+        employee = EmployeeFakeFactory.create(team=self.team)
         employee.position.add_labour_type(self.dir)
         activity = ActivityFactory.create(labour_types=[self.ind])
         self.team.activities.add(activity)
@@ -202,9 +202,9 @@ class WorkLogsFormTest(TestCase):
 
     def test_disabled_fields(self):
         # Add two employees (one direct, one indirect)
-        emp1 = EmployeeFactory.create(team=self.team)
+        emp1 = EmployeeFakeFactory.create(team=self.team)
         emp1.position.add_labour_type(self.dir)
-        emp2 = EmployeeFactory.create(team=self.team)
+        emp2 = EmployeeFakeFactory.create(team=self.team)
         emp2.position.add_labour_type(self.ind)
 
         # Add two activities (one direct, one direct+indirect)
@@ -230,9 +230,9 @@ class WorkLogsFormTest(TestCase):
 
     def test_clean(self):
         # Add one direct employee and one w/o labour type
-        emp1 = EmployeeFactory.create(team=self.team)
+        emp1 = EmployeeFakeFactory.create(team=self.team)
         emp1.position.add_labour_type(self.dir)
-        emp2 = EmployeeFactory.create(team=self.team)
+        emp2 = EmployeeFakeFactory.create(team=self.team)
 
         # Add three activities (one direct, one indirect, one w/oi labour type)
         act1 = ActivityFactory.create(labour_types=[self.dir])
@@ -275,7 +275,7 @@ class WorkLogsFormTest(TestCase):
         self.assertEqual(WorkLog.objects.count(), 0)
 
         # Create one emp and two acts, all compatible
-        emp = EmployeeFactory.create(team=self.team)
+        emp = EmployeeFakeFactory.create(team=self.team)
         emp.position.add_labour_type(self.dir)
         act1 = ActivityFactory.create(labour_types=[self.dir])
         act2 = ActivityFactory.create(labour_types=[self.dir])

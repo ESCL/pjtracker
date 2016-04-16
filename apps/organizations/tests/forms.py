@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 from ...accounts.factories import UserFactory, User
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import TimeSheet
-from ...resources.factories import EmployeeFactory, EquipmentFactory
+from ...resources.factories import EmployeeFakeFactory, EquipmentFakeFactory
 from ...work.models import LabourType
 from ..factories import PositionFactory, CompanyFactory
 from ..forms import TeamForm, PositionForm
@@ -108,8 +108,8 @@ class TeamFormTest(TestCase):
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue', 'review']))
 
         # Create a team with 1 emp and 1 eqp
-        emp = EmployeeFactory.create(owner=self.account)
-        eqp = EquipmentFactory.create(owner=self.account)
+        emp = EmployeeFakeFactory.create(owner=self.account)
+        eqp = EquipmentFakeFactory.create(owner=self.account)
         data = {'name': 'x', 'code': 'X',
                 'company': CompanyFactory.create(owner=self.user.owner).id,
                 'timekeepers': [self.user.id], 'supervisors': [self.user.id],

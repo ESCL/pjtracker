@@ -1,22 +1,22 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, Faker, SelfAttribute
+from factory import DjangoModelFactory, SubFactory, Faker, SelfAttribute, LazyAttribute
 
 from ..common.factories import NullableSubFactory
 from ..accounts.factories import AccountBaseFactory, AccountFactory
 from ..geo.factories import LocationBaseFactory, LocationFactory
 from ..organizations.factories import (
     CompanyBaseFactory, CompanyFactory, DepartmentBaseFactory,
-    DepartmentFactory, PositionFactory, PositionBaseFactory, TeamFactory
+    DepartmentFactory, PositionFactory, PositionBaseFactory, TeamFactory,
 )
 from ..work.factories import ProjectBaseFactory, ProjectFactory
-from .models import Employee, Equipment, EquipmentType
+from .models import Employee, Equipment, EquipmentType, ResourceCategory
 
 
 # Base factories
 # These generate no fake data, they are used for imports and as base classes
 
-class EquipmentTypeBaseFactory(DjangoModelFactory):
+class EquipmentTypeFactory(DjangoModelFactory):
 
     class Meta:
         model = EquipmentType
@@ -25,7 +25,17 @@ class EquipmentTypeBaseFactory(DjangoModelFactory):
     owner = SubFactory(AccountBaseFactory)
 
 
-class EmployeeBaseFactory(DjangoModelFactory):
+class ResourceCategoryFactory(DjangoModelFactory):
+
+    class Meta:
+        model = ResourceCategory
+        django_get_or_create = ('owner', 'name',)
+
+    owner = SubFactory(AccountFactory)
+    resource_type = 'all'
+
+
+class EmployeeFactory(DjangoModelFactory):
 
     class Meta:
         model = Employee
@@ -33,13 +43,14 @@ class EmployeeBaseFactory(DjangoModelFactory):
 
     owner = SubFactory(AccountBaseFactory)
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
-    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
     department = NullableSubFactory(DepartmentBaseFactory, owner=SelfAttribute('..owner'))
+    position = SubFactory(PositionBaseFactory, owner=SelfAttribute('..owner'))
+    category = NullableSubFactory(ResourceCategoryFactory, owner=SelfAttribute('..owner'))
     project = NullableSubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
     location = NullableSubFactory(LocationBaseFactory, owner=SelfAttribute('..owner'))
 
 
-class EquipmentBaseFactory(DjangoModelFactory):
+class EquipmentFactory(DjangoModelFactory):
 
     class Meta:
         model = Equipment
@@ -47,15 +58,16 @@ class EquipmentBaseFactory(DjangoModelFactory):
 
     owner = SubFactory(AccountBaseFactory)
     company = SubFactory(CompanyBaseFactory, owner=SelfAttribute('..owner'))
-    type = SubFactory(EquipmentTypeBaseFactory, owner=SelfAttribute('..owner'))
+    type = SubFactory(EquipmentTypeFactory, owner=SelfAttribute('..owner'))
+    category = NullableSubFactory(ResourceCategoryFactory, owner=SelfAttribute('..owner'))
     project = NullableSubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
     location = NullableSubFactory(LocationBaseFactory, owner=SelfAttribute('..owner'))
 
 
-# Smart factories
+# Fake factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class EquipmentTypeFactory(DjangoModelFactory):
+class EquipmentTypeFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = EquipmentType
@@ -64,14 +76,22 @@ class EquipmentTypeFactory(DjangoModelFactory):
     code = 'EAR'
 
 
-class EquipmentSubTypeFactory(EquipmentTypeFactory):
+class EquipmentSubTypeFakeFactory(EquipmentTypeFakeFactory):
 
     name = 'Backhoe'
     code = 'BKH'
-    parent = SubFactory(EquipmentTypeFactory)
+    parent = SubFactory(EquipmentTypeFakeFactory)
 
 
-class EquipmentFactory(DjangoModelFactory):
+class ResourceCategoryFakeFactory(ResourceCategoryFactory):
+
+    owner = SubFactory(AccountFactory)
+    name = Faker('random_element', elements=('Senior', 'Semi-Senior', 'Junior'))
+    code = LazyAttribute(lambda obj: obj.name[:2].upper())
+    resource_type = 'employee'
+
+
+class EquipmentFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = Equipment
@@ -81,14 +101,15 @@ class EquipmentFactory(DjangoModelFactory):
     model = 'Komatsu WB140'
     year = 2005
     company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
+    type = SubFactory(EquipmentSubTypeFakeFactory, owner=SelfAttribute('..owner'))
+    category = SubFactory(ResourceCategoryFakeFactory, owner=SelfAttribute('..owner'))
     project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
-    type = SubFactory(EquipmentSubTypeFactory, owner=SelfAttribute('..owner'))
     team = SubFactory(TeamFactory, owner=SelfAttribute('..owner'),
                       company=SelfAttribute('..company'))
     location = SubFactory(LocationFactory, owner=SelfAttribute('..owner'))
 
 
-class EmployeeFactory(DjangoModelFactory):
+class EmployeeFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = Employee
@@ -100,9 +121,9 @@ class EmployeeFactory(DjangoModelFactory):
     gender = 'M'
     company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
     department = SubFactory(DepartmentFactory, owner=SelfAttribute('..owner'))
-    project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
     position = SubFactory(PositionFactory, owner=SelfAttribute('..owner'))
+    category = SubFactory(ResourceCategoryFakeFactory, owner=SelfAttribute('..owner'))
+    project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
     team = SubFactory(TeamFactory, owner=SelfAttribute('..owner'),
                       company=SelfAttribute('..company'))
     location = SubFactory(LocationFactory, owner=SelfAttribute('..owner'))
-

@@ -7,7 +7,7 @@ from django.test import TestCase
 from ...common.exceptions import InvalidOperationError
 from ...deployment.factories import TimeSheetFactory
 from ...deployment.models import WorkLog, TimeSheet
-from ...resources.factories import EmployeeFactory
+from ...resources.factories import EmployeeFakeFactory
 from ...work.factories import ActivityFactory
 from ...work.models import LabourType
 from ..models import CalendarDay, HourTypeRange, Period, WorkedHours, StandardHours
@@ -97,7 +97,7 @@ class WorkedHoursTest(TestCase):
         self.mgt = LabourType.objects.get(code='MG')
         self.act = ActivityFactory.create(labour_types=[self.mgt])
         self.acc = self.act.owner
-        self.emp = EmployeeFactory.create(owner=self.acc)
+        self.emp = EmployeeFakeFactory.create(owner=self.acc)
         self.team = self.emp.team
 
         # Create standard hour types (normal, OT 150%, OT 200%)

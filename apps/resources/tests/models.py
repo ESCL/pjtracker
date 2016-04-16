@@ -4,7 +4,7 @@ from django.test import TestCase
 from ...accounts.factories import UserFactory
 from ...work.models import LabourType
 from ..models import EquipmentTypeLabourType
-from ..factories import EquipmentTypeFactory
+from ..factories import EquipmentTypeFakeFactory
 
 
 class EquipmentTypeTest(TestCase):
@@ -13,7 +13,7 @@ class EquipmentTypeTest(TestCase):
         super(EquipmentTypeTest, self).setUp()
 
         # Create a global position and labour types
-        self.et = EquipmentTypeFactory.create()
+        self.et = EquipmentTypeFakeFactory.create()
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 

@@ -1,0 +1,37 @@
+{% extends 'apps/base.html' %}
+
+{% load tags %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'resource-categories' %}"> resource categories</a></li>
+<li><span>{{ resourcecategory.code }}</span></li>
+<li><a href="{% url 'resource-category' pk=resourcecategory.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h3>Resource Category</h3>
+    <dl>
+        <dt>Name</dt><dd>{{ resourcecategory.name }}</dd>
+        <dt>Code</dt><dd>{{ resourcecategory.code }}</dd>
+        <dt>Type</dt><dd>{{ resourcecategory.get_resource_type_display }}</dd>
+    </dl>
+</div>
+
+{% endblock %}

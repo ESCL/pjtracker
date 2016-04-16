@@ -9,7 +9,7 @@ from django.db import transaction, IntegrityError
 
 from ....accounts.factories import UserBaseFactory
 from ....accounts.models import Account
-from ....resources.factories import EmployeeBaseFactory, EquipmentBaseFactory
+from ....resources.factories import EmployeeFactory, EquipmentFactory
 from ....work.factories import ActivityBaseFactory
 
 
@@ -29,8 +29,8 @@ class Command(BaseCommand):
         :param model_name: str
         :return: matching factory class
         """
-        for f in (UserBaseFactory, EmployeeBaseFactory,
-                  EquipmentBaseFactory, ActivityBaseFactory):
+        for f in (UserBaseFactory, EmployeeFactory,
+                  EquipmentFactory, ActivityBaseFactory):
             if f._get_model_class().__name__.lower() == model_name.lower():
                 return f
         raise ValueError("No factory found for resource '{}'.".format(model_name))

@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from ...accounts.factories import UserFactory
 from ...organizations.factories import TeamFactory
-from ...resources.factories import EmployeeFactory, EquipmentFactory
+from ...resources.factories import EmployeeFakeFactory, EquipmentFakeFactory
 from ...work.factories import ActivityFactory
 from ...work.models import LabourType
 from ..factories import TimeSheetFactory
@@ -134,8 +134,8 @@ class TimeSheetTest(TestCase):
         self.assertEqual(self.ts.resources, {})
 
         # Add two resources, one belonging to the team
-        e1 = EmployeeFactory.create(team=self.team)
-        e2 = EquipmentFactory.create()
+        e1 = EmployeeFakeFactory.create(team=self.team)
+        e2 = EquipmentFakeFactory.create()
 
         # Add a few activities, link team to last one
         a1 = ActivityFactory.create()
@@ -193,7 +193,7 @@ class WorkLogTest(TestCase):
         self.assertNotEqual(None, self.user2.domain)
 
         # Create a few workflogs
-        e = EmployeeFactory.create(team=self.team)
+        e = EmployeeFakeFactory.create(team=self.team)
         a = ActivityFactory.create()
         WorkLog.objects.create(timesheet=self.ts, resource=e.resource_ptr,
                                activity=a, hours=3, labour_type=self.ind)
@@ -210,8 +210,8 @@ class WorkLogTest(TestCase):
 
     def test_group_by(self):
         # Create a few work logs
-        e1 = EmployeeFactory.create(team=self.team)
-        e2 = EmployeeFactory.create(team=self.team)
+        e1 = EmployeeFakeFactory.create(team=self.team)
+        e2 = EmployeeFakeFactory.create(team=self.team)
         a1 = ActivityFactory.create()
         a2 = ActivityFactory.create()
         WorkLog.objects.create(timesheet=self.ts, resource=e1.resource_ptr,

@@ -1,10 +1,12 @@
 from django.contrib import admin
 
-from .models import Employee, Equipment, EquipmentType, EquipmentTypeLabourType
+from .models import (Employee, Equipment, EquipmentType,
+                     EquipmentTypeLabourType, ResourceCategory)
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'identifier', 'full_name', 'company', 'position', 'project',)
+    list_display = ('owner', 'identifier', 'full_name', 'company',
+                    'position', 'project',)
 
 
 class EquipmentAdmin(admin.ModelAdmin):
@@ -19,7 +21,12 @@ class EquipmentTypeLabourTypeAdmin(admin.ModelAdmin):
     list_display = ('owner', 'equipment_type', 'labour_type',)
 
 
+class ResourceCategoryAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'code', 'name', 'resource_type')
+
+
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Equipment, EquipmentAdmin)
 admin.site.register(EquipmentType, EquipmentTypeAdmin)
 admin.site.register(EquipmentTypeLabourType, EquipmentTypeLabourTypeAdmin)
+admin.site.register(ResourceCategory, ResourceCategoryAdmin)
