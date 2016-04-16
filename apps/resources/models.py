@@ -1,6 +1,6 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity, History
+from ..common.db.models import OwnedEntity
 from .query import EmployeeQuerySet, EquipmentQuerySet
 
 
@@ -72,6 +72,11 @@ class Resource(OwnedEntity):
         null=True,
         blank=True
     )
+    location = models.ForeignKey(
+        'geo.Location',
+        null=True,
+        blank=True
+    )
     resource_type = models.CharField(
         max_length=32,
     )
@@ -89,6 +94,7 @@ class Resource(OwnedEntity):
 
     def complete_work_log(self, work_log):
         work_log.company = self.company
+        work_log.location = self.location
 
     def save(self, *args, **kwargs):
         self.resource_type = self.__class__._meta.model_name

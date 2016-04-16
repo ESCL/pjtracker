@@ -1,0 +1,36 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'locations' %}">locations</a></li>
+{% if location %}
+    <li><a href="{% url 'location' pk=location.id %}">{{ location.name|upper }}</a></li>
+    <li><span>edit</span></li>
+{% else %}
+    <li><span>add</span></li>
+{% endif %}
+
+{% endblock %}
+
+
+{% block body %}
+
+<h3>{% if location %}Edit{% else %}Add{% endif %} Location</h3>
+
+<form method="POST">
+
+    {% csrf_token %}
+    {{ main_form }}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}

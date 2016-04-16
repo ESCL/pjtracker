@@ -27,7 +27,9 @@ class Project(OwnedEntity):
 
 
 class Activity(OwnedEntity):
-
+    """
+    Specific work entity into which hours are charged.
+    """
     class Meta:
         verbose_name_plural = 'activities'
 
@@ -172,7 +174,9 @@ class Activity(OwnedEntity):
 
 
 class ActivityGroup(OwnedEntity):
-
+    """
+    Entity used to group activities outside their hierarchy.
+    """
     name = models.CharField(
         max_length=64
     )
@@ -188,7 +192,9 @@ class ActivityGroup(OwnedEntity):
 
 
 class ActivityGroupType(OwnedEntity):
-
+    """
+    Type of activity group, to limit the groups to one of each type.
+    """
     name = models.CharField(
         max_length=128
     )
@@ -198,7 +204,9 @@ class ActivityGroupType(OwnedEntity):
 
 
 class LabourType(OwnedEntity):
-
+    """
+    Relation of the activity performed with direct scope progress.
+    """
     name = models.CharField(
         max_length=32
     )
