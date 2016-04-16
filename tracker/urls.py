@@ -8,6 +8,7 @@ urlpatterns = [
 
     # Specific app views (modules)
     url(r'^account/', include('apps.accounts.urls')),
+    url(r'^geo/', include('apps.geo.urls')),
     url(r'^notifications/', include('apps.notifications.urls')),
     url(r'^organizations/', include('apps.organizations.urls')),
     url(r'^resources/', include('apps.resources.urls')),

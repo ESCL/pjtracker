@@ -1,0 +1,35 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url 'locations' %}">locations</a></li>
+<li><span>{{ location.name|upper }}</span></li>
+<li><a href="{% url 'location' pk=location.id action='edit' %}">edit</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h3>Location</h3>
+    <dl>
+        <dt>Name</dt><dd>{{ location.name }}</dd>
+        <dt>Latitude</dt><dd>{{ location.latitude|default:'-' }}</dd>
+        <dt>Longitude</dt><dd>{{ location.longitude|default:'-' }}</dd>
+    </dl>
+</div>
+
+{% endblock %}
