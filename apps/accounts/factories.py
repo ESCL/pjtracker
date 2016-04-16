@@ -40,7 +40,7 @@ class AccountFactory(DjangoModelFactory):
 class UserFactory(UserBaseFactory):
 
     owner = SubFactory(AccountFactory)
-    username = LazyAttribute(lambda obj: obj.first_name.lower())
+    username = Faker('user_name')
     first_name = Faker('first_name')
     password = '123'
 

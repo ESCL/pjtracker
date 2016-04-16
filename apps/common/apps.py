@@ -8,6 +8,6 @@ from .signals import validate_model_save
 class Common(AppConfig):
     name = 'apps.common'
     verbose_name = "common"
-
+    
     def ready(self):
         pre_save.connect(validate_model_save, dispatch_uid='asdkasdi')
