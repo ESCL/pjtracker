@@ -1,8 +1,9 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, post_generation, LazyAttribute, SelfAttribute
+from factory import (DjangoModelFactory, Faker, SubFactory,
+                     LazyAttribute, SelfAttribute, post_generation)
 
-from ..accounts.factories import AccountBaseFactory
+from ..accounts.factories import AccountBaseFactory, AccountFactory
 from .models import Project, Activity, LabourType
 
 
@@ -24,8 +25,8 @@ class ActivityBaseFactory(DjangoModelFactory):
         model = Activity
         django_get_or_create = ('owner', 'parent', 'code',)
 
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
     owner = SubFactory(AccountBaseFactory)
+    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
 
     @classmethod
     def create(cls, **kwargs):
@@ -54,6 +55,7 @@ class ProjectFactory(DjangoModelFactory):
     class Meta:
         model = Project
 
+    owner = SubFactory(AccountFactory)
     name = Faker('street_address')
     code = Faker('military_ship')
 
@@ -63,10 +65,11 @@ class ActivityFactory(DjangoModelFactory):
     class Meta:
         model = Activity
 
+    # Note: due to its hierarchical nature, we need to get always from project
     owner = LazyAttribute(lambda obj: obj.project.owner)
+    project = SubFactory(ProjectFactory)
     name = 'Foundation 23 Design'
     code = 'FND2'
-    project = SubFactory(ProjectFactory)
 
     @classmethod
     def create(cls, **kwargs):
