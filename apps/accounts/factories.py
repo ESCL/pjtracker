@@ -1,6 +1,8 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation, PostGeneration
+import random
+
+from factory import DjangoModelFactory, Faker, SubFactory, LazyAttribute, post_generation
 
 from ..common.utils import generate_code_from_name
 from .models import Account, User
@@ -34,7 +36,8 @@ class AccountFactory(DjangoModelFactory):
         model = Account
 
     name = Faker('company')
-    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
+    code = LazyAttribute(lambda obj: '{}-{}'.format(generate_code_from_name(obj.name),
+                                                    random.randint(100,999)))
 
 
 class UserFactory(UserBaseFactory):

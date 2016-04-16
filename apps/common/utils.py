@@ -4,8 +4,7 @@ import re
 import itertools
 
 
-RE_NAME_REPLACE = re.compile(r'[\(\)-/]')
-LEVEL_REPLACE = re.compile(r'\bI+\b')
+RE_NAME_REPLACE = re.compile(r'\W|\bI+\b')
 
 
 def generate_code_from_name(name, max_len=3):
@@ -19,8 +18,7 @@ def generate_code_from_name(name, max_len=3):
       - "Some Very Long Case" -> "SVL"
     """
     # First remove weird characters
-    name = RE_NAME_REPLACE.sub('', name.replace('/', ' '))
-    name = LEVEL_REPLACE.sub('', name)
+    name = RE_NAME_REPLACE.sub(' ', name)
 
     # Now split in words
     name_parts = name.split()
@@ -33,7 +31,8 @@ def generate_code_from_name(name, max_len=3):
     code_parts.extend(p[0] for p in name_parts[1:])
 
     # Return it upper-cased and truncated
-    return ''.join(code_parts).upper()[:max_len]
+    res = ''.join(code_parts).upper()[:max_len]
+    return res
 
 
 class Indexable(object):
