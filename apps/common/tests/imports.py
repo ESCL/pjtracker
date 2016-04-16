@@ -7,7 +7,7 @@ from unittest import mock
 from django.core.management import call_command, CommandError
 from django.test import TestCase
 
-from ...accounts.factories import AccountFactory
+from ...accounts.factories import AccountFakeFactory
 from ...accounts.models import Account, User
 from ...organizations.models import Company, Position
 from ...resources.models import Employee, Equipment, EquipmentType
@@ -18,7 +18,7 @@ class ImportTest(TestCase):
 
     def setUp(self):
         # We need an account for any import check
-        self.account = AccountFactory.create()
+        self.account = AccountFakeFactory.create()
 
     def test_error(self):
         # No arguments provided

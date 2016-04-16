@@ -2,26 +2,26 @@ __author__ = 'kako'
 
 from django.test import TestCase
 
-from apps.accounts.factories import UserFactory
+from apps.accounts.factories import UserFakeFactory
 from apps.accounts.utils import ensure_permissions
 from apps.notifications.models import Notification
-from apps.deployment.factories import TimeSheetFactory
+from apps.deployment.factories import TimeSheetFakeFactory
 from apps.deployment.models import TimeSheet
-from apps.organizations.factories import TeamFactory
+from apps.organizations.factories import TeamFakeFactory
 
 
 class TimeSheetNotificationsTest(TestCase):
 
     def setUp(self):
         # Create one timekeeper and two reviewers
-        self.tk = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['add', 'issue']))
+        self.tk = UserFakeFactory.create(user_permissions=ensure_permissions(TimeSheet, ['add', 'issue']))
         self.account = self.tk.owner
-        self.r1 = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
-        self.r2 = UserFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
+        self.r1 = UserFakeFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
+        self.r2 = UserFakeFactory.create(user_permissions=ensure_permissions(TimeSheet, ['review']), owner=self.account)
 
         # Create one team and and a timesheet
-        self.team = TeamFactory.create(owner=self.account, timekeepers=[self.tk], supervisors=[self.r1, self.r2])
-        self.ts = TimeSheetFactory.create(team=self.team, owner=self.account)
+        self.team = TeamFakeFactory.create(owner=self.account, timekeepers=[self.tk], supervisors=[self.r1, self.r2])
+        self.ts = TimeSheetFakeFactory.create(team=self.team, owner=self.account)
 
     def test_typical_workflow(self):
         Notification.objects.all().delete()

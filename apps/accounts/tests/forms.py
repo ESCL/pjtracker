@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from ..forms import UserForm
 from ..models import User
-from ..factories import UserFactory
+from ..factories import UserFakeFactory
 from ..utils import ensure_permissions
 
 
@@ -11,7 +11,7 @@ class UserFormTest(TestCase):
 
     def test_save_owner(self):
         # Create admin user that can add users
-        admin = UserFactory.create()
+        admin = UserFakeFactory.create()
         admin.user_permissions.add(*ensure_permissions(User, ['add']))
 
         # Render and submit the form

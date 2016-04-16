@@ -5,7 +5,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from ...factories import PositionFactory
+from ...factories import PositionFakeFactory
 
 
 class Command(BaseCommand):
@@ -27,7 +27,7 @@ class Command(BaseCommand):
             for record in reader:
                 pos_name = record[1]
                 try:
-                    PositionFactory.create(name=pos_name)
+                    PositionFakeFactory.create(name=pos_name)
                 except:
                     e += 1
                 else:

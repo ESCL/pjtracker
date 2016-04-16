@@ -2,15 +2,15 @@ __author__ = 'kako'
 
 from factory import DjangoModelFactory, SubFactory, SelfAttribute
 
-from ..accounts.factories import AccountFactory
-from ..organizations.factories import TeamFactory
+from ..accounts.factories import AccountFakeFactory
+from ..organizations.factories import TeamFakeFactory
 from .models import TimeSheet
 
 
-class TimeSheetFactory(DjangoModelFactory):
+class TimeSheetFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = TimeSheet
 
-    owner = SubFactory(AccountFactory)
-    team = SubFactory(TeamFactory, owner=SelfAttribute('..owner'))
+    owner = SubFactory(AccountFakeFactory)
+    team = SubFactory(TeamFakeFactory, owner=SelfAttribute('..owner'))

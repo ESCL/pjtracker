@@ -5,14 +5,14 @@ from datetime import date
 from django.test import TestCase
 
 from ...common.exceptions import InvalidOperationError
-from ...deployment.factories import TimeSheetFactory
+from ...deployment.factories import TimeSheetFakeFactory
 from ...deployment.models import WorkLog, TimeSheet
 from ...resources.factories import EmployeeFakeFactory
-from ...work.factories import ActivityFactory
+from ...work.factories import ActivityFakeFactory
 from ...work.models import LabourType
 from ..models import CalendarDay, HourTypeRange, Period, WorkedHours, StandardHours
-from ..factories import (CalendarDayFactory, NormalHoursFactory,
-                         Overtime150HoursFactory, Overtime200HoursFactory)
+from ..factories import (CalendarDayFakeFactory, NormalHoursFakeFactory,
+                         Overtime150HoursFakeFactory, Overtime200HoursFakeFactory)
 
 
 class CalendarDayTest(TestCase):
@@ -65,7 +65,7 @@ class CalendarDayTest(TestCase):
 
     def test_filter_in_range(self):
         # Make friday a public holiday
-        CalendarDayFactory.create(date=date(2015, 12, 11))
+        CalendarDayFakeFactory.create(date=date(2015, 12, 11))
 
         # Filter from the 7th to the 10th, all non-stored dates
         days = CalendarDay.objects.in_range(date(2015, 12, 7), date(2015, 12, 10))
@@ -95,15 +95,15 @@ class WorkedHoursTest(TestCase):
     def setUp(self):
         # Create an activity and an employee
         self.mgt = LabourType.objects.get(code='MG')
-        self.act = ActivityFactory.create(labour_types=[self.mgt])
+        self.act = ActivityFakeFactory.create(labour_types=[self.mgt])
         self.acc = self.act.owner
         self.emp = EmployeeFakeFactory.create(owner=self.acc)
         self.team = self.emp.team
 
         # Create standard hour types (normal, OT 150%, OT 200%)
-        self.n = NormalHoursFactory.create(owner=self.acc)
-        self.ot150 = Overtime150HoursFactory.create(owner=self.acc)
-        self.ot200 = Overtime200HoursFactory.create(owner=self.acc)
+        self.n = NormalHoursFakeFactory.create(owner=self.acc)
+        self.ot150 = Overtime150HoursFakeFactory.create(owner=self.acc)
+        self.ot200 = Overtime200HoursFakeFactory.create(owner=self.acc)
 
         # Set standard hours: Weekdays 9, saturdays 6
         StandardHours.objects.create(day_type=CalendarDay.WEEKDAY, hours=9, owner=self.acc)
@@ -118,7 +118,7 @@ class WorkedHoursTest(TestCase):
         HourTypeRange.objects.create(owner=self.acc, day_type=CalendarDay.PUBLIC_HOLIDAY, hour_type=self.ot200)
 
         # Make friday 25th a public holiday
-        CalendarDayFactory.create(owner=self.acc, date=date(2015, 12, 25))
+        CalendarDayFakeFactory.create(owner=self.acc, date=date(2015, 12, 25))
 
         # Create a period forecasting the last week (28th to 3rd)
         self.period = Period.objects.create(start_date=date(2015, 12, 5),
@@ -126,22 +126,22 @@ class WorkedHoursTest(TestCase):
                                             forecast_start_date=date(2015, 12, 28))
 
         # Now add hours for the current week
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 21)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 21)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=8)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 22)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 22)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=10)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 23)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 23)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=4)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 24)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 24)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=12)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 25)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 25)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=4)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 26)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 26)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=6)
 
@@ -215,13 +215,13 @@ class WorkedHoursTest(TestCase):
             wh.save()
 
         # Now add period 1 retroactive hours (10 on weekdays, 7 on saturday)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 29)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 29)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=6)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2015, 12, 30)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2015, 12, 30)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=4)
-        WorkLog.objects.create(timesheet=TimeSheetFactory.create(team=self.team, date=date(2016, 1, 2)),
+        WorkLog.objects.create(timesheet=TimeSheetFakeFactory.create(team=self.team, date=date(2016, 1, 2)),
                                resource=self.emp.resource_ptr, activity=self.act,
                                labour_type=self.mgt, hours=7)
         TimeSheet.objects.update(status=TimeSheet.STATUS_APPROVED)

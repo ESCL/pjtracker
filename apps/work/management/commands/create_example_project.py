@@ -3,7 +3,7 @@ __author__ = 'kako'
 from django.core.management.base import BaseCommand
 
 from ....accounts.factories import Account
-from ...factories import ProjectFactory, ActivityFactory, ActivityGroup
+from ...factories import ProjectFakeFactory, ActivityFakeFactory, ActivityGroup
 from ...models import LabourType
 
 
@@ -33,55 +33,55 @@ class Command(BaseCommand):
         ds_pip = ActivityGroup.objects.get(name='Piping')
 
         # Create the project
-        proj = ProjectFactory.create(owner=account, name='Some plant revamping')
+        proj = ProjectFakeFactory.create(owner=account, name='Some plant revamping')
 
         # Create temp camp activities
-        ac_cmp = ActivityFactory.create(code='CMP', name='Temporary Camp', project=proj)
-        ActivityFactory.create(code='DES', name='Engineering', project=proj, parent=ac_cmp,
+        ac_cmp = ActivityFakeFactory.create(code='CMP', name='Temporary Camp', project=proj)
+        ActivityFakeFactory.create(code='DES', name='Engineering', project=proj, parent=ac_cmp,
                                groups=[ph_eng, ds_civ], labour_types=[mgt])
-        ActivityFactory.create(code='PRT', name='Procurement', project=proj, parent=ac_cmp,
+        ActivityFakeFactory.create(code='PRT', name='Procurement', project=proj, parent=ac_cmp,
                                groups=[ph_prt, ds_civ], labour_types=[mgt, ind])
-        ActivityFactory.create(code='CST', name='Construction', project=proj, parent=ac_cmp,
+        ActivityFakeFactory.create(code='CST', name='Construction', project=proj, parent=ac_cmp,
                                groups=[ph_cst, ds_civ], labour_types=[ind, dir])
 
         # Create train 1 main activity
-        ac_tr1 = ActivityFactory.create(code='TR1', name='Train 1', project=proj)
+        ac_tr1 = ActivityFakeFactory.create(code='TR1', name='Train 1', project=proj)
 
         # Create train 1 civil works activities
-        u1 = ActivityFactory.create(code='U1', name='Unit 1', project=proj, parent=ac_tr1)
-        u1_fnd = ActivityFactory.create(code='FND', name='Foundations', project=proj, parent=u1)
-        ActivityFactory.create(code='DES', name='Unit 1 Foundation Design', project=proj, parent=u1_fnd,
+        u1 = ActivityFakeFactory.create(code='U1', name='Unit 1', project=proj, parent=ac_tr1)
+        u1_fnd = ActivityFakeFactory.create(code='FND', name='Foundations', project=proj, parent=u1)
+        ActivityFakeFactory.create(code='DES', name='Unit 1 Foundation Design', project=proj, parent=u1_fnd,
                                groups=[ph_eng, ds_civ], labour_types=[mgt])
-        ActivityFactory.create(code='SUP', name='Unit 1 Concrete Supply', project=proj, parent=u1_fnd,
+        ActivityFakeFactory.create(code='SUP', name='Unit 1 Concrete Supply', project=proj, parent=u1_fnd,
                                groups=[ph_prt, ds_civ], labour_types=[mgt, ind])
-        ActivityFactory.create(code='CST', name='Unit 1 Foundation Construction', project=proj, parent=u1_fnd,
+        ActivityFakeFactory.create(code='CST', name='Unit 1 Foundation Construction', project=proj, parent=u1_fnd,
                                groups=[ph_cst, ds_civ], labour_types=[ind, dir])
 
         # Create train 1 structural activities
-        u1_str = ActivityFactory.create(code='STR', name='Unit 1 Structure', project=proj, parent=u1)
-        ActivityFactory.create(code='DES', name='Unit 1 Structure Design', project=proj, parent=u1_str,
+        u1_str = ActivityFakeFactory.create(code='STR', name='Unit 1 Structure', project=proj, parent=u1)
+        ActivityFakeFactory.create(code='DES', name='Unit 1 Structure Design', project=proj, parent=u1_str,
                                groups=[ph_eng, ds_str], labour_types=[mgt])
-        ActivityFactory.create(code='SUP', name='Unit 1 Structure Supply', project=proj, parent=u1_str,
+        ActivityFakeFactory.create(code='SUP', name='Unit 1 Structure Supply', project=proj, parent=u1_str,
                                groups=[ph_prt, ds_str])
-        ActivityFactory.create(code='CST', name='Unit 1 Structure Erection', project=proj, parent=u1_str,
+        ActivityFakeFactory.create(code='CST', name='Unit 1 Structure Erection', project=proj, parent=u1_str,
                                groups=[ph_cst, ds_str])
 
         # Create train 1 mechanical activities
-        u1_eq = ActivityFactory.create(code='EQP', name='Unit 1 HP Drum', project=proj, parent=u1)
-        ActivityFactory.create(code='DES', name='Unit 1 HP Drum Design', project=proj, parent=u1_eq,
+        u1_eq = ActivityFakeFactory.create(code='EQP', name='Unit 1 HP Drum', project=proj, parent=u1)
+        ActivityFakeFactory.create(code='DES', name='Unit 1 HP Drum Design', project=proj, parent=u1_eq,
                                groups=[ph_eng, ds_mec], labour_types=[mgt])
-        ActivityFactory.create(code='SUP', name='Unit 1 HP Drum Supply', project=proj, parent=u1_eq,
+        ActivityFakeFactory.create(code='SUP', name='Unit 1 HP Drum Supply', project=proj, parent=u1_eq,
                                groups=[ph_prt, ds_mec])
-        ActivityFactory.create(code='INS', name='Unit 1 HP Drum Installation', project=proj, parent=u1_eq,
+        ActivityFakeFactory.create(code='INS', name='Unit 1 HP Drum Installation', project=proj, parent=u1_eq,
                                groups=[ph_cst, ds_mec])
 
         # Create train 1 piping activities
-        u1_pip = ActivityFactory.create(code='PIP', name='Unit 1 Piping', project=proj, parent=u1)
-        ActivityFactory.create(code='DES', name='Unit 1 Piping Design', project=proj, parent=u1_pip,
+        u1_pip = ActivityFakeFactory.create(code='PIP', name='Unit 1 Piping', project=proj, parent=u1)
+        ActivityFakeFactory.create(code='DES', name='Unit 1 Piping Design', project=proj, parent=u1_pip,
                                groups=[ph_eng, ds_mec])
-        ActivityFactory.create(code='SUP', name='Unit 1 Piping Supply', project=proj, parent=u1_pip,
+        ActivityFakeFactory.create(code='SUP', name='Unit 1 Piping Supply', project=proj, parent=u1_pip,
                                groups=[ph_prt, ds_mec])
-        ActivityFactory.create(code='CST', name='Unit 1 Piping Installation', project=proj, parent=u1_pip,
+        ActivityFakeFactory.create(code='CST', name='Unit 1 Piping Installation', project=proj, parent=u1_pip,
                                groups=[ph_cst, ds_pip])
 
         # Done, print result

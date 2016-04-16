@@ -7,10 +7,10 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.db import transaction, IntegrityError
 
-from ....accounts.factories import UserBaseFactory
+from ....accounts.factories import UserFactory
 from ....accounts.models import Account
 from ....resources.factories import EmployeeFactory, EquipmentFactory
-from ....work.factories import ActivityBaseFactory
+from ....work.factories import ActivityFactory
 
 
 class Command(BaseCommand):
@@ -29,8 +29,8 @@ class Command(BaseCommand):
         :param model_name: str
         :return: matching factory class
         """
-        for f in (UserBaseFactory, EmployeeFactory,
-                  EquipmentFactory, ActivityBaseFactory):
+        for f in (UserFactory, EmployeeFactory,
+                  EquipmentFactory, ActivityFactory):
             if f._get_model_class().__name__.lower() == model_name.lower():
                 return f
         raise ValueError("No factory found for resource '{}'.".format(model_name))

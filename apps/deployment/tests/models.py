@@ -2,12 +2,12 @@ from unittest import mock
 
 from django.test import TestCase
 
-from ...accounts.factories import UserFactory
-from ...organizations.factories import TeamFactory
+from ...accounts.factories import UserFakeFactory
+from ...organizations.factories import TeamFakeFactory
 from ...resources.factories import EmployeeFakeFactory, EquipmentFakeFactory
-from ...work.factories import ActivityFactory
+from ...work.factories import ActivityFakeFactory
 from ...work.models import LabourType
-from ..factories import TimeSheetFactory
+from ..factories import TimeSheetFakeFactory
 from ..models import TimeSheet, TimeSheetAction, WorkLog, NotAuthorizedError
 
 
@@ -17,19 +17,19 @@ class TimeSheetTest(TestCase):
         super(TimeSheetTest, self).setUp()
 
         # Main setup
-        self.account = UserFactory.create(password='123').owner
+        self.account = UserFakeFactory.create(password='123').owner
         self.ts_settings = self.account.timesheet_settings
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 
         # Setup teams and create timesheet
-        self.timekeeper = UserFactory.create(owner=self.account, password='123')
-        self.supervisor1 = UserFactory.create(owner=self.account, password='123')
-        self.supervisor2 = UserFactory.create(owner=self.account, password='123')
-        self.team = TeamFactory.create(owner=self.account,
+        self.timekeeper = UserFakeFactory.create(owner=self.account, password='123')
+        self.supervisor1 = UserFakeFactory.create(owner=self.account, password='123')
+        self.supervisor2 = UserFakeFactory.create(owner=self.account, password='123')
+        self.team = TeamFakeFactory.create(owner=self.account,
                                        timekeepers=[self.timekeeper],
                                        supervisors=[self.supervisor1, self.supervisor2])
-        self.ts = TimeSheetFactory.create(owner=self.account,
+        self.ts = TimeSheetFakeFactory.create(owner=self.account,
                                           team=self.team)
 
     @mock.patch('apps.deployment.models.TimeSheet.signal', mock.MagicMock())
@@ -138,9 +138,9 @@ class TimeSheetTest(TestCase):
         e2 = EquipmentFakeFactory.create()
 
         # Add a few activities, link team to last one
-        a1 = ActivityFactory.create()
-        a2 = ActivityFactory.create()
-        a3 = ActivityFactory.create()
+        a1 = ActivityFakeFactory.create()
+        a2 = ActivityFakeFactory.create()
+        a3 = ActivityFakeFactory.create()
         self.team.activities.add(a1)
 
         # Fetch again, employees and acts are updated
@@ -174,16 +174,16 @@ class WorkLogTest(TestCase):
         super(WorkLogTest, self).setUp()
 
         # Main setup
-        self.account = UserFactory.create(password='123').owner
+        self.account = UserFakeFactory.create(password='123').owner
         self.ts_settings = self.account.timesheet_settings
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 
         # Setup users, teams and create timesheet
-        self.user1 = UserFactory.create(owner=self.account, password='123')
-        self.user2 = UserFactory.create(password='123')
-        self.team = TeamFactory.create(owner=self.account)
-        self.ts = TimeSheetFactory.create(owner=self.account, team=self.team)
+        self.user1 = UserFakeFactory.create(owner=self.account, password='123')
+        self.user2 = UserFakeFactory.create(password='123')
+        self.team = TeamFakeFactory.create(owner=self.account)
+        self.ts = TimeSheetFakeFactory.create(owner=self.account, team=self.team)
 
     def test_filter_for_user(self):
         # Added this because something was failing, which was caused by the
@@ -194,7 +194,7 @@ class WorkLogTest(TestCase):
 
         # Create a few workflogs
         e = EmployeeFakeFactory.create(team=self.team)
-        a = ActivityFactory.create()
+        a = ActivityFakeFactory.create()
         WorkLog.objects.create(timesheet=self.ts, resource=e.resource_ptr,
                                activity=a, hours=3, labour_type=self.ind)
         WorkLog.objects.create(timesheet=self.ts, resource=e.resource_ptr,
@@ -212,8 +212,8 @@ class WorkLogTest(TestCase):
         # Create a few work logs
         e1 = EmployeeFakeFactory.create(team=self.team)
         e2 = EmployeeFakeFactory.create(team=self.team)
-        a1 = ActivityFactory.create()
-        a2 = ActivityFactory.create()
+        a1 = ActivityFakeFactory.create()
+        a2 = ActivityFakeFactory.create()
         WorkLog.objects.create(timesheet=self.ts, resource=e1.resource_ptr,
                                activity=a1, hours=2, labour_type=self.ind)
         WorkLog.objects.create(timesheet=self.ts, resource=e1.resource_ptr,

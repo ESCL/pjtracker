@@ -6,32 +6,32 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from ...common.test import PermissionTestMixin
-from ...accounts.factories import UserFactory
+from ...accounts.factories import UserFakeFactory
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import WorkLog
 from ...resources.factories import EmployeeFakeFactory
-from ..factories import (CalendarDayFactory, PeriodFactory, NormalHoursFactory,
-                         Overtime150HoursFactory, Overtime200HoursFactory)
+from ..factories import (CalendarDayFakeFactory, PeriodFakeFactory, NormalHoursFakeFactory,
+                         Overtime150HoursFakeFactory, Overtime200HoursFakeFactory)
 from ..models import WorkedHours, HourType, HourTypeRange, CalendarDay, Period
 
 
 class CalendarDayViewTest(PermissionTestMixin, TestCase):
     model = CalendarDay
-    model_factory = CalendarDayFactory
+    model_factory = CalendarDayFakeFactory
     list_view_name = 'calendar'
     instance_view_name = 'calendar-day'
 
 
 class HourTypeViewTest(PermissionTestMixin, TestCase):
     model = HourType
-    model_factory = NormalHoursFactory
+    model_factory = NormalHoursFakeFactory
     list_view_name = 'hour-types'
     instance_view_name = 'hour-type'
 
 
 class PeriodViewTest(PermissionTestMixin, TestCase):
     model = Period
-    model_factory = PeriodFactory
+    model_factory = PeriodFakeFactory
     list_view_name = 'periods'
     instance_view_name = 'period'
 
@@ -42,14 +42,14 @@ class WorkedHoursViewTest(TestCase):
         self.client = Client()
 
         # Create user and period (as previous to work with adjustment)
-        self.user = UserFactory.create(password='123')
-        self.period = PeriodFactory.create(owner=self.user.owner)
-        PeriodFactory.create(owner=self.user.owner, end_date=self.period.start_date - timedelta(days=1))
+        self.user = UserFakeFactory.create(password='123')
+        self.period = PeriodFakeFactory.create(owner=self.user.owner)
+        PeriodFakeFactory.create(owner=self.user.owner, end_date=self.period.start_date - timedelta(days=1))
 
         # Set hour types and their ranges
-        self.std = NormalHoursFactory.create(owner=self.period.owner)
-        self.ot150 = Overtime150HoursFactory.create(owner=self.period.owner)
-        self.ot200 = Overtime200HoursFactory.create(owner=self.period.owner)
+        self.std = NormalHoursFakeFactory.create(owner=self.period.owner)
+        self.ot150 = Overtime150HoursFakeFactory.create(owner=self.period.owner)
+        self.ot200 = Overtime200HoursFakeFactory.create(owner=self.period.owner)
         HourTypeRange.objects.create(owner=self.period.owner, day_type=CalendarDay.WEEKDAY, hour_type=self.std, limit=8)
         HourTypeRange.objects.create(owner=self.period.owner, day_type=CalendarDay.WEEKDAY, hour_type=self.ot150)
         HourTypeRange.objects.create(owner=self.period.owner, day_type=CalendarDay.SATURDAY, hour_type=self.ot150, limit=4)
