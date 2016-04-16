@@ -5,14 +5,14 @@ from unittest import mock
 
 from django.test import TestCase
 
-from ...accounts.factories import UserFactory
+from ...accounts.factories import UserFakeFactory
 from ...accounts.utils import ensure_permissions
-from ...organizations.factories import TeamFactory
-from ...resources.factories import EmployeeFactory
-from ...work.factories import ActivityFactory
+from ...organizations.factories import TeamFakeFactory
+from ...resources.factories import EmployeeFakeFactory
+from ...work.factories import ActivityFakeFactory
 from ...work.models import LabourType
 from ..forms import TimeSheetForm, TimeSheetActionForm, TimeSheetSettingsForm, WorkLogsForm
-from ..factories import TimeSheetFactory
+from ..factories import TimeSheetFakeFactory
 from ..models import TimeSheet, WorkLog
 
 
@@ -22,9 +22,9 @@ class TimeSheetFormTest(TestCase):
         super(TimeSheetFormTest, self).setUp()
 
         # Setup user and team
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['create']))
-        self.team = TeamFactory.create(owner=self.user.owner)
+        self.team = TeamFakeFactory.create(owner=self.user.owner)
 
     def test_init(self):
         # Init without instance, team and no comments fields
@@ -33,7 +33,7 @@ class TimeSheetFormTest(TestCase):
         self.assertFalse('comments' in form.fields)
 
         # Init with unsaved instance, team and no comments fields
-        ts = TimeSheetFactory.build(owner=self.user.owner, team=self.team, date=date.today())
+        ts = TimeSheetFakeFactory.build(owner=self.user.owner, team=self.team, date=date.today())
         form = TimeSheetForm(instance=ts, user=self.user)
         self.assertTrue('team' in form.fields)
         self.assertFalse('comments' in form.fields)
@@ -88,9 +88,9 @@ class TimeSheetActionFormTest(TestCase):
         super(TimeSheetActionFormTest, self).setUp()
 
         # Setup user and team and create timesheet
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
-        self.team = TeamFactory.create(owner=self.user.owner)
+        self.team = TeamFakeFactory.create(owner=self.user.owner)
         self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
 
     def test_clean(self):
@@ -173,9 +173,9 @@ class WorkLogsFormTest(TestCase):
 
     def setUp(self):
         # Setup user and team and create timesheet
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
-        self.team = TeamFactory.create(owner=self.user.owner)
+        self.team = TeamFakeFactory.create(owner=self.user.owner)
         self.ts = TimeSheet.objects.create(owner=self.user.owner, team=self.team, date=date.today())
 
         # Add labour types
@@ -189,9 +189,9 @@ class WorkLogsFormTest(TestCase):
                                        'This team has no activities assigned.'])
 
         # Assign activities and employees w/o matching labour types
-        employee = EmployeeFactory.create(team=self.team)
+        employee = EmployeeFakeFactory.create(team=self.team)
         employee.position.add_labour_type(self.dir)
-        activity = ActivityFactory.create(labour_types=[self.ind])
+        activity = ActivityFakeFactory.create(labour_types=[self.ind])
         self.team.activities.add(activity)
 
         # Now alert should say they don't match
@@ -202,14 +202,14 @@ class WorkLogsFormTest(TestCase):
 
     def test_disabled_fields(self):
         # Add two employees (one direct, one indirect)
-        emp1 = EmployeeFactory.create(team=self.team)
+        emp1 = EmployeeFakeFactory.create(team=self.team)
         emp1.position.add_labour_type(self.dir)
-        emp2 = EmployeeFactory.create(team=self.team)
+        emp2 = EmployeeFakeFactory.create(team=self.team)
         emp2.position.add_labour_type(self.ind)
 
         # Add two activities (one direct, one direct+indirect)
-        act1 = ActivityFactory.create(labour_types=[self.dir])
-        act2 = ActivityFactory.create(labour_types=[self.dir, self.ind])
+        act1 = ActivityFakeFactory.create(labour_types=[self.dir])
+        act2 = ActivityFakeFactory.create(labour_types=[self.dir, self.ind])
         self.team.activities.add(act1, act2)
 
         # Should have no alerts
@@ -230,14 +230,14 @@ class WorkLogsFormTest(TestCase):
 
     def test_clean(self):
         # Add one direct employee and one w/o labour type
-        emp1 = EmployeeFactory.create(team=self.team)
+        emp1 = EmployeeFakeFactory.create(team=self.team)
         emp1.position.add_labour_type(self.dir)
-        emp2 = EmployeeFactory.create(team=self.team)
+        emp2 = EmployeeFakeFactory.create(team=self.team)
 
         # Add three activities (one direct, one indirect, one w/oi labour type)
-        act1 = ActivityFactory.create(labour_types=[self.dir])
-        act2 = ActivityFactory.create(labour_types=[self.ind])
-        act3 = ActivityFactory.create()
+        act1 = ActivityFakeFactory.create(labour_types=[self.dir])
+        act2 = ActivityFakeFactory.create(labour_types=[self.ind])
+        act3 = ActivityFakeFactory.create()
         self.team.activities.add(act1, act2, act3)
 
         # Attempt failed charge of hours
@@ -275,10 +275,10 @@ class WorkLogsFormTest(TestCase):
         self.assertEqual(WorkLog.objects.count(), 0)
 
         # Create one emp and two acts, all compatible
-        emp = EmployeeFactory.create(team=self.team)
+        emp = EmployeeFakeFactory.create(team=self.team)
         emp.position.add_labour_type(self.dir)
-        act1 = ActivityFactory.create(labour_types=[self.dir])
-        act2 = ActivityFactory.create(labour_types=[self.dir])
+        act1 = ActivityFakeFactory.create(labour_types=[self.dir])
+        act2 = ActivityFakeFactory.create(labour_types=[self.dir])
         self.team.activities.add(act1, act2)
 
         # Post 4 hours each

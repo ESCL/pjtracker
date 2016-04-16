@@ -3,30 +3,30 @@ __author__ = 'kako'
 from factory import (DjangoModelFactory, Faker, SubFactory,
                      LazyAttribute, SelfAttribute, post_generation)
 
-from ..accounts.factories import AccountBaseFactory, AccountFactory
+from ..accounts.factories import AccountFactory, AccountFakeFactory
 from .models import Project, Activity, LabourType
 
 
 # Base factories
 # These generate no fake data, they are used for imports and as base classes
 
-class ProjectBaseFactory(DjangoModelFactory):
+class ProjectFactory(DjangoModelFactory):
 
     class Meta:
         model = Project
         django_get_or_create = ('owner', 'code',)
 
-    owner = SubFactory(AccountBaseFactory)
+    owner = SubFactory(AccountFactory)
 
 
-class ActivityBaseFactory(DjangoModelFactory):
+class ActivityFactory(DjangoModelFactory):
 
     class Meta:
         model = Activity
         django_get_or_create = ('owner', 'parent', 'code',)
 
-    owner = SubFactory(AccountBaseFactory)
-    project = SubFactory(ProjectBaseFactory, owner=SelfAttribute('..owner'))
+    owner = SubFactory(AccountFactory)
+    project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
 
     @classmethod
     def create(cls, **kwargs):
@@ -36,11 +36,7 @@ class ActivityBaseFactory(DjangoModelFactory):
         full_wbs_code = kwargs.pop('full_wbs_code', None)
         if full_wbs_code:
             cls._get_model_class().process_wbs_code_kwargs(full_wbs_code, kwargs)
-        return super(ActivityBaseFactory, cls).create(**kwargs)
-
-
-# Smart factories
-# These produce fake data, used in unit tests and to bootstrap dev dbs
+        return super(ActivityFactory, cls).create(**kwargs)
 
 
 class LabourTypeFactory(DjangoModelFactory):
@@ -50,24 +46,22 @@ class LabourTypeFactory(DjangoModelFactory):
         django_get_or_create = ('owner', 'code',)
 
 
-class ProjectFactory(DjangoModelFactory):
+# Smart factories
+# These produce fake data, used in unit tests and to bootstrap dev dbs
 
-    class Meta:
-        model = Project
+class ProjectFakeFactory(ProjectFactory):
 
-    owner = SubFactory(AccountFactory)
+    owner = SubFactory(AccountFakeFactory)
     name = Faker('street_address')
     code = Faker('military_ship')
 
 
-class ActivityFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Activity
+class ActivityFakeFactory(ActivityFactory):
 
     # Note: due to its hierarchical nature, we need to get always from project
     owner = LazyAttribute(lambda obj: obj.project.owner)
-    project = SubFactory(ProjectFactory)
+    project = SubFactory(ProjectFakeFactory)
+    parent = None
     name = 'Foundation 23 Design'
     code = 'FND2'
 
@@ -80,7 +74,7 @@ class ActivityFactory(DjangoModelFactory):
         project = kwargs.get('project')
         if parent and not project:
             kwargs['project'] = parent.project
-        return super(ActivityFactory, cls).create(**kwargs)
+        return super(ActivityFakeFactory, cls).create(**kwargs)
 
     @post_generation
     def groups(self, create, values):

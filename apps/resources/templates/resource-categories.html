@@ -1,0 +1,59 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>resource categories</span></li>
+<li><a href="{% url 'resource-category' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=resourcecategories %}
+
+{% if resourcecategories %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Type</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in resourcecategories %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.code }}</td>
+                    <td>{{ c.get_resource_type_display }}</td>
+                    <td class="actions">
+                        <ul class="action-group">
+                            <li><a href="{% url 'resource-category' pk=c.id %}">view</a></li>
+                            <li><a href="{% url 'resource-category' pk=c.id action='edit' %}">edit</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No resource categories found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}

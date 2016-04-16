@@ -1,9 +1,9 @@
 from django.test import TestCase
 
-from ...accounts.factories import UserFactory
+from ...accounts.factories import UserFakeFactory
 from ...work.models import LabourType
 from ..models import PositionLabourType
-from ..factories import PositionFactory
+from ..factories import PositionFakeFactory
 
 
 class PositionTest(TestCase):
@@ -12,14 +12,14 @@ class PositionTest(TestCase):
         super(PositionTest, self).setUp()
 
         # Create a global position and labour types
-        self.pos = PositionFactory.create()
+        self.pos = PositionFakeFactory.create()
         self.dir = LabourType.objects.get(code='DI')
         self.ind = LabourType.objects.get(code='IN')
 
     def test_add_labour_type(self):
         # Create two users with diff. accounts
-        self.user1 = UserFactory.create(password='123')
-        self.user2 = UserFactory.create(password='123')
+        self.user1 = UserFakeFactory.create(password='123')
+        self.user2 = UserFakeFactory.create(password='123')
 
         # Add direct as global
         self.pos.add_labour_type(self.dir)
@@ -45,7 +45,7 @@ class PositionTest(TestCase):
         self.assertEqual(self.pos.get_labour_types_for(self.user2).count(), 1)
 
     def test_update_labour_types(self):
-        self.user1 = UserFactory.create(password='123')
+        self.user1 = UserFakeFactory.create(password='123')
 
         # Update type adding only direct, should have created one for account
         self.pos.update_labour_types([self.dir], self.user1)

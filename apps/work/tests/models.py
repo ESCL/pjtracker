@@ -1,19 +1,19 @@
 from django.test import TestCase
 
-from ...accounts.factories import UserFactory, AccountFactory
-from ..factories import ProjectFactory, ActivityFactory
+from ...accounts.factories import UserFakeFactory, AccountFakeFactory
+from ..factories import ProjectFakeFactory, ActivityFakeFactory
 from ..models import Activity, LabourType
 
 
 class ActivityTest(TestCase):
 
     def setUp(self):
-        self.account = AccountFactory.create()
+        self.account = AccountFakeFactory.create()
 
     def test_init_set_parent(self):
         # Create a base activity
-        prj = ProjectFactory.create(owner=self.account, code='WOW')
-        act1 = ActivityFactory.create(code='CALI', project=prj, parent=None)
+        prj = ProjectFakeFactory.create(owner=self.account, code='WOW')
+        act1 = ActivityFakeFactory.create(code='CALI', project=prj, parent=None)
         self.assertEqual(act1.owner, self.account)
 
         # Now init a child w/o setting project. should set project to parent's
@@ -30,11 +30,11 @@ class ActivityTest(TestCase):
         self.assertEqual(act3.owner, self.account)
 
     def test_filter_workable(self):
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
 
         # Create a global and an account activity
-        g_act = ActivityFactory.create(owner=None)
-        a_act = ActivityFactory.create(owner=self.user.owner)
+        g_act = ActivityFakeFactory.create(owner=None)
+        a_act = ActivityFakeFactory.create(owner=self.user.owner)
 
         # Nothing workable
         self.assertEqual(Activity.objects.for_user(self.user).workable().count(), 0)

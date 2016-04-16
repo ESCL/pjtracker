@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from ....accounts.models import Account, User
 from ....work.models import Activity
-from ...factories import CompanyFactory, TeamFactory
+from ...factories import CompanyFakeFactory, TeamFakeFactory
 
 
 class Command(BaseCommand):
@@ -16,14 +16,14 @@ class Command(BaseCommand):
         supervisor = User.objects.get(username__icontains='supervisor')
 
         # Create one company
-        cpy = CompanyFactory.create(owner=account)
+        cpy = CompanyFakeFactory.create(owner=account)
 
         # Create two teams
-        mgt_team = TeamFactory.create(name='Engineering', company=cpy,
+        mgt_team = TeamFakeFactory.create(name='Engineering', company=cpy,
                                       timekeepers=[timekeeper],
                                       supervisors=[supervisor],
                                       activities=Activity.objects.workable())
-        cst_team = TeamFactory.create(name='Civil Works', company=cpy,
+        cst_team = TeamFakeFactory.create(name='Civil Works', company=cpy,
                                       timekeepers=[timekeeper],
                                       supervisors=[supervisor],
                                       activities=Activity.objects.workable())

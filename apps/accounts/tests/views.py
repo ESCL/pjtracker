@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from ...deployment.models import TimeSheetSettings, TimeSheet
-from ..factories import UserFactory
+from ..factories import UserFakeFactory
 from ..models import User
 from ..utils import ensure_permissions
 
@@ -14,7 +14,7 @@ class AuthViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         # Note: set password to avoid bug (https://github.com/ESCL/pjtracker/issues/40)
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.login_url = reverse('login')
         self.logout_url = reverse('logout')
 
@@ -50,7 +50,7 @@ class SettingsViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         # Note: set password to avoid bug (https://github.com/ESCL/pjtracker/issues/40)
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.url = reverse('settings')
 
     def test_view(self):
@@ -102,7 +102,7 @@ class UserViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         # Note: set password to avoid bug (https://github.com/ESCL/pjtracker/issues/40)
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
 
     def test_view(self):
         url = reverse('users')

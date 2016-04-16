@@ -55,6 +55,28 @@ class EquipmentTypeLabourType(OwnedEntity):
         return self.labour_type
 
 
+class ResourceCategory(OwnedEntity):
+
+    class Meta:
+        verbose_name_plural = 'resource categories'
+
+    name = models.CharField(
+        max_length=128
+    )
+    code = models.CharField(
+        max_length=8
+    )
+    resource_type = models.CharField(
+        max_length=32,
+        choices=(('employee', 'Employees'),
+                 ('equipment', 'Equipment'),
+                 ('all', 'Both'))
+    )
+
+    def __str__(self):
+        return '{} ({})'.format(self.code, self.name)
+
+
 class Resource(OwnedEntity):
 
     identifier = models.CharField(
@@ -62,6 +84,11 @@ class Resource(OwnedEntity):
     )
     company = models.ForeignKey(
         'organizations.Company'
+    )
+    category = models.ForeignKey(
+        'ResourceCategory',
+        null=True,
+        blank=True
     )
     team = models.ForeignKey(
         'organizations.Team',
@@ -95,6 +122,7 @@ class Resource(OwnedEntity):
 
     def complete_work_log(self, work_log):
         work_log.company = self.company
+        work_log.category = self.category
         work_log.location = self.location
 
     def save(self, *args, **kwargs):

@@ -3,21 +3,21 @@ __author__ = 'kako'
 from django.test import TestCase, Client
 
 from ...common.test import PermissionTestMixin
-from ...accounts.factories import UserFactory
-from ..factories import ProjectFactory, ActivityFactory
+from ...accounts.factories import UserFakeFactory
+from ..factories import ProjectFakeFactory, ActivityFakeFactory
 from ..models import Project, ActivityGroupType, ActivityGroup, Activity, LabourType
 
 
 class ProjectViewTest(PermissionTestMixin, TestCase):
     model = Project
-    model_factory = ProjectFactory
+    model_factory = ProjectFakeFactory
     list_view_name = 'projects'
     instance_view_name = 'project'
 
 
 class ActivityViewTest(PermissionTestMixin, TestCase):
     model = Activity
-    model_factory = ActivityFactory
+    model_factory = ActivityFakeFactory
     list_view_name = 'activities'
     instance_view_name = 'activity'
 
@@ -29,7 +29,7 @@ class LabourTypeViewTest(PermissionTestMixin, TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.instance = LabourType.objects.get(code='IN')
 
 
@@ -40,7 +40,7 @@ class ActivityGroupTypeViewTest(PermissionTestMixin, TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.instance = ActivityGroupType.objects.get(name='Phase')
 
 
@@ -51,5 +51,5 @@ class ActivityGroupViewTest(PermissionTestMixin, TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.instance = ActivityGroup.objects.get(code='ENG')

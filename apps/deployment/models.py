@@ -265,6 +265,11 @@ class WorkLog(OwnedEntity):
         null=True,
         blank=True
     )
+    category = models.ForeignKey(
+        'resources.ResourceCategory',
+        null=True,
+        blank=True
+    )
     equipment_type = models.ForeignKey(
         'resources.EquipmentType',
         null=True,

@@ -5,10 +5,41 @@ from django import forms
 from ..common.forms import OwnedEntityForm, ModernForm
 from ..common.forms.mixins import PagedForm
 from ..work.models import LabourType
-from .models import Employee, Equipment, EquipmentType
+from .models import Employee, Equipment, EquipmentType, ResourceCategory
 
 
-class EmployeeForm(OwnedEntityForm):
+class EmployeeSearchForm(ModernForm, PagedForm):
+    identifier = forms.CharField(max_length=16, required=False, label='Employee identifier')
+    name = forms.CharField(max_length=32, required=False, label='Employee name')
+
+
+class EquipmentSearchForm(ModernForm, PagedForm):
+    identifier = forms.CharField(max_length=16, required=False, label='Equipment identifier')
+    type__code__icontains = forms.CharField(max_length=32, required=False, label='Equipment type')
+
+
+class EquipmentTypeSearchForm(ModernForm, PagedForm):
+    code__icontains = forms.CharField(max_length=8, required=False, label='Type code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Type name')
+
+
+class ResourceCategorySearchForm(ModernForm, PagedForm):
+    code__icontains = forms.CharField(max_length=8, required=False, label='Category code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Category name')
+
+
+class ResourceFormBase(OwnedEntityForm):
+    """
+    Base class for all resource model forms, providing common functionality
+    to filter querysets in model choice fields.
+    """
+    def __init__(self, *args, **kwargs):
+        super(ResourceFormBase, self).__init__(*args, **kwargs)
+        cat = self.fields['category']
+        cat.queryset = cat.queryset.filter(resource_type__in=('all', self.Meta.model._meta.model_name))
+
+
+class EmployeeForm(ResourceFormBase):
 
     class Meta:
         model = Employee
@@ -16,7 +47,7 @@ class EmployeeForm(OwnedEntityForm):
         exclude = ('owner', 'resource_type', 'team',)
 
 
-class EquipmentForm(OwnedEntityForm):
+class EquipmentForm(ResourceFormBase):
 
     class Meta:
         model = Equipment
@@ -53,16 +84,8 @@ class EquipmentTypeForm(OwnedEntityForm):
         return et
 
 
-class EmployeeSearchForm(ModernForm, PagedForm):
-    identifier = forms.CharField(max_length=16, required=False, label='Employee identifier')
-    name = forms.CharField(max_length=32, required=False, label='Employee name')
+class ResourceCategoryForm(OwnedEntityForm):
 
-
-class EquipmentSearchForm(ModernForm, PagedForm):
-    identifier = forms.CharField(max_length=16, required=False, label='Equipment identifier')
-    type = forms.CharField(max_length=32, required=False, label='Equipment type')
-
-
-class EquipmentTypeSearchForm(ModernForm, PagedForm):
-    name__icontains = forms.CharField(max_length=32, required=False, label='Type name')
-
+    class Meta:
+        model = ResourceCategory
+        exclude = ('owner',)

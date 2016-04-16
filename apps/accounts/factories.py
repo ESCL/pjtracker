@@ -11,38 +11,35 @@ from .models import Account, User
 # Base factories
 # These generate no fake data, they are used for imports and as base classes
 
-class AccountBaseFactory(DjangoModelFactory):
+class AccountFactory(DjangoModelFactory):
 
     class Meta:
         model = Account
         django_get_or_create = ('code',)
 
 
-class UserBaseFactory(DjangoModelFactory):
+class UserFactory(DjangoModelFactory):
 
     class Meta:
         model = User
         django_get_or_create = ('owner', 'username',)
 
-    owner = SubFactory(AccountBaseFactory)
+    owner = SubFactory(AccountFactory)
 
 
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class AccountFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Account
+class AccountFakeFactory(AccountFactory):
 
     name = Faker('company')
     code = LazyAttribute(lambda obj: '{}-{}'.format(generate_code_from_name(obj.name),
                                                     random.randint(100,999)))
 
 
-class UserFactory(UserBaseFactory):
+class UserFakeFactory(UserFactory):
 
-    owner = SubFactory(AccountFactory)
+    owner = SubFactory(AccountFakeFactory)
     username = Faker('user_name')
     first_name = Faker('first_name')
     password = '123'
@@ -59,7 +56,7 @@ class UserFactory(UserBaseFactory):
 
     @classmethod
     def create(cls, **kwargs):
-        user = super(UserFactory, cls).create(**kwargs)
+        user = super(UserFakeFactory, cls).create(**kwargs)
         user.set_password(user.password)
         user.save()
         return user

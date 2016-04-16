@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from ..models import Account, User
-from ..factories import UserFactory
+from ..factories import UserFakeFactory
 from ..utils import ensure_permissions
 
 
@@ -10,9 +10,9 @@ class UserTest(TestCase):
 
     def test_user_filter(self):
         # Create three users with two different accounts
-        user1 = UserFactory.create(password='123')
-        user2 = UserFactory.create(password='123')
-        user3 = UserFactory.create(owner=user2.owner, password='123')
+        user1 = UserFakeFactory.create(password='123')
+        user2 = UserFakeFactory.create(password='123')
+        user3 = UserFakeFactory.create(owner=user2.owner, password='123')
 
         # Make sure they have different accounts
         self.assertNotEqual(user1.owner, user2.owner)
@@ -30,7 +30,7 @@ class UserTest(TestCase):
 
     def test_get_allowed_actions(self):
         # Create an admin that can change anything
-        user = UserFactory.create(password='123')
+        user = UserFakeFactory.create(password='123')
         user.user_permissions.add(*ensure_permissions(User, ['add', 'change']))
 
         # Actions should be simple
@@ -38,7 +38,7 @@ class UserTest(TestCase):
         self.assertEqual(set(actions), {('add',), ('change',)})
 
         # Create one that can only change usernames
-        user = UserFactory.create(password='123')
+        user = UserFakeFactory.create(password='123')
         user.user_permissions.add(*ensure_permissions(User, ['change username']))
 
         # Actions should include field name
@@ -47,7 +47,7 @@ class UserTest(TestCase):
 
     def test_get_disallowed_fields(self):
         # Create an admin that can change anything
-        user = UserFactory.create(password='123')
+        user = UserFakeFactory.create(password='123')
         user.user_permissions.add(*ensure_permissions(User, ['add', 'change']))
 
         # Actions should be simple
@@ -55,7 +55,7 @@ class UserTest(TestCase):
         self.assertEqual(fields, set())
 
         # Create one that can only change usernames
-        user = UserFactory.create(password='123')
+        user = UserFakeFactory.create(password='123')
         user.user_permissions.add(*ensure_permissions(User, ['change username']))
 
         # Check fields, only username is removed
@@ -64,7 +64,7 @@ class UserTest(TestCase):
 
     def test_username(self):
         # Create user (with account)
-        user = UserFactory.create(password='123')
+        user = UserFakeFactory.create(password='123')
         self.assertIsNotNone(user.owner)
 
         # Check username includes @<account.code>
@@ -79,9 +79,9 @@ class UserTest(TestCase):
         User.objects.all().delete()
 
         # Add one global user and two for an account
-        staff = UserFactory.create(owner=None, password='123')
-        acc_admin = UserFactory.create(password='123')
-        acc_user = UserFactory.create(owner=acc_admin.owner, password='123')
+        staff = UserFakeFactory.create(owner=None, password='123')
+        acc_admin = UserFakeFactory.create(password='123')
+        acc_user = UserFakeFactory.create(owner=acc_admin.owner, password='123')
 
         # Staff gets list, all are there
         qs = User.objects.for_user(staff)

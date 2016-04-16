@@ -5,12 +5,12 @@ from unittest import mock
 from django.test import TestCase
 from django.contrib.auth.models import Group
 
-from ...accounts.factories import UserFactory, User
+from ...accounts.factories import UserFakeFactory, User
 from ...accounts.utils import ensure_permissions
 from ...deployment.models import TimeSheet
-from ...resources.factories import EmployeeFactory, EquipmentFactory
+from ...resources.factories import EmployeeFakeFactory, EquipmentFakeFactory
 from ...work.models import LabourType
-from ..factories import PositionFactory, CompanyFactory
+from ..factories import PositionFakeFactory, CompanyFakeFactory
 from ..forms import TeamForm, PositionForm
 from ..models import Team, Position, PositionLabourType
 
@@ -21,7 +21,7 @@ class TeamFormTest(TestCase):
         super(TeamFormTest, self).setUp()
 
         # Create user and get account
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.account = self.user.owner
 
     @mock.patch('apps.work.query.ActivityQuerySet.workable',
@@ -74,13 +74,13 @@ class TeamFormTest(TestCase):
         self.assertEqual(form.fields['supervisors'].queryset.count(), 0)
 
         # Add a timekeeper with direct permissions
-        tk = UserFactory.create(owner=self.user.owner)
+        tk = UserFakeFactory.create(owner=self.user.owner)
         tk.user_permissions.add(*ensure_permissions(TimeSheet, ['issue']))
 
         # Add a supervisor with indirect permissions (through group)
         g = Group.objects.create(name='supervisors')
         g.permissions.add(*ensure_permissions(TimeSheet, ['review']))
-        s = UserFactory.create(owner=self.user.owner, groups=[g])
+        s = UserFakeFactory.create(owner=self.user.owner, groups=[g])
 
         # Render form again, they are both options
         form = TeamForm(user=self.user)
@@ -88,7 +88,7 @@ class TeamFormTest(TestCase):
         self.assertEqual(set(form.fields['supervisors'].queryset.all()), {s})
 
         # Post form with wrong timekeeper and supervisor, error
-        cpy = CompanyFactory.create(owner=self.user.owner)
+        cpy = CompanyFakeFactory.create(owner=self.user.owner)
         data = {'name': 'x', 'company': cpy.id, 'code': 'X',
                 'timekeepers': [s.id], 'supervisors': [tk.id]}
         form = TeamForm(data, user=self.user)
@@ -108,10 +108,10 @@ class TeamFormTest(TestCase):
         self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['issue', 'review']))
 
         # Create a team with 1 emp and 1 eqp
-        emp = EmployeeFactory.create(owner=self.account)
-        eqp = EquipmentFactory.create(owner=self.account)
+        emp = EmployeeFakeFactory.create(owner=self.account)
+        eqp = EquipmentFakeFactory.create(owner=self.account)
         data = {'name': 'x', 'code': 'X',
-                'company': CompanyFactory.create(owner=self.user.owner).id,
+                'company': CompanyFakeFactory.create(owner=self.user.owner).id,
                 'timekeepers': [self.user.id], 'supervisors': [self.user.id],
                 'employees': [emp.id], 'equipment': [eqp.id]}
         form = TeamForm(data, user=self.user)
@@ -139,7 +139,7 @@ class PositionFormTest(TestCase):
         super(PositionFormTest, self).setUp()
 
         # Create user and account
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.account = self.user.owner
         self.user.user_permissions.add(*ensure_permissions(Position, ['change']))
 
@@ -155,14 +155,14 @@ class PositionFormTest(TestCase):
             self.assertFalse('readonly' in f.widget.attrs)
 
         # Create account position and init form, everything's editable
-        pos_a = PositionFactory.create(owner=self.account)
+        pos_a = PositionFakeFactory.create(owner=self.account)
         form = PositionForm(user=self.user, instance=pos_a)
         for f in form.fields.values():
             self.assertFalse('disabled' in f.widget.attrs)
             self.assertFalse('readonly' in f.widget.attrs)
 
         # Create global position and init form
-        pos_g = PositionFactory.create()
+        pos_g = PositionFakeFactory.create()
         form = PositionForm(user=self.user, instance=pos_g)
 
         # Labour types are editable

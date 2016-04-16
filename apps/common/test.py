@@ -3,7 +3,7 @@ __author__ = 'kako'
 from django.test import Client
 from django.core.urlresolvers import reverse
 
-from ..accounts.factories import UserFactory
+from ..accounts.factories import UserFakeFactory
 from ..accounts.utils import ensure_permissions
 
 
@@ -20,7 +20,7 @@ class PermissionTestMixin(object):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
         self.instance = self.model_factory.create(owner=self.user.owner)
 
     def test_permissions(self):

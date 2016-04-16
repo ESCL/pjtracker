@@ -34,9 +34,11 @@
                 <th>Model</th>
                 <th>Year</th>
                 <th>Type</th>
+                <th>Category</th>
                 <th>Company</th>
                 <th>Team</th>
                 <th>Project</th>
+                <th>Location</th>
                 <th class="actions">Actions</th>
             </tr>
         </thead>
@@ -47,9 +49,11 @@
                     <td>{{ e.model }}</td>
                     <td>{{ e.year }}</td>
                     <td title="{{ e.type.name }}">{{ e.type.code }}</td>
+                    <td title="{{ e.category.name }}">{{ e.category.code }}</td>
                     <td title="{{ e.company.name }}">{{ e.company.code }}</td>
                     <td title="{{ e.team.name }}">{{ e.team.code }}</td>
                     <td title="{{ e.project.name }}">{{ e.project.code }}</td>
+                    <td>{{ e.location }}</td>
                     <td class="actions">
                         <ul class="action-group">
                             <li><a href="{% url 'equipment' pk=e.id %}" class="action">view</a></li>
