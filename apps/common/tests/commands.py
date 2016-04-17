@@ -14,7 +14,7 @@ from ...resources.models import Employee, Equipment, EquipmentType
 from ...work.models import Activity, Project
 
 
-class ImportTest(TestCase):
+class ImportDataTest(TestCase):
 
     def setUp(self):
         # We need an account for any import check
