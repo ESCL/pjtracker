@@ -14,7 +14,7 @@ class CreteExampleCompanyTest(TestCase):
         self.u1 = UserFakeFactory.create(username='supervisor')
         self.u2 = UserFakeFactory.create(username='timekeeper')
 
-    def test_create_example_account(self):
+    def test_create_example_company(self):
         n_companies = Company.objects.count()
         n_teams = Team.objects.count()
 
