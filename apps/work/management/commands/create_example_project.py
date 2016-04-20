@@ -3,8 +3,8 @@ __author__ = 'kako'
 from django.core.management.base import BaseCommand
 
 from ....accounts.factories import Account
-from ...factories import ProjectFakeFactory, ActivityFakeFactory, ActivityGroup
-from ...models import LabourType
+from ...factories import ProjectFakeFactory, ActivityFakeFactory
+from ...models import LabourType, ActivityGroup
 
 
 class Command(BaseCommand):
