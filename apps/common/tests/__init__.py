@@ -1,4 +1,4 @@
 __author__ = 'kako'
 
-from .imports import *
+from .commands import *
 from .views import *
