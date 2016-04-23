@@ -67,6 +67,7 @@ class Command(BaseCommand):
             reader = DictReader(i_file)
             error_headers = reader.fieldnames + ['error']
             writer = DictWriter(e_file, error_headers)
+            writer.writeheader()
 
             # For every row (a dict), create using factory
             for row in reader:

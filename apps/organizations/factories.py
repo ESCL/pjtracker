@@ -3,7 +3,7 @@ __author__ = 'kako'
 from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute, SelfAttribute
 
 from ..accounts.factories import AccountFakeFactory, AccountFactory
-from ..common.utils import generate_code_from_name
+from ..common.utils import generate_code_from_name, generate_unique_code
 from .models import Company, Department, Team, Position
 
 
@@ -35,6 +35,8 @@ class PositionFactory(DjangoModelFactory):
         django_get_or_create = ('owner', 'code',)
 
     owner = SubFactory(AccountFactory)
+    code = LazyAttribute(lambda obj: generate_unique_code(obj, 'code', 'name',
+                                                          min_len=2, max_len=4))
 
 
 # Smart factories
