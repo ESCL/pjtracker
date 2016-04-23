@@ -23,6 +23,20 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
+# Database configuration
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', 5432),
+        'NAME': os.environ.get('DB_NAME', 'pjtracker'),
+        'USER': os.environ.get('DB_USER', 'pjtracker'),
+        'PASSWORD': os.environ.get('DB_PASS', 'pjtracker'),
+    }
+}
+
+
 # Database bootstrapping options
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = False
