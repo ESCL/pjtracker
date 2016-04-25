@@ -10,6 +10,10 @@ urlpatterns = [
     # Auth views
     url(r'^login/', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
+    url(r'^password/$', auth_views.password_change,
+        {'template_name': 'password-change.html'}, name='password_change'),
+    url(r'^password/changed/$', auth_views.password_change_done,
+        {'template_name': 'password-changed.html'}, name='password_change_done'),
 
     # Settings view
     url(r'^settings/$', SettingsView.as_view(), name='settings'),

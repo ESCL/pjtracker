@@ -14,12 +14,18 @@ class UserFormTest(TestCase):
         admin = UserFakeFactory.create()
         admin.user_permissions.add(*ensure_permissions(User, ['add']))
 
+        # Create user to modify
+        # Note: end-users cannot add users (yet?)
+        karina = UserFakeFactory.create(owner=admin.owner)
+        self.assertEqual(karina.email, '')
+
         # Render and submit the form
-        form = UserForm({'username': 'karina', 'password': '123'}, user=admin)
+        form = UserForm({'username': 'karina', 'email': 'karina@gmail.com'},
+                        user=admin, instance=karina)
         self.assertTrue(form.is_valid())
         form.save()
 
         # Check that new user was created with correct owner
-        karina = User.objects.latest('date_joined')
+        karina = User.objects.get(id=karina.id)
         self.assertEqual(karina.username, 'karina@{}'.format(admin.owner.code))
-        self.assertEqual(karina.owner, admin.owner)
+        self.assertEqual(karina.email, 'karina@gmail.com')
