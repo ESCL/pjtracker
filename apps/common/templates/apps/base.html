@@ -73,10 +73,10 @@
                     {{ request.user.username }}
                 </a>
                 <ul>
-                    {% get request.user 'all_permissions' as perms %}
                     {% if user.is_staff %}
                         <li><a href="/admin/">Admin</a></li>
                     {% else %}
+                        {% get request.user 'all_permissions' as perms %}
                         {% if 'deployment.change_timesheetsettings' in perms %}
                             <li><a href="{% url 'settings' %}">Settings</a></li>
                         {% endif %}
