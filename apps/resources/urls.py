@@ -4,7 +4,7 @@ from django.conf.urls import url, include
 from tastypie.api import Api
 
 from .api.resources import EmployeesResource, EquipmentResource
-from .views import EmployeeView, EquipmentView, EquipmentTypeView
+from .views import EmployeeView, EquipmentView, EquipmentTypeView, ResourceCategoryView
 
 
 api_v0 = Api(api_name='v0')
@@ -30,6 +30,12 @@ urlpatterns = [
     url(r'^equipment-types/(?P<action>add)/$', EquipmentTypeView.as_view(), name='equipment-type'),
     url(r'^equipment-types/(?P<pk>\d+)/$', EquipmentTypeView.as_view(), name='equipment-type'),
     url(r'^equipment-types/(?P<pk>\d+)/(?P<action>edit)/$', EquipmentTypeView.as_view(), name='equipment-type'),
+
+    # Resource categories
+    url(r'^categories/$', ResourceCategoryView.as_view(), name='resource-categories'),
+    url(r'^categories/(?P<action>add)/$', ResourceCategoryView.as_view(), name='resource-category'),
+    url(r'^categories/(?P<pk>\d+)/$', ResourceCategoryView.as_view(), name='resource-category'),
+    url(r'^categories/(?P<pk>\d+)/(?P<action>edit)/$', ResourceCategoryView.as_view(), name='resource-category'),
 
     # APIs
     url('^api/', include(api_v0.urls))

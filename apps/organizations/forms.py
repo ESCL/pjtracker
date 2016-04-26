@@ -7,13 +7,42 @@ from ..common.forms import OwnedEntityForm, ModernForm
 from ..common.forms.mixins import PagedForm
 from ..resources.models import Employee, Equipment
 from ..work.models import LabourType
-from .models import Company, Team, Position
+from .models import Company, Department, Team, Position
+
+
+class CompanySearchForm(ModernForm, PagedForm):
+    code__iexact = forms.CharField(max_length=8, required=False, label='Company code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Company name')
+
+
+class DepartmentSearchForm(ModernForm, PagedForm):
+    code__iexact = forms.CharField(max_length=8, required=False, label='Department code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Department name')
+
+
+class PositionSearchForm(ModernForm, PagedForm):
+    code__iexact = forms.CharField(max_length=8, required=False, label='Position code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Position name')
+
+
+class TeamSearchForm(ModernForm, PagedForm):
+    code__iexact = forms.CharField(max_length=8, required=False, label='Team code')
+    name__icontains = forms.CharField(max_length=32, required=False, label='Team name')
+    company__code__iexact = forms.CharField(max_length=32, required=False, label='Company code')
+
 
 
 class CompanyForm(OwnedEntityForm):
 
     class Meta:
         model = Company
+        exclude = ('owner',)
+
+
+class DepartmentForm(OwnedEntityForm):
+
+    class Meta:
+        model = Department
         exclude = ('owner',)
 
 
@@ -51,7 +80,6 @@ class TeamForm(OwnedEntityForm):
         exclude = ('owner',)
 
     # TODO: Handle "change employees" and "change equipment" permissions
-
     employees = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(), required=False)
     equipment = forms.ModelMultipleChoiceField(queryset=Equipment.objects.all(), required=False)
 
@@ -105,19 +133,3 @@ class TeamForm(OwnedEntityForm):
 
         # Return saved team instance
         return team
-
-
-class CompanySearchForm(ModernForm, PagedForm):
-    code__iexact = forms.CharField(max_length=16, required=False, label='Company code')
-    name__icontains = forms.CharField(max_length=32, required=False, label='Company name')
-
-
-class PositionSearchForm(ModernForm, PagedForm):
-    code__iexact = forms.CharField(max_length=16, required=False, label='Position code')
-    name__icontains = forms.CharField(max_length=32, required=False, label='Position name')
-
-
-class TeamSearchForm(ModernForm, PagedForm):
-    code__iexact = forms.CharField(max_length=16, required=False, label='Team code')
-    name__icontains = forms.CharField(max_length=32, required=False, label='Team name')
-    company__code__iexact = forms.CharField(max_length=32, required=False, label='Company')

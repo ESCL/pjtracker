@@ -1,15 +1,16 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, LazyAttribute
+from factory import DjangoModelFactory, SubFactory, SelfAttribute
 
-from ..organizations.factories import TeamFactory
+from ..accounts.factories import AccountFakeFactory
+from ..organizations.factories import TeamFakeFactory
 from .models import TimeSheet
 
 
-class TimeSheetFactory(DjangoModelFactory):
+class TimeSheetFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = TimeSheet
 
-    owner = LazyAttribute(lambda obj: obj.team.owner)
-    team = SubFactory(TeamFactory)
+    owner = SubFactory(AccountFakeFactory)
+    team = SubFactory(TeamFakeFactory, owner=SelfAttribute('..owner'))

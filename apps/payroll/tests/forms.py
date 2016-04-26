@@ -4,21 +4,21 @@ from datetime import date
 
 from django.test import TestCase
 
-from ...accounts.factories import UserFactory
+from ...accounts.factories import UserFakeFactory
 from ...accounts.utils import ensure_permissions
 from ..forms import CalendarDay, HoursSettingsForm, ProcessPayrollForm, PeriodForm
 from ..models import HourTypeRange, StandardHours, Period
-from ..factories import NormalHoursFactory, Overtime150HoursFactory, Overtime200HoursFactory
+from ..factories import NormalHoursFakeFactory, Overtime150HoursFakeFactory, Overtime200HoursFakeFactory
 
 
 class HoursSettingsFormTest(TestCase):
 
     def setUp(self):
         # Create account and a few hour types
-        self.user = UserFactory.create()
-        self.std = NormalHoursFactory.create(owner=self.user.owner)
-        self.ot150 = Overtime150HoursFactory.create(owner=self.user.owner)
-        self.ot200 = Overtime200HoursFactory.create(owner=self.user.owner)
+        self.user = UserFakeFactory.create(password='123')
+        self.std = NormalHoursFakeFactory.create(owner=self.user.owner)
+        self.ot150 = Overtime150HoursFakeFactory.create(owner=self.user.owner)
+        self.ot200 = Overtime200HoursFakeFactory.create(owner=self.user.owner)
 
     def test_validate(self):
         # Init form, all fields empty
@@ -111,7 +111,7 @@ class PeriodFormTest(TestCase):
 
     def setUp(self):
         # Create use with permissions to add a period
-        self.user = UserFactory.create()
+        self.user = UserFakeFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(Period, ['add']))
 
     def test_validate(self):

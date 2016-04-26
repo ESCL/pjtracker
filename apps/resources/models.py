@@ -1,6 +1,6 @@
 from django.db import models
 
-from ..common.db.models import OwnedEntity, History
+from ..common.db.models import OwnedEntity
 from .query import EmployeeQuerySet, EquipmentQuerySet
 
 
@@ -15,6 +15,7 @@ class EquipmentType(OwnedEntity):
     parent = models.ForeignKey(
         'self',
         null=True,
+        blank=True,
         related_name='subtypes',
     )
     labour_types = models.ManyToManyField(
@@ -54,6 +55,28 @@ class EquipmentTypeLabourType(OwnedEntity):
         return self.labour_type
 
 
+class ResourceCategory(OwnedEntity):
+
+    class Meta:
+        verbose_name_plural = 'resource categories'
+
+    name = models.CharField(
+        max_length=128
+    )
+    code = models.CharField(
+        max_length=8
+    )
+    resource_type = models.CharField(
+        max_length=32,
+        choices=(('employee', 'Employees'),
+                 ('equipment', 'Equipment'),
+                 ('all', 'Both'))
+    )
+
+    def __str__(self):
+        return '{} ({})'.format(self.code, self.name)
+
+
 class Resource(OwnedEntity):
 
     identifier = models.CharField(
@@ -62,6 +85,11 @@ class Resource(OwnedEntity):
     company = models.ForeignKey(
         'organizations.Company'
     )
+    category = models.ForeignKey(
+        'ResourceCategory',
+        null=True,
+        blank=True
+    )
     team = models.ForeignKey(
         'organizations.Team',
         null=True,
@@ -69,6 +97,11 @@ class Resource(OwnedEntity):
     )
     project = models.ForeignKey(
         'work.Project',
+        null=True,
+        blank=True
+    )
+    location = models.ForeignKey(
+        'geo.Location',
         null=True,
         blank=True
     )
@@ -89,6 +122,8 @@ class Resource(OwnedEntity):
 
     def complete_work_log(self, work_log):
         work_log.company = self.company
+        work_log.category = self.category
+        work_log.location = self.location
 
     def save(self, *args, **kwargs):
         self.resource_type = self.__class__._meta.model_name
@@ -113,6 +148,11 @@ class Employee(Resource):
         choices=(('F', 'Female'),
                  ('M', 'Male'))
     )
+    department = models.ForeignKey(
+        'organizations.Department',
+        null=True,
+        blank=True
+    )
     position = models.ForeignKey(
         'organizations.Position'
     )
@@ -127,6 +167,7 @@ class Employee(Resource):
 
     def complete_work_log(self, work_log):
         super(Employee, self).complete_work_log(work_log)
+        work_log.department = self.department
         work_log.position = self.position
 
     def get_labour_types_for(self, user):

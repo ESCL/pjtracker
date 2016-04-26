@@ -3,9 +3,9 @@ __author__ = 'kako'
 from django.test import TestCase
 
 from ...accounts.utils import ensure_permissions
-from ...accounts.factories import UserFactory
+from ...accounts.factories import UserFakeFactory
 from ..models import Activity, ActivityGroup
-from ..factories import ProjectFactory
+from ..factories import ProjectFakeFactory
 from ..forms import ActivityForm
 
 
@@ -13,9 +13,9 @@ class ActivityFormTest(TestCase):
 
     def setUp(self):
         # Create one user with full permission to activities and a project
-        self.user = UserFactory.create()
+        self.user = UserFakeFactory.create(password='123')
         self.user.user_permissions.add(*ensure_permissions(Activity, ['add', 'change']))
-        self.pj = ProjectFactory.create(owner=self.user.owner)
+        self.pj = ProjectFakeFactory.create(owner=self.user.owner)
 
         # Get two phase groups
         self.eng = ActivityGroup.objects.get(code='ENG')

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.common',
     'apps.notifications',
     'apps.accounts',
+    'apps.geo',
     'apps.organizations',
     'apps.resources',
     'apps.work',

@@ -1,55 +1,77 @@
 __author__ = 'kako'
 
-from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute
+from factory import DjangoModelFactory, SubFactory, Faker, post_generation, LazyAttribute, SelfAttribute
 
-from ..accounts.factories import AccountFactory, AccountBaseFactory
-from ..common.utils import generate_code_from_name
-from .models import Company, Team, Position
+from ..accounts.factories import AccountFakeFactory, AccountFactory
+from ..common.utils import generate_code_from_name, generate_unique_code
+from .models import Company, Department, Team, Position
 
 
 # Base factories
 # These generate no fake data, they are used for imports and as base classes
 
-class CompanyBaseFactory(DjangoModelFactory):
+class CompanyFactory(DjangoModelFactory):
 
     class Meta:
         model = Company
         django_get_or_create = ('owner', 'code',)
 
-    owner = SubFactory(AccountBaseFactory)
+    owner = SubFactory(AccountFactory)
 
 
-class PositionBaseFactory(DjangoModelFactory):
+class DepartmentFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Department
+        django_get_or_create = ('owner', 'code',)
+
+    owner = SubFactory(AccountFactory)
+
+
+class PositionFactory(DjangoModelFactory):
 
     class Meta:
         model = Position
         django_get_or_create = ('owner', 'code',)
 
-    owner = SubFactory(AccountBaseFactory)
+    owner = SubFactory(AccountFactory)
+    code = LazyAttribute(lambda obj: generate_unique_code(obj, 'code', 'name',
+                                                          min_len=2, max_len=4))
 
 
 # Smart factories
 # These produce fake data, used in unit tests and to bootstrap dev dbs
 
-class CompanyFactory(DjangoModelFactory):
+class CompanyFakeFactory(CompanyFactory):
 
-    class Meta:
-        model = Company
-
-    owner = SubFactory(AccountFactory)
+    owner = SubFactory(AccountFakeFactory)
     name = Faker('company')
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
 
 
-class TeamFactory(DjangoModelFactory):
+class DepartmentFakeFactory(DepartmentFactory):
+
+    owner = SubFactory(AccountFakeFactory)
+    name = Faker('color_name')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
+
+
+class PositionFakeFactory(PositionFactory):
+
+    owner = None
+    name = Faker('job')
+    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
+
+
+class TeamFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = Team
 
-    owner = LazyAttribute(lambda obj: obj.company.owner)
+    owner = SubFactory(AccountFakeFactory)
     name = Faker('sentence', nb_words=2)
     code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))
-    company = SubFactory(CompanyFactory)
+    company = SubFactory(CompanyFakeFactory, owner=SelfAttribute('..owner'))
 
     @post_generation
     def timekeepers(self, create, values):
@@ -65,12 +87,3 @@ class TeamFactory(DjangoModelFactory):
     def activities(self, create, values):
         if create and values:
             self.activities.add(*values)
-
-
-class PositionFactory(DjangoModelFactory):
-
-    class Meta:
-        model = Position
-
-    name = Faker('job')
-    code = LazyAttribute(lambda obj: generate_code_from_name(obj.name))

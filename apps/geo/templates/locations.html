@@ -1,0 +1,58 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><span>locations</span></li>
+<li><a href="{% url 'location' action='add' %}" title="add">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=locations %}
+
+{% if locations %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in locations %}
+                <tr>
+                    <td>{{ l.name }}</td>
+                    <td>{{ l.latitude|default:'-' }}</td>
+                    <td>{{ l.longitude|default:'-' }}</td>
+                    <td class="actions">
+                        <ul class="action-group">
+                            <li><a href="{% url 'location' pk=l.id %}">view</a></li>
+                            <li><a href="{% url 'location' pk=l.id action='edit' %}">edit</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No locations found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}

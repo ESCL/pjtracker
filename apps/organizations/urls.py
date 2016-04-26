@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django.conf.urls import url
 
-from .views import CompanyView, PositionView, TeamView
+from .views import CompanyView, DepartmentView, PositionView, TeamView
 
 
 urlpatterns = [
@@ -11,6 +11,12 @@ urlpatterns = [
     url(r'^companies/(?P<action>add)/$', CompanyView.as_view(), name='company'),
     url(r'^companies/(?P<pk>\d+)/$', CompanyView.as_view(), name='company'),
     url(r'^companies/(?P<pk>\d+)/(?P<action>edit)/$', CompanyView.as_view(), name='company'),
+
+    # Companies view
+    url(r'^departments/$', DepartmentView.as_view(), name='departments'),
+    url(r'^departments/(?P<action>add)/$', DepartmentView.as_view(), name='department'),
+    url(r'^departments/(?P<pk>\d+)/$', DepartmentView.as_view(), name='department'),
+    url(r'^departments/(?P<pk>\d+)/(?P<action>edit)/$', DepartmentView.as_view(), name='department'),
 
     # Positions view
     url(r'^positions/$', PositionView.as_view(), name='positions'),

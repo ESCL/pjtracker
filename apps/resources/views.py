@@ -1,7 +1,9 @@
 
 from ..common.views.base import StandardResourceView
-from .models import Employee, Equipment, EquipmentType
-from .forms import EmployeeForm, EmployeeSearchForm, EquipmentForm, EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm
+from .models import Employee, Equipment, EquipmentType, ResourceCategory
+from .forms import (EmployeeForm, EmployeeSearchForm, EquipmentForm,
+                    EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm,
+                    ResourceCategoryForm, ResourceCategorySearchForm)
 
 
 class EmployeeView(StandardResourceView):
@@ -45,3 +47,18 @@ class EquipmentTypeView(StandardResourceView):
     }
     # Override default to make it "sluggish"
     collection_view_name = 'equipment-types'
+
+
+class ResourceCategoryView(StandardResourceView):
+    model = ResourceCategory
+    list_template = 'resource-categories.html'
+    detail_template = 'resource-category.html'
+    edit_template = 'resource-category-edit.html'
+    main_form = ResourceCategoryForm
+    search_form = ResourceCategorySearchForm
+    permissions = {
+        'add': ('resources.add_resourcecategory',),
+        'edit': ('resources.change_resourcecategory',),
+    }
+    # Override default to make it "sluggish"
+    collection_view_name = 'resource-categories'

@@ -1,40 +1,54 @@
 __author__ = 'kako'
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
-from factory import DjangoModelFactory, LazyAttribute
+from factory import DjangoModelFactory, LazyAttribute, SubFactory
 
-from .models import HourType, Period
+from ..accounts.factories import AccountFakeFactory
+from .models import HourType, Period, CalendarDay
 
 
+class CalendarDayFakeFactory(DjangoModelFactory):
 
-class HourTypeFactory(DjangoModelFactory):
+    class Meta:
+        model = CalendarDay
+
+    owner = SubFactory(AccountFakeFactory)
+    date = LazyAttribute(lambda obj: date.today())
+    name = 'Halloween'
+    type = CalendarDay.PUBLIC_HOLIDAY
+
+
+class HourTypeFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = HourType
         django_get_or_create = ('owner', 'code', )
 
+    owner = SubFactory(AccountFakeFactory)
 
-class NormalHoursFactory(HourTypeFactory):
+
+class NormalHoursFakeFactory(HourTypeFakeFactory):
     name = 'Standard'
     code = 'STD'
 
 
-class Overtime150HoursFactory(HourTypeFactory):
+class Overtime150HoursFakeFactory(HourTypeFakeFactory):
     name = 'Overtime 150%'
     code = 'OT150'
 
 
-class Overtime200HoursFactory(HourTypeFactory):
+class Overtime200HoursFakeFactory(HourTypeFakeFactory):
     name = 'Overtime 200%'
     code = 'OT200'
 
 
-class PeriodFactory(DjangoModelFactory):
+class PeriodFakeFactory(DjangoModelFactory):
 
     class Meta:
         model = Period
 
+    owner = SubFactory(AccountFakeFactory)
     start_date = LazyAttribute(lambda obj: datetime.utcnow().date())
     end_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=30))
     forecast_start_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=20))

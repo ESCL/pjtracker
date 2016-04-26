@@ -3,58 +3,26 @@ __author__ = 'claudio.melendrez'
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from ...accounts.factories import UserFactory
+from ...common.test import PermissionTestMixin
+from ...accounts.factories import UserFakeFactory
 from ...accounts.utils import ensure_permissions
-from ...deployment.factories import TimeSheetFactory
+from ...deployment.factories import TimeSheetFakeFactory
 from ...deployment.models import TimeSheet
 
 
-class TimeSheetViewTest(TestCase):
-
-    def setUp(self):
-        self.client = Client()
-        self.user = UserFactory.create(password='123')
-        self.ts = TimeSheetFactory.create(owner=self.user.owner)
-
-    def test_get(self):
-        # Anon entry, not allowed
-        res = self.client.get(reverse('timesheets'))
-        self.assertEqual(res.status_code, 401)
-
-        # Login, OK
-        self.client.login(username=self.user.username, password='123')
-        res = self.client.get(reverse('timesheets'))
-        self.assertEqual(res.status_code, 200)
-
-        # View detail, OK
-        res = self.client.get(reverse('timesheet', kwargs={'pk': self.ts.id}))
-        self.assertEqual(res.status_code, 200)
-
-        # Attempt to access add view, not allowed
-        res = self.client.get(reverse('timesheet', kwargs={'action': 'add'}))
-        self.assertEqual(res.status_code, 403)
-
-        # Add permission, now access add view ok
-        self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['add']))
-        res = self.client.get(reverse('timesheet', kwargs={'action': 'add'}))
-        self.assertEqual(res.status_code, 200)
-
-        # Attempt to access edit view, not allowed
-        res = self.client.get(reverse('timesheet', kwargs={'pk': self.ts.id, 'action': 'edit'}))
-        self.assertEqual(res.status_code, 403)
-
-        # Add permission, now access edit view ok
-        self.user.user_permissions.add(*ensure_permissions(TimeSheet, ['change']))
-        res = self.client.get(reverse('timesheet', kwargs={'pk': self.ts.id, 'action': 'edit'}))
-        self.assertEqual(res.status_code, 200)
+class TimeSheetViewTest(PermissionTestMixin, TestCase):
+    model = TimeSheet
+    model_factory = TimeSheetFakeFactory
+    list_view_name = 'timesheets'
+    instance_view_name = 'timesheet'
 
 
 class TimeSheetActionViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
-        self.ts = TimeSheetFactory.create(owner=self.user.owner)
+        self.user = UserFakeFactory.create(password='123')
+        self.ts = TimeSheetFakeFactory.create(owner=self.user.owner)
 
     def test_get(self):
         # Anon entry, not allowed
@@ -76,7 +44,7 @@ class HoursViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = UserFactory.create(password='123')
+        self.user = UserFakeFactory.create(password='123')
 
     def test_get(self):
         # Anon entry, not allowed

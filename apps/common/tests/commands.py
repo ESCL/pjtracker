@@ -2,23 +2,23 @@ __author__ = 'kako'
 
 from csv import DictWriter
 from io import StringIO
+from unittest import mock
 
 from django.core.management import call_command, CommandError
 from django.test import TestCase
 
-from ..test import mock
-from ...accounts.factories import AccountFactory
+from ...accounts.factories import AccountFakeFactory
 from ...accounts.models import Account, User
 from ...organizations.models import Company, Position
 from ...resources.models import Employee, Equipment, EquipmentType
 from ...work.models import Activity, Project
 
 
-class ImportTest(TestCase):
+class ImportDataTest(TestCase):
 
     def setUp(self):
         # We need an account for any import check
-        self.account = AccountFactory.create()
+        self.account = AccountFakeFactory.create()
 
     def test_error(self):
         # No arguments provided
@@ -41,6 +41,7 @@ class ImportTest(TestCase):
                           'Employee', 'employees.csv', self.account.code)
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
+    @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.open', create=True)
     def test_import_users(self, open_mock):
         # Use a broken file
@@ -118,6 +119,7 @@ class ImportTest(TestCase):
         self.assertFalse(DictWriter.writerow.called)
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
+    @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.open', create=True)
     def test_import_employees(self, open_mock):
         # Simulate somewhat heterogeneous file with a few errors
@@ -131,12 +133,12 @@ class ImportTest(TestCase):
             'gps930445,Peter,Griffin,M,GPS,,PLE,,KOL,\n'
             # OK: project not required
             'gps930444,Andres,Iniaquella,M,TRU,Toys R-Us,SAL,Salesman,,\n'
+            # OK: position code determined automatically
+            'lol123,Peter,Capusotto,M,GPS,,,Lala,,\n'
             # error: missing identifier
             ',Mike,Litoris,M,GPS,Global Pundits Society,PLE,Planning Engineer,KOL,\n'
             # error: invalid gender
             'bon001,Jose,Bonaparte,Male,NAP,Napoleon Brothers,SAL,,,\n'
-            # error: missing position code
-            'lol123,Peter,Capusotto,M,GPS,,,Lala,,\n'
             # error: project name required to create it (code does not match)
             'lol124,Megatron,Griffin,F,GPS,,SAL,,TAT,\n'
         )
@@ -147,14 +149,13 @@ class ImportTest(TestCase):
                      stdout=stdout)
 
         # Four employees created, 4 errors found
-        self.assertEqual(Employee.objects.filter(owner=self.account).count(), 4)
-        self.assertIn('4 errors', stdout.getvalue())
+        self.assertEqual(Employee.objects.filter(owner=self.account).count(), 5)
+        self.assertIn('3 errors', stdout.getvalue())
 
         # Check errors
         errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
         self.assertEqual(errors, ['identifier field cannot be blank',
                                   'gender \'Male\' is not a valid choice',
-                                  'code field cannot be blank',
                                   'name field cannot be blank'])
 
         # Check created companies: 3 (GPS, TRU, NAP)
@@ -165,10 +166,14 @@ class ImportTest(TestCase):
         self.assertEqual(c3.name, 'Toys R-Us')
 
         # Check created positions: 2 (PLE, SAL)
-        self.assertEqual(Position.objects.filter(owner=self.account).count(), 2)
-        p1, p2 = Position.objects.filter(owner=self.account).all()
+        self.assertEqual(Position.objects.filter(owner=self.account).count(), 3)
+        p1, p2, p3 = Position.objects.filter(owner=self.account).all()
         self.assertEqual(p1.name, 'Planning Engineer')
+        self.assertEqual(p1.code, 'PLE')
         self.assertEqual(p2.name, 'Salesman')
+        self.assertEqual(p2.code, 'SAL')
+        self.assertEqual(p3.name, 'Lala')
+        self.assertEqual(p3.code, 'LA')
 
         # Check created projects: 1 (KOL)
         self.assertEqual(Project.objects.filter(owner=self.account).count(), 1)
@@ -176,6 +181,7 @@ class ImportTest(TestCase):
         self.assertEqual(p1.name, 'Kingdom of Loathing')
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
+    @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.open', create=True)
     def test_import_equipment(self, open_mock):
         # Simulate somewhat heterogeneous file with a few errors
@@ -207,7 +213,7 @@ class ImportTest(TestCase):
         # Check errors
         errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
         self.assertEqual(errors, ['identifier field cannot be blank',
-                                  'year field cannot be blank',
+                                  'year field cannot be null',
                                   'code field cannot be blank'])
 
         # Check created companies: 2 (GPS, NAP)
@@ -228,6 +234,7 @@ class ImportTest(TestCase):
         self.assertEqual(p1.name, 'Kingdom of Loathing')
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
+    @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.open', create=True)
     def test_import_activities(self, open_mock):
         # Simulate somewhat heterogeneous file with a few errors

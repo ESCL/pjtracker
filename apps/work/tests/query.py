@@ -2,20 +2,20 @@ __author__ = 'kako'
 
 from django.test import TestCase
 
-from ..factories import ActivityFactory, ProjectFactory
+from ..factories import ActivityFakeFactory, ProjectFakeFactory
 from ..models import Activity
 
 
 class ActivityQuerySetTest(TestCase):
 
     def setUp(self):
-        self.prj = ProjectFactory.create(code='HMS01')
+        self.prj = ProjectFakeFactory.create(code='HMS01')
 
     def test_get_by_wbs_path(self):
         # Create three hierarchical activities
-        act1 = ActivityFactory.create(project=self.prj, code='ENG')
-        act2 = ActivityFactory.create(parent=act1, code='TR1')
-        act3 = ActivityFactory.create(parent=act2, code='DS56')
+        act1 = ActivityFakeFactory.create(project=self.prj, code='ENG')
+        act2 = ActivityFakeFactory.create(parent=act1, code='TR1')
+        act3 = ActivityFakeFactory.create(parent=act2, code='DS56')
 
         # Get parent for act1, nothing
         parent = Activity.objects.get_by_wbs_path(['HMS01'] + act1.parent_wbs_path)
