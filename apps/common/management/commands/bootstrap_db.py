@@ -9,10 +9,6 @@ from django.conf import settings
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        # Create superuser
-        self.stdout.write("Creating superuser...")
-        call_command('createsuperuser')
-
         # Create example account if required
         if settings.BOOTSTRAP_EXAMPLE_ACCOUNT:
             call_command('create_example_account')

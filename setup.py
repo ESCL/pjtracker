@@ -21,7 +21,7 @@ setup(
     name='pjtracker',
 
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.0',
+    version='1.1.1',
 
     description='Project resources tracker',
     long_description=long_description,
@@ -61,4 +61,3 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={},
 )
-
