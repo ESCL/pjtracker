@@ -105,7 +105,7 @@ def bootstrap_default_groups(apps, schema_editor):
 
 def create_superuser(apps, schema_editor):
     """
-    Add default groups with their corresponding permissions.
+    Add standard superuser.
     """
     # Get models
     # Note: We can't import the models directly as they may be a newer
