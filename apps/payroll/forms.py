@@ -85,6 +85,34 @@ class HoursSettingsForm(ModernForm):
             # Append row
             self.rows.append(row)
 
+    def _update_range(self, day_type_code, day_type_name, hour_type):
+        """
+        Update hour type range for the given day and hour type using parsed
+        form data.
+
+        :param day_type_code: code of day type
+        :param day_type_name: name of day type
+        :param day_type_code: hour type instance
+        :return: None
+        """
+        # Get htr and posted limit
+        htr = self.hour_type_ranges.get(day_type_code, {}).get(hour_type.code)
+        htr_fname = 'htr-{}-{}'.format(day_type_name, hour_type.code)
+        limit = self.cleaned_data.get(htr_fname)
+
+        # Now process
+        if htr and not limit:
+            # Limit set to zero, delete instance
+            htr.delete()
+
+        elif limit:
+            # Get or create hour type range and update limit
+            if not htr:
+                htr = HourTypeRange(day_type=day_type_code,
+                                    hour_type=hour_type, owner=self.user.owner)
+            htr.limit = limit
+            htr.save()
+
     def clean(self):
         """
         Clean the fields, checking for two possible errors: having two hour
@@ -144,24 +172,9 @@ class HoursSettingsForm(ModernForm):
             sh.hours = std_hours
             sh.save()
 
-            # Now save all the hour type ranges
+            # Update hour type ranges for day type
             for ht in self.hour_types:
-                # Get htr and posted limit
-                htr = self.hour_type_ranges.get(day_type_code, {}).get(ht.code)
-                htr_fname = 'htr-{}-{}'.format(day_type_name, ht.code)
-                limit = self.cleaned_data.get(htr_fname)
-
-                # Now process
-                if htr and not limit:
-                    # Limit set to zero, delete instance
-                    htr.delete()
-
-                elif limit:
-                    # Get or create hour type range and update limit
-                    if not htr:
-                        htr = HourTypeRange(day_type=day_type_code, hour_type=ht, owner=self.user.owner)
-                    htr.limit = limit
-                    htr.save()
+                self._update_range(day_type_code, day_type_name, ht)
 
         # Now return true
         return True
