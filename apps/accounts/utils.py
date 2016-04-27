@@ -3,6 +3,19 @@ __author__ = 'kako'
 from django.contrib.auth.models import Permission, ContentType
 
 
+def build_username(username, owner):
+    """
+    Build a username including the owner account's code if it has one,
+    in the format <user>@<account>.
+
+    # Note: we moved this out of User class to allow using it in migrations.
+    """
+    proper_username = username.split('@')[0]
+    if proper_username and owner:
+        proper_username += '@{}'.format(owner.code)
+    return proper_username
+
+
 def ensure_permissions(model, actions, permission_model=Permission):
     """
     Ensure the existence of a set of permissions defined by a model and a set
