@@ -51,16 +51,17 @@ class User(AbstractUser):
             return None
         return self.owner
 
-    def __str__(self):
-        return '{} ({})'.format(self.username, self.get_full_name())
-
-    def _classify(self, obj):
+    @staticmethod
+    def _classify(obj):
         """
         Return the class of the passed object (itself if it's a class).
         """
         if not inspect.isclass(obj):
             obj = type(obj)
         return obj
+
+    def __str__(self):
+        return '{} ({})'.format(self.username, self.get_full_name())
 
     def get_allowed_actions_for(self, obj):
         """
