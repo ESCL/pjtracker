@@ -3,6 +3,7 @@ __author__ = 'kako'
 from django.contrib.auth.models import UserManager as UserManagerBase
 
 from ..common.db.query import OwnedEntityQuerySet
+from .utils import build_username
 
 
 class UserQuerySet(OwnedEntityQuerySet):
@@ -20,7 +21,7 @@ class UserManager(UserManagerBase):
         Handle username update to make sure match is correct.
         """
         if 'username' in kwargs:
-            kwargs['username'] = self.model.build_username(kwargs['username'],
-                                                           kwargs.get('owner'))
+            kwargs['username'] = build_username(kwargs['username'],
+                                                kwargs.get('owner'))
         return super(UserManager, self).get_or_create(*args, **kwargs)
 

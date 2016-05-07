@@ -14,7 +14,7 @@ from ....work.factories import ActivityFactory
 
 
 class Command(BaseCommand):
-    ERROR_SUB_RE = re.compile('^\w+ ')
+    ERROR_SUB_RE = re.compile(r'^\w+ ')
 
     def add_arguments(self, parser):
         parser.add_argument('model', type=str)
@@ -45,6 +45,47 @@ class Command(BaseCommand):
         """
         return Account.objects.get(code=account_code)
 
+    @classmethod
+    def import_row(cls, factory, row, owner):
+        """
+        Create an object using the given factory, row data and owner.
+
+        :param factory: factory of the model to create
+        :param row: row data dictionary
+        :param owner: Account instance that owns the object
+        :return: error message
+        """
+        e_msg = None
+        try:
+            # Extract all non-empty data
+            # Note: we do this to avoid creating "empty-string instances"
+            data = {k: v for k, v in row.items() if v and k != 'error'}
+
+            # Not create in a transaction
+            # Note: this is because all created models run a full_clean, so
+            # subfactories might raise an error
+            with transaction.atomic():
+                factory.create(owner=owner, **data)
+
+        except KeyError as e:
+            # Error on creation, we need that field
+            e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
+
+        except IntegrityError as e:
+            # Error in creation, get field name from model.field
+            e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
+
+        except ValidationError as e:
+            # Validation error, we got a dict of field: [error1, ...]
+            e_msg = ', '.join('{} {}'.format(k, cls.ERROR_SUB_RE.sub('', v[0]))
+                              for k, v in e)
+
+        except Exception as e:
+            # Other error, just render it
+            e_msg = str(e)
+
+        return e_msg
+
     def handle(self, *args, **options):
         # Import and error file names
         if_name = options['file']
@@ -52,7 +93,7 @@ class Command(BaseCommand):
         errors = 0
 
         # Select factory to use
-        factory_cls = self.get_factory_for(options['model'])
+        factory = self.get_factory_for(options['model'])
 
         # Get owner account for all objects
         owner = self.get_owner(options['account'])
@@ -61,7 +102,7 @@ class Command(BaseCommand):
         with open(options['file'], 'r') as i_file, open(ef_name, 'w') as e_file:
             # Log what we're doing
             self.stdout.write("Importing contents of '{}' as {} for {}..."
-                              "".format(i_file.name, factory_cls._get_model_class(), owner))
+                              "".format(i_file.name, factory._get_model_class(), owner))
 
             # Open reader (for input) and writer (for errors)
             reader = DictReader(i_file)
@@ -69,37 +110,13 @@ class Command(BaseCommand):
             writer = DictWriter(e_file, error_headers)
             writer.writeheader()
 
-            # For every row (a dict), create using factory
+            # Now import every row
             for row in reader:
-                e_msg = None
-                try:
-                    # Extract all non-empty data
-                    # Note: we do this to avoid creating "empty-string instances"
-                    data = {k: v for k, v in row.items() if v and k != 'error'}
-                    with transaction.atomic():
-                        obj = factory_cls.create(owner=owner, **data)
-                        obj.full_clean()
+                error = self.import_row(factory, row, owner)
 
-                except KeyError as e:
-                    # Error on creation, we need that field
-                    e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
-
-                except IntegrityError as e:
-                    # Error in creation, get field name from model.field
-                    e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
-
-                except ValidationError as e:
-                    # Validation error, we got a dict of field: [error1, ...]
-                    e_msg = ', '.join('{} {}'.format(k, self.ERROR_SUB_RE.sub('', v[0]))
-                                      for k, v in e)
-
-                except Exception as e:
-                    # Other error, just render it
-                    e_msg = str(e)
-
-                if e_msg:
-                    # Error message, write to file (lowercased and w/o dots)
-                    row['error'] = e_msg.replace('.', '')
+                # Write error if there was one (remove dots)
+                if error:
+                    row['error'] = error.replace('.', '')
                     writer.writerow(row)
                     errors += 1
 
@@ -107,5 +124,6 @@ class Command(BaseCommand):
         if errors:
             self.stdout.write("The process found {} errors, please review them"
                               " in {} and retry.".format(errors, ef_name))
+
         # Done
         self.stdout.write("Done.")

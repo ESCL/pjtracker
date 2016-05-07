@@ -103,6 +103,23 @@ def bootstrap_default_groups(apps, schema_editor):
                                               permission_model=Permission))
 
 
+def create_superuser(apps, schema_editor):
+    """
+    Add standard superuser.
+    """
+    # Get models
+    # Note: We can't import the models directly as they may be a newer
+    # version than this migration expects
+    User = apps.get_model('accounts', 'User')
+
+    # Create superuser
+    User.objects.get_or_create(
+        username='root',
+        password='123',
+        is_superuser=True,
+    )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -116,5 +133,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(bootstrap_default_groups)
+        migrations.RunPython(bootstrap_default_groups),
+        migrations.RunPython(create_superuser)
     ]

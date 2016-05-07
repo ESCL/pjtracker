@@ -28,7 +28,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
     REVIEW_POLICY_MAJORITY = 'M'
     REVIEW_POLICY_ALL = 'A'
 
-    ALLOWED_ACTIONS = {
+    STATUS_ALLOWED_ACTIONS = {
         STATUS_PREPARING: (('issue', 'Issue'),),
         STATUS_ISSUED: (('approve', 'Approve'),
                         ('reject', 'Reject')),
@@ -60,7 +60,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
 
     @property
     def allowed_actions(self):
-        return self.ALLOWED_ACTIONS.get(self.status, [])
+        return self.STATUS_ALLOWED_ACTIONS.get(self.status, [])
 
     @property
     def code(self):
