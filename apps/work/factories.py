@@ -23,7 +23,7 @@ class ActivityFactory(DjangoModelFactory):
 
     class Meta:
         model = Activity
-        django_get_or_create = ('owner', 'parent', 'code',)
+        django_get_or_create = ('project', 'parent', 'code',)
 
     owner = SubFactory(AccountFactory)
     project = SubFactory(ProjectFactory, owner=SelfAttribute('..owner'))

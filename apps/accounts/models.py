@@ -15,7 +15,7 @@ class Account(models.Model, SignalsMixin):
         help_text="Full name to identify the account."
     )
     code = models.CharField(
-        max_length=16,
+        max_length=8,
         unique=True,
         help_text="Short code used for users login."
     )
