@@ -36,10 +36,10 @@ class Activity(OwnedEntity):
     objects = ActivityQuerySet.as_manager()
 
     name = models.CharField(
-        max_length=64
+        max_length=128
     )
     code = models.CharField(
-        max_length=4
+        max_length=6
     )
     project = models.ForeignKey(
         'Project'
@@ -145,12 +145,18 @@ class Activity(OwnedEntity):
         parent_path, own_code = cls._split_wbs_code(wbs_code)
         parent, project = cls._get_activity_and_project(parent_path)
 
-        # Set code, project and parent kwargs
+        # Set code for activity
         kwargs['code'] = own_code
+
+        # Set parent
         if not kwargs.get('parent'):
             kwargs['parent'] = parent
+
+        # Set project (and remove creation params if existing)
         if project and not kwargs.get('project'):
             kwargs['project'] = project
+            kwargs.pop('project__code', None)
+            kwargs.pop('project__name', None)
 
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
@@ -196,7 +202,7 @@ class ActivityGroupType(OwnedEntity):
     Type of activity group, to limit the groups to one of each type.
     """
     name = models.CharField(
-        max_length=128
+        max_length=32
     )
 
     def __str__(self):
