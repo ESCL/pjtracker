@@ -10,10 +10,10 @@ class Company(OwnedEntity):
         verbose_name_plural = 'companies'
 
     name = models.CharField(
-        max_length=64
+        max_length=128
     )
     code = models.CharField(
-        max_length=4
+        max_length=8
     )
 
     def __str__(self):
