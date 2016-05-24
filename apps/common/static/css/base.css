@@ -171,6 +171,7 @@ form .helptext {
 /** Action group **/
 
 .action-group {
+    white-space: nowrap;
     margin: 0;
     padding: 0;
 }
