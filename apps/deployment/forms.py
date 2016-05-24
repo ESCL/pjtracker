@@ -2,9 +2,8 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm, ModernForm
+from ..common.forms import OwnedEntityForm, OwnedEntitiesForm
 from ..common.forms.fields import CustomLabelModelChoiceField
-from ..common.forms.mixins import PagedForm
 from .models import TimeSheet, WorkLog, TimeSheetSettings
 
 
@@ -82,7 +81,7 @@ class TimeSheetForm(OwnedEntityForm):
         return super(TimeSheetForm, self).save(commit=commit)
 
 
-class TimeSheetSearchForm(ModernForm, PagedForm):
+class TimeSheetSearchForm(OwnedEntitiesForm):
     team__code__icontains = forms.CharField(max_length=32, required=False,
                                             label='Team code')
     date__gte = forms.DateField(label='From date')
@@ -290,7 +289,7 @@ class WorkLogsForm(forms.Form):
                     log.delete()
 
 
-class HoursSearchForm(ModernForm, PagedForm):
+class HoursSearchForm(OwnedEntitiesForm):
     # Filters
     from_date = forms.DateField(label='From date', required=False)
     to_date = forms.DateField(label='To date', required=False)

@@ -2,28 +2,27 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import OwnedEntityForm, ModernForm
-from ..common.forms.mixins import PagedForm
+from ..common.forms import OwnedEntityForm, OwnedEntitiesForm
 from ..work.models import LabourType
 from .models import Employee, Equipment, EquipmentType, ResourceCategory
 
 
-class EmployeeSearchForm(ModernForm, PagedForm):
+class EmployeeSearchForm(OwnedEntitiesForm):
     identifier = forms.CharField(max_length=16, required=False, label='Employee identifier')
     name = forms.CharField(max_length=32, required=False, label='Employee name')
 
 
-class EquipmentSearchForm(ModernForm, PagedForm):
+class EquipmentSearchForm(OwnedEntitiesForm):
     identifier = forms.CharField(max_length=16, required=False, label='Equipment identifier')
     type__code__icontains = forms.CharField(max_length=32, required=False, label='Equipment type')
 
 
-class EquipmentTypeSearchForm(ModernForm, PagedForm):
+class EquipmentTypeSearchForm(OwnedEntitiesForm):
     code__icontains = forms.CharField(max_length=8, required=False, label='Type code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Type name')
 
 
-class ResourceCategorySearchForm(ModernForm, PagedForm):
+class ResourceCategorySearchForm(OwnedEntitiesForm):
     code__icontains = forms.CharField(max_length=8, required=False, label='Category code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Category name')
 

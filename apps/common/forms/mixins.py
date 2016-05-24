@@ -19,18 +19,6 @@ class ModernFieldsMixin(object):
                 field.widget.attrs['placeholder'] = label
 
 
-class PagedForm(object):
-    page_size = IntegerField(required=False, label='Page size',
-                             min_value=10, max_value=50)
-
-    def __init__(self, *args, **kwargs):
-        """
-        Set page_size field to int with tenwise steps.
-        """
-        self.fields['page_size'].widget.attrs['step'] = 10
-        super(PagedForm, self).__init__(*args, **kwargs)
-
-
 class RestrictedQuerySetsMixin(object):
 
     def __init__(self, *args, **kwargs):

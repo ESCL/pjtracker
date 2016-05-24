@@ -3,29 +3,28 @@ __author__ = 'kako'
 from django import forms
 from django.db.models import Q
 
-from ..common.forms import OwnedEntityForm, ModernForm
-from ..common.forms.mixins import PagedForm
+from ..common.forms import OwnedEntityForm, OwnedEntitiesForm
 from ..resources.models import Employee, Equipment
 from ..work.models import LabourType
 from .models import Company, Department, Team, Position
 
 
-class CompanySearchForm(ModernForm, PagedForm):
+class CompanySearchForm(OwnedEntitiesForm):
     code__iexact = forms.CharField(max_length=8, required=False, label='Company code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Company name')
 
 
-class DepartmentSearchForm(ModernForm, PagedForm):
+class DepartmentSearchForm(OwnedEntitiesForm):
     code__iexact = forms.CharField(max_length=8, required=False, label='Department code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Department name')
 
 
-class PositionSearchForm(ModernForm, PagedForm):
+class PositionSearchForm(OwnedEntitiesForm):
     code__iexact = forms.CharField(max_length=8, required=False, label='Position code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Position name')
 
 
-class TeamSearchForm(ModernForm, PagedForm):
+class TeamSearchForm(OwnedEntitiesForm):
     code__iexact = forms.CharField(max_length=8, required=False, label='Team code')
     name__icontains = forms.CharField(max_length=32, required=False, label='Team name')
     company__code__iexact = forms.CharField(max_length=32, required=False, label='Company code')
