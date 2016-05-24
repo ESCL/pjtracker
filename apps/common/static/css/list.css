@@ -12,11 +12,6 @@
     margin-bottom: 0;
 }
 
-.search-form input[name=page_size] {
-    width: 7em;
-    padding-right: 1px;
-}
-
 .search-form ul, .search-form li, .search-form label {
     display: inline;
 }
@@ -44,6 +39,11 @@
 .paginator {
     text-align: center;
     margin: 12px 0;
+}
+
+.paginator ul {
+    display: inline;
+    margin: 0 1rem;
 }
 
 .paginator span.disabled {

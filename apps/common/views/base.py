@@ -124,7 +124,7 @@ class ReadOnlyResourceView(SafeView):
         # Populate it
         for k in qd:
             # Get value depending on key
-            if k in ('page', 'page_size',):
+            if k in ('p', 'ps',):
                 # page or page_size, skip it (not handled by filter)
                 continue
             elif k.endswith('__in') or k.endswith('__range'):
@@ -176,7 +176,7 @@ class ReadOnlyResourceView(SafeView):
           - qs: querystring
         """
         return {cls.model._meta.verbose_name_plural.replace(' ', ''): objs,
-                'qs': re.sub(r'[&]?page=\d+', '', request.GET.urlencode())}
+                'qs': re.sub(r'[&]?p(s)?=\d+', '', request.GET.urlencode())}
 
     @classmethod
     def get_object(cls, user, pk):
@@ -213,19 +213,30 @@ class ReadOnlyResourceView(SafeView):
         # First get the filtered objects
         objs = self.filter_objects(request.user, request.GET, **kwargs)
 
-        # Now get the paginated subset of objects
-        page_size = request.GET.get('page_size') or 20
-        page_num = request.GET.get('page', 1)
+        # Get page size
+        try:
+            page_size = int(request.GET.get('ps'))
+        except (TypeError, ValueError):
+            page_size = 20
+
+        # Get page number and init paginator
+        page_num = request.GET.get('p') or 1
         p = Paginator(objs, page_size)
+
+        # Paginate data (and fix page number if required)
         try:
             objs = p.page(page_num)
         except PageNotAnInteger:
-            objs = p.page(1)
+            page_num = 1
+            objs = p.page(page_num)
         except EmptyPage:
-            objs = p.page(p.num_pages)
+            page_num = p.num_pages
+            objs = p.page(page_num)
 
         # Build the context (include form if required)
         context = self.get_list_context(request, objs)
+        context.update({'p': page_num, 'ps': page_size})
+        print(context)
         if self.search_form:
             search_form = self.search_form(request.GET, user=request.user)
             context['search_form'] = search_form

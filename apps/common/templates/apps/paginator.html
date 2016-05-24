@@ -1,36 +1,65 @@
-<ul class="paginator action-group">
+<div class="paginator">
 
-    <li>
-        {% if list.previous_page_number != 1 %}
-            <a href="?{{ qs }}&page=1" title="First page">&lt;&lt;</a>
-        {% else %}
-            <span class="disabled">&lt;&lt;</span>
-        {% endif %}
-    </li>
-    <li>
-        {% if list.has_previous %}
-            <a href="?{{ qs }}&page={{ list.previous_page_number }}" title="Previous page">&lt;</a>
-        {% else %}
-            <span class="disabled">&lt;</span>
-        {% endif %}
-    </li>
+    <ul class="action-group">
 
+        <li>
+            {% if list.previous_page_number != 1 %}
+                <a href="?{{ qs }}&p=1&ps={{ ps }}" title="First page">&lt;&lt;</a>
+            {% else %}
+                <span class="disabled">&lt;&lt;</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if list.has_previous %}
+                <a href="?{{ qs }}&p={{ list.previous_page_number }}&ps={{ ps }}" title="Previous page">&lt;</a>
+            {% else %}
+                <span class="disabled">&lt;</span>
+            {% endif %}
+        </li>
 
-    <li><span title="Current page">page {{ list.number }} of {{ list.paginator.num_pages }}</span></li>
+        <li><span title="Current page">page {{ list.number }} of {{ list.paginator.num_pages }}</span></li>
 
-    <li>
-        {% if list.has_next %}
-            <a href="?{{ qs }}&page={{ list.next_page_number }}" title="Next page">&gt;</a>
-        {% else %}
-            <span class="disabled">&gt;</span>
-        {% endif %}
-    </li>
-    <li>
-        {% if list.next_page_number != list.paginator.num_pages %}
-            <a href="?{{ qs }}&page={{ list.paginator.num_pages }}" title="Last page">&gt;&gt;</a>
-        {% else %}
-            <span class="disabled">&gt;&gt;</span>
-        {% endif %}
-    </li>
+        <li>
+            {% if list.has_next %}
+                <a href="?{{ qs }}&p={{ list.next_page_number }}&ps={{ ps }}" title="Next page">&gt;</a>
+            {% else %}
+                <span class="disabled">&gt;</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if list.next_page_number != list.paginator.num_pages %}
+                <a href="?{{ qs }}&p={{ list.paginator.num_pages }}&ps={{ ps }}" title="Last page">&gt;&gt;</a>
+            {% else %}
+                <span class="disabled">&gt;&gt;</span>
+            {% endif %}
+        </li>
 
-</ul>
+    </ul>
+
+    <ul class="action-group">
+
+        <li><span>page size</span></li>
+        <li>
+            {% if ps == 20 %}
+                <span class="disabled">20</span>
+            {% else %}
+                <a href="?{{ qs }}&p={{ p }}&ps=20">20</a>
+            {% endif %}
+        </li>
+        <li>
+            {% if ps == 50 %}
+                <span class="disabled">50</span>
+            {% else %}
+                <a href="?{{ qs }}&p={{ p }}&ps=50">50</a>
+            {% endif %}
+        </li>
+        <li>
+            {% if ps == 100 %}
+                <span class="disabled">100</span>
+            {% else %}
+                <a href="?{{ qs }}&p={{ p }}&ps=100">100</a>
+            {% endif %}
+        </li>
+    </ul>
+
+</div>
