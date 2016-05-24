@@ -2,12 +2,11 @@ __author__ = 'kako'
 
 from django import forms
 
-from ..common.forms import ModernForm, OwnedEntityForm
-from ..common.forms.mixins import PagedForm
+from ..common.forms import OwnedEntitiesForm, OwnedEntityForm
 from .models import Location
 
 
-class LocationSearchForm(ModernForm, PagedForm):
+class LocationSearchForm(OwnedEntitiesForm):
     """
     Search form for location list.
     """

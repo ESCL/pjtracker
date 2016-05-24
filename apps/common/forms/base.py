@@ -5,13 +5,13 @@ from django import forms
 from .mixins import ModernFieldsMixin, RestrictedQuerySetsMixin
 
 
-class ModernForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.Form):
+class OwnedEntitiesForm(ModernFieldsMixin, RestrictedQuerySetsMixin, forms.Form):
     """
     Base model for all non-model forms with restricted querysets and HTML5
     widgets for their fields.
     """
     def __init__(self, *args, **kwargs):
-        super(ModernForm, self).__init__(*args, **kwargs)
+        super(OwnedEntitiesForm, self).__init__(*args, **kwargs)
         self.restrict_querysets()
         self.modernize_fields()
 

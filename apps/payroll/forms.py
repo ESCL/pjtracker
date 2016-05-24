@@ -7,32 +7,31 @@ from decimal import Decimal
 from django import forms
 from django.utils.functional import cached_property
 
-from ..common.forms import ModernForm, OwnedEntityForm
-from ..common.forms.mixins import PagedForm
+from ..common.forms import OwnedEntitiesForm, OwnedEntityForm
 from .models import CalendarDay, HourType, HourTypeRange, Period, StandardHours
 
 
-class CalendarDaySearchForm(ModernForm, PagedForm):
+class CalendarDaySearchForm(OwnedEntitiesForm):
     name__icontains = forms.CharField(label='Name', required=False)
     date__gte = forms.DateField(label='From date', required=False)
     date__lte = forms.DateField(label='To date', required=False)
 
 
-class HourTypeSearchForm(ModernForm, PagedForm):
+class HourTypeSearchForm(OwnedEntitiesForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class PeriodSearchForm(ModernForm, PagedForm):
+class PeriodSearchForm(OwnedEntitiesForm):
     name__icontains = forms.CharField(label='Name', required=False)
     code__icontains = forms.CharField(label='Code', required=False)
 
 
-class WorkedHoursSearchForm(ModernForm, PagedForm):
+class WorkedHoursSearchForm(OwnedEntitiesForm):
     pass
 
 
-class HoursSettingsForm(ModernForm):
+class HoursSettingsForm(OwnedEntitiesForm):
 
     DAY_TYPES = OrderedDict((
         ('weekdays', CalendarDay.WEEKDAY),
@@ -221,6 +220,7 @@ class PeriodForm(OwnedEntityForm):
 
         # Return all cleaned data
         return cleaned_data
+
 
 class ProcessPayrollForm(forms.Form):
 
