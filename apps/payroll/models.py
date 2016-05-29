@@ -245,7 +245,7 @@ class WorkedHours(OwnedEntity):
             timesheet__status=TimeSheet.STATUS_APPROVED,
             timesheet__date__gte=start_date,
             timesheet__date__lte=end_date
-        ).values('timesheet__date').annotate(hours=models.Sum('hours'))
+        ).group_by('timesheet__date').annotate(hours=models.Sum('hours'))
         return {wlg.timesheet.date: wlg.hours for wlg in groups}
 
     @staticmethod

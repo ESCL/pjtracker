@@ -2,11 +2,11 @@ __author__ = 'kako'
 
 from datetime import datetime
 
-from django_values_group import ValuesGroupMixin
+from django_group_by import GroupByMixin
 from ..common.db.query import OwnedEntityQuerySet
 
 
-class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
+class WorkLogQuerySet(OwnedEntityQuerySet, GroupByMixin):
 
     def filter_for_querystring(self, querystring):
         """
@@ -38,7 +38,7 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
         # Apply all filters and return
         return self.filter(**filters)
 
-    def group_by(self, main_groups):
+    def group_for_querystring(self, main_groups):
         """
         Apply a bunch of group_bys according to the passed querystring.
         """
@@ -46,22 +46,17 @@ class WorkLogQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
 
         # Default to grouping by project if no grouping is defined
         if not main_groups or 'project' in main_groups:
-            groups.append('activity__project_id')
+            groups.append('activity__project')
 
         # Check other grouping options
         if 'activity' in main_groups:
-            groups.extend(('activity__id', 'activity__parent_id',
-                           'activity__code', 'activity__name',
-                           'activity__project_id',))
+            groups.append('activity')
         if 'labour_type' in main_groups:
-            groups.extend(('labour_type__id', 'labour_type__code',
-                           'labour_type__name',))
+            groups.append('labour_type')
         if 'resource' in main_groups:
-            groups.extend(('resource__id', 'resource__identifier',
-                           'resource__resource_type',))
+            groups.append('resource')
         if 'date' in main_groups:
-            groups.extend(('timesheet__id', 'timesheet__date',
-                           'timesheet__status',))
+            groups.append('timesheet')
 
         # Return grouped queryset (a ValuesGroupQuerySet)
-        return self.values(*groups)
+        return self.group_by(*groups)

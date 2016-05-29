@@ -2,10 +2,6 @@
 django==1.8
 django-tastypie==0.12.2
 
-# Non-PyPI utils
--e git+https://github.com/kako-nawao/django-values-group.git#egg=django_values_group
--e git+https://github.com/kako-nawao/django-signals-mixin.git#egg=django_signals_mixin
-
 # Factory, required for unit tests and database bootstrapping
 factory_boy==2.6.0
 
@@ -17,3 +13,9 @@ django-cors-headers==1.1.0
 
 # PostgreSQL drivers
 psycopg2==2.6.1
+
+# ORM plugins
+django-group-by
+
+# Non-PyPI utils
+-e git+https://github.com/kako-nawao/django-signals-mixin.git#egg=django_signals_mixin
