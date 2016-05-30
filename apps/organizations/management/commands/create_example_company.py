@@ -20,13 +20,13 @@ class Command(BaseCommand):
 
         # Create two teams
         mgt_team = TeamFakeFactory.create(
-            name='Engineering', company=cpy,
+            owner=account, name='Engineering', company=cpy,
             timekeepers=[timekeeper],
             supervisors=[supervisor],
             activities=Activity.objects.workable()
         )
         cst_team = TeamFakeFactory.create(
-            name='Civil Works', company=cpy,
+            owner=account, name='Civil Works', company=cpy,
             timekeepers=[timekeeper],
             supervisors=[supervisor],
             activities=Activity.objects.workable()

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
+from django.contrib.auth.hashers import make_password
 from django.db import migrations
 
 from ..utils import ensure_permissions
@@ -115,7 +113,7 @@ def create_superuser(apps, schema_editor):
     # Create superuser
     User.objects.get_or_create(
         username='root',
-        password='123',
+        password=make_password('123'),
         is_superuser=True,
     )
 
