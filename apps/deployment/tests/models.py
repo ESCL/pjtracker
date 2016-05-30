@@ -225,7 +225,7 @@ class WorkLogTest(TestCase):
         self.assertEqual(WorkLog.objects.filter(timesheet=self.ts).count(), 4)
 
         # Group by date, a single work log with only timesheet attr
-        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['date']).distinct()
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_for_querystring(['date']).distinct()
         self.assertEqual(wlogs.count(), 1)
         wl1 = wlogs.get()
         self.assertEqual(wl1.timesheet.id, self.ts.id)
@@ -234,7 +234,7 @@ class WorkLogTest(TestCase):
         self.assertFalse(hasattr(wl1, 'labour_type'))
 
         # Group by employee only, two logs with only employee set
-        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['resource']).distinct()
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_for_querystring(['resource']).distinct()
         self.assertEqual(wlogs.count(), 2)
         wl1, wl2 = wlogs.all()
         self.assertEqual(wl1.resource, e1.resource_ptr)
@@ -245,7 +245,7 @@ class WorkLogTest(TestCase):
         self.assertFalse(hasattr(wl2, 'labour_type'))
 
         # Group by activity+labour type, three logs
-        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_by(['activity', 'labour_type']).distinct()
+        wlogs = WorkLog.objects.filter(timesheet=self.ts).group_for_querystring(['activity', 'labour_type']).distinct()
         self.assertEqual(wlogs.count(), 3)
         wl1, wl2, wl3 = wlogs.all()
         self.assertFalse(hasattr(wl1, 'resource'))

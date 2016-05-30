@@ -23,7 +23,6 @@
 
 <form method="GET" class="row search-form">
 
-    {{ search_form.page_size }}
     {{ search_form.status }}
     {{ search_form.from_date }}
     {{ search_form.to_date }}
@@ -56,7 +55,7 @@
                 {%  if 'resource' in groups %}
                     <th>Resource</th>
                 {% endif %}
-            {%  if 'date' in groups %}
+                {%  if 'date' in groups %}
                     <th>Date</th>
                 {% endif %}
                 <th>Hours</th>
@@ -66,7 +65,7 @@
             {% for wl in worklogs %}
                 <tr>
                     {% if 'project' in groups %}
-                        <td>{{ wl.activity.project.code }}. {{ wl.activity.project.name }}</td>
+                        <td>{{ wl.activity_project.code }}. {{ wl.activity_project.name }}</td>
                     {% endif %}
                     {% if 'activity' in groups %}
                         <td>{{ wl.activity.full_wbs_code }}. {{ wl.activity.name }}</td>

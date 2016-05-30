@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from datetime import timedelta
 
-from django_values_group import ValuesGroupMixin
+from django_group_by import GroupByMixin
 
 from ..common.db.query import OwnedEntityQuerySet
 from ..common.exceptions import InvalidOperationError
@@ -27,7 +27,7 @@ class CalendarDayQuerySet(OwnedEntityQuerySet):
         return sorted(res.values())
 
 
-class WorkedHoursQuerySet(ValuesGroupMixin, OwnedEntityQuerySet):
+class WorkedHoursQuerySet(OwnedEntityQuerySet, GroupByMixin):
 
     def create(self, **kwargs):
         """

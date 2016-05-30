@@ -62,8 +62,7 @@ class PeriodView(StandardResourceView):
 
         # Add worked hours and return context
         ctx['worked_hours'] = WorkedHours.objects.for_payroll(obj)\
-            .values('hour_type__id', 'hour_type__name', 'hour_type__code')\
-            .order_by('hour_type__id').annotate(total_hours=Sum('hours'))
+            .group_by('hour_type').order_by('hour_type__id').annotate(total_hours=Sum('hours'))
         return ctx
 
 
@@ -94,7 +93,7 @@ class WorkedHoursView(SafeView):
             # Viewing the list, get queryset
             # Note: payroll period values are adj+act+fct
             worked_hours = WorkedHours.objects.for_payroll(period).consolidated()
-            n_employees = WorkedHours.objects.for_payroll(period).values('employee').distinct().count()
+            n_employees = WorkedHours.objects.for_payroll(period).group_by('employee').distinct().count()
 
             # Get pagination querystring and paginate accordingly
             page_size = request.GET.get('page_size') or 20
