@@ -115,6 +115,7 @@ def create_superuser(apps, schema_editor):
         username='root',
         password=make_password('123'),
         is_superuser=True,
+        is_staff=True
     )
 
 
