@@ -86,7 +86,7 @@ class User(AbstractUser):
         """
         # Start by assuming that all are disallowed
         meta = self._classify(obj)._meta
-        disallowed = set(f.name for f in meta.get_fields())
+        disallowed = {f.name for f in meta.get_fields()}
 
         # Now if user has no domain or its domain matches obj owner allow
         # whatever actions determine

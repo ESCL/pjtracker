@@ -6,7 +6,7 @@ from ..factories import LocationFakeFactory
 from ..models import Location
 
 
-class LabourTypeViewTest(PermissionTestMixin, TestCase):
+class LocationViewTest(PermissionTestMixin, TestCase):
     model = Location
     model_factory = LocationFakeFactory
     list_view_name = 'locations'

@@ -68,26 +68,27 @@ class Command(BaseCommand):
             # subfactories might raise an error after the object is created,
             # in which case we want to roll back
             with transaction.atomic():
-                o = factory.create(owner=owner, **data)
+                factory.create(owner=owner, **data)
 
         except FactoryError as e:
-            # Missing field (same as before, triggered by factory)
+            # Error during factory generation, we get a message with 'field_name'
             field_name = cls.FACTORY_ERROR_FIELD_RE.search(e.args[0]).groups()[0]
             e_msg = '{} field cannot be blank'.format(field_name)
 
-        except IntegrityError as e:
-            # Error in creation, get field name from model.field
-            e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
-
         except ValidationError as e:
-            # Validation error, we got a dict of field: [error1, ...]
+            # Error on pre-save validation, we get a dict of field: [error1, ...]
             e_msg = ', '.join('{} {}'.format(k, cls.ERROR_SUB_RE.sub('', v[0]))
                               for k, v in e)
+
+        except IntegrityError as e:
+            # Error during database save, get field name from model.field
+            e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
 
         except Exception as e:
             # Other error, just render it
             e_msg = str(e)
 
+        # Return error message
         return e_msg
 
     def handle(self, *args, **options):

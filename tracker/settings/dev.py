@@ -16,6 +16,14 @@ TASTYPIE_FULL_DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 
+# Set nose as test runner
+
+INSTALLED_APPS.append('django_nose')
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--verbosity=2']
+
+
 # Database bootstrapping
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = True
