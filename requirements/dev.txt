@@ -1,5 +1,4 @@
 -r base.txt
 
-# Testing functionality (eg, coverage, nose integration, etc)
-coverage
-django-nose
+# Testing functionality
+coverage==4.1

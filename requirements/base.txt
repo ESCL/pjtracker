@@ -1,21 +1,21 @@
-# Web framework and its API builder
-django
-django-tastypie
+# Django web framework
+django==1.9.7
+
+# Django CORS extensions
+django-cors-headers==1.1.0
+
+# Django API framework
+django-tastypie==0.13.3
+
+# Django OAuth extensions
+django-oauth-toolkit==0.10.0
+
+# Django ORM extensions
+django-group-by==0.2.1
+-e git+https://github.com/kako-nawao/django-signals-mixin.git#egg=django_signals_mixin
 
 # Factory, required for unit tests and database bootstrapping
-factory_boy
-
-# OAuth stuff
-django-oauth-toolkit
-
-# CORS headers
-django-cors-headers
+factory_boy==2.7.0
 
 # PostgreSQL drivers
-psycopg2
-
-# ORM plugins
-django-group-by
-
-# Non-PyPI utils
--e git+https://github.com/kako-nawao/django-signals-mixin.git#egg=django_signals_mixin
+psycopg2==2.6.1
