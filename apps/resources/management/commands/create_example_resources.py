@@ -2,7 +2,7 @@ __author__ = 'kako'
 
 from django.core.management.base import BaseCommand
 
-from ....accounts.models import User
+from ....accounts.models import User, Account
 from ....organizations.models import Team
 from ....work.models import Project, LabourType
 from ...factories import EmployeeFakeFactory, EquipmentFakeFactory
@@ -11,6 +11,9 @@ from ...factories import EmployeeFakeFactory, EquipmentFakeFactory
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+
+        account = Account.objects.last()
+
         self.stdout.write("Creating example resources...")
         pj = Project.objects.last()
         hr = User.objects.filter(username__icontains='hr').last()
@@ -24,15 +27,15 @@ class Command(BaseCommand):
         eng_team, cst_team = Team.objects.all()[:2]
 
         # Create resources for eng team
-        res.append(EmployeeFakeFactory.create(team=eng_team, project=pj))
-        res.append(EmployeeFakeFactory.create(team=eng_team, project=pj))
+        res.append(EmployeeFakeFactory.create(owner=account, team=eng_team, project=pj))
+        res.append(EmployeeFakeFactory.create(owner=account, team=eng_team, project=pj))
         for e in eng_team.employees:
             e.position.add_labour_type(mgt, hr)
 
         # Create resources for cst team
-        res.append(EmployeeFakeFactory.create(team=cst_team, project=pj))
-        res.append(EmployeeFakeFactory.create(team=cst_team, project=pj))
-        res.append(EquipmentFakeFactory.create(team=cst_team, project=pj))
+        res.append(EmployeeFakeFactory.create(owner=account, team=cst_team, project=pj))
+        res.append(EmployeeFakeFactory.create(owner=account, team=cst_team, project=pj))
+        res.append(EquipmentFakeFactory.create(owner=account, team=cst_team, project=pj))
         for e in cst_team.employees:
             e.position.update_labour_types([dir, ind], hr)
         for e in cst_team.equipment:

@@ -82,8 +82,8 @@ class ImportDataTest(TestCase):
                      stdout=stdout)
 
         # Two users created, two errors found
-        self.assertEqual(User.objects.filter(owner=self.account).count(), 2)
         self.assertIn('2 errors', stdout.getvalue())
+        self.assertEqual(User.objects.filter(owner=self.account).count(), 2)
 
         # Two rows written to error file
         expected_calls = [

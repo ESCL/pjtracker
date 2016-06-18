@@ -236,7 +236,6 @@ class ReadOnlyResourceView(SafeView):
         # Build the context (include form if required)
         context = self.get_list_context(request, objs)
         context.update({'p': page_num, 'ps': page_size})
-        print(context)
         if self.search_form:
             search_form = self.search_form(request.GET, user=request.user)
             context['search_form'] = search_form

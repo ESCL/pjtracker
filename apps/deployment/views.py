@@ -49,7 +49,7 @@ class HoursView(ReadOnlyResourceView):
         objs = cls.model.objects.for_user(user)
         objs = objs.filter_for_querystring(qs)
         groups = qs.getlist('group_by')
-        objs = objs.group_by(groups)
+        objs = objs.group_for_querystring(groups)
 
         # Annotate and return
         return objs.annotate(total_hours=Sum('hours'))

@@ -5,14 +5,6 @@ __author__ = 'kako'
 from .base import *
 
 
-# Extra apps for
-
-INSTALLED_APPS.extend([
-    # Better test runner (for coverage reports)
-    'django_nose'
-])
-
-
 # Debug level
 
 DEBUG = True
@@ -22,6 +14,14 @@ TASTYPIE_FULL_DEBUG = True
 # CORS allowed domains
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# Set nose as test runner
+
+INSTALLED_APPS.append('django_nose')
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--verbosity=2']
 
 
 # Database bootstrapping
@@ -40,8 +40,3 @@ LOGGING['handlers'] = {
 }
 
 LOGGING['loggers']['django']['handlers'] = ['console']
-
-
-# Test options
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
