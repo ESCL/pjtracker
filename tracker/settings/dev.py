@@ -5,14 +5,6 @@ __author__ = 'kako'
 from .base import *
 
 
-# Extra apps for
-
-INSTALLED_APPS.extend([
-    # Better test runner (for coverage reports)
-    'django_nose'
-])
-
-
 # Debug level
 
 DEBUG = True
@@ -40,8 +32,3 @@ LOGGING['handlers'] = {
 }
 
 LOGGING['loggers']['django']['handlers'] = ['console']
-
-
-# Test options
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
