@@ -68,9 +68,7 @@ class Command(BaseCommand):
             # subfactories might raise an error after the object is created,
             # in which case we want to roll back
             with transaction.atomic():
-                print(data)
                 o = factory.create(owner=owner, **data)
-                print('>>> ok, password: {}'.format(o.password))
 
         except FactoryError as e:
             # Missing field (same as before, triggered by factory)
