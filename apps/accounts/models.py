@@ -85,7 +85,8 @@ class User(AbstractUser):
         Return a set of fields that the user cannot modify.
         """
         # Start by assuming that all are disallowed
-        disallowed = set(self._classify(obj)._meta.get_all_field_names())
+        meta = self._classify(obj)._meta
+        disallowed = set(f.name for f in meta.get_fields())
 
         # Now if user has no domain or its domain matches obj owner allow
         # whatever actions determine

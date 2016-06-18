@@ -60,7 +60,7 @@ class UserTest(TestCase):
 
         # Check fields, only username is removed
         fields = user.get_disallowed_fields_for(User(owner=user.owner))
-        self.assertEqual(fields, set(User._meta.get_all_field_names()).difference({'username'}))
+        self.assertEqual(fields, {f.name for f in User._meta.get_fields()}.difference({'username'}))
 
     def test_username(self):
         # Create user (with account)

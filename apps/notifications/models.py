@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.dispatch import Signal
+from django.utils import timezone
 from django.template import Template, Context
 from django_signals_mixin import SignalsMixin
 
@@ -45,7 +46,7 @@ class Notification(models.Model, SignalsMixin):
     message_template = models.TextField(
     )
     timestamp = models.DateTimeField(
-        default=datetime.utcnow
+        default=timezone.now
     )
     action_url = models.CharField(
         max_length=256,
