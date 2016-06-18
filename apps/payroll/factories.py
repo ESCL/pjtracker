@@ -1,7 +1,8 @@
 __author__ = 'kako'
 
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 
+from django.utils import timezone
 from factory import DjangoModelFactory, LazyAttribute, SubFactory
 
 from ..accounts.factories import AccountFakeFactory
@@ -49,6 +50,6 @@ class PeriodFakeFactory(DjangoModelFactory):
         model = Period
 
     owner = SubFactory(AccountFakeFactory)
-    start_date = LazyAttribute(lambda obj: datetime.utcnow().date())
+    start_date = LazyAttribute(lambda obj: timezone.now().date())
     end_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=30))
     forecast_start_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=20))

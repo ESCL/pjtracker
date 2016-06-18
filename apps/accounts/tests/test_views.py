@@ -31,7 +31,7 @@ class AuthViewTest(TestCase):
         # Correct login, redirected to homepage, session key still set
         res = self.client.post(self.login_url, {'username': self.user.username, 'password': '123'})
         self.assertEqual(res.status_code, 302)
-        self.assertEqual(res.url, 'http://testserver{}'.format(reverse('home')))
+        self.assertEqual(res.url, reverse('home'))
         self.assertTrue(self.client.session.session_key)
 
     def test_logout(self):

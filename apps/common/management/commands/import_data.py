@@ -2,6 +2,7 @@ __author__ = 'kako'
 
 import re
 from csv import DictReader, DictWriter
+from factory import FactoryError
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
@@ -15,6 +16,7 @@ from ....work.factories import ActivityFactory
 
 class Command(BaseCommand):
     ERROR_SUB_RE = re.compile(r'^\w+ ')
+    FACTORY_ERROR_FIELD_RE = re.compile(r'\'([_\w]+)\'')
 
     def add_arguments(self, parser):
         parser.add_argument('model', type=str)
@@ -61,29 +63,32 @@ class Command(BaseCommand):
             # Note: we do this to avoid creating "empty-string instances"
             data = {k: v for k, v in row.items() if v and k != 'error'}
 
-            # Not create in a transaction
+            # Create in a transaction
             # Note: this is because all created models run a full_clean, so
-            # subfactories might raise an error
+            # subfactories might raise an error after the object is created,
+            # in which case we want to roll back
             with transaction.atomic():
                 factory.create(owner=owner, **data)
 
-        except KeyError as e:
-            # Error on creation, we need that field
-            e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
-
-        except IntegrityError as e:
-            # Error in creation, get field name from model.field
-            e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
+        except FactoryError as e:
+            # Error during factory generation, we get a message with 'field_name'
+            field_name = cls.FACTORY_ERROR_FIELD_RE.search(e.args[0]).groups()[0]
+            e_msg = '{} field cannot be blank'.format(field_name)
 
         except ValidationError as e:
-            # Validation error, we got a dict of field: [error1, ...]
+            # Error on pre-save validation, we get a dict of field: [error1, ...]
             e_msg = ', '.join('{} {}'.format(k, cls.ERROR_SUB_RE.sub('', v[0]))
                               for k, v in e)
+
+        except IntegrityError as e:
+            # Error during database save, get field name from model.field
+            e_msg = '{} field cannot be blank'.format(str(e).split('.')[-1])
 
         except Exception as e:
             # Other error, just render it
             e_msg = str(e)
 
+        # Return error message
         return e_msg
 
     def handle(self, *args, **options):

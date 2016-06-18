@@ -3,6 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.dispatch import Signal
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django_signals_mixin import SignalsMixin
 
@@ -50,7 +51,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
         default=STATUS_PREPARING
     )
     timestamp = models.DateTimeField(
-        default=datetime.utcnow
+        default=timezone.now
     )
     comments = models.CharField(
         max_length=256,
@@ -213,7 +214,7 @@ class TimeSheetAction(SignalsMixin, OwnedEntity):
         blank=True
     )
     timestamp = models.DateTimeField(
-        default=datetime.utcnow
+        default=timezone.now
     )
 
     def save(self, *args, **kwargs):

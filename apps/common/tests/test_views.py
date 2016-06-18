@@ -46,7 +46,7 @@ class HomeViewTest(TestCase):
         # Attempt to access, redirect to home
         res = self.client.get(url)
         self.assertEqual(res.status_code, 302)
-        self.assertEqual(res.url, 'http://testserver{}'.format(reverse('public', kwargs={'page': 'home'})))
+        self.assertEqual(res.url, reverse('public', kwargs={'page': 'home'}))
 
         # Login and access, now OK
         self.client.login(username=self.user.username, password='123')
