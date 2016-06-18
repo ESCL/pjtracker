@@ -2,6 +2,7 @@ __author__ = 'kako'
 
 import re
 from csv import DictReader, DictWriter
+from factory import FactoryError
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
@@ -15,6 +16,7 @@ from ....work.factories import ActivityFactory
 
 class Command(BaseCommand):
     ERROR_SUB_RE = re.compile(r'^\w+ ')
+    FACTORY_ERROR_FIELD_RE = re.compile(r'\'([_\w]+)\'')
 
     def add_arguments(self, parser):
         parser.add_argument('model', type=str)
@@ -61,15 +63,19 @@ class Command(BaseCommand):
             # Note: we do this to avoid creating "empty-string instances"
             data = {k: v for k, v in row.items() if v and k != 'error'}
 
-            # Not create in a transaction
+            # Create in a transaction
             # Note: this is because all created models run a full_clean, so
-            # subfactories might raise an error
+            # subfactories might raise an error after the object is created,
+            # in which case we want to roll back
             with transaction.atomic():
-                factory.create(owner=owner, **data)
+                print(data)
+                o = factory.create(owner=owner, **data)
+                print('>>> ok, password: {}'.format(o.password))
 
-        except KeyError as e:
-            # Error on creation, we need that field
-            e_msg = ', '.join('{} field cannot be blank'.format(a) for a in e.args)
+        except FactoryError as e:
+            # Missing field (same as before, triggered by factory)
+            field_name = cls.FACTORY_ERROR_FIELD_RE.search(e.args[0]).groups()[0]
+            e_msg = '{} field cannot be blank'.format(field_name)
 
         except IntegrityError as e:
             # Error in creation, get field name from model.field
