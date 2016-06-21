@@ -49,8 +49,6 @@ class LabourTypeView(StandardResourceView):
         'add': ('work.add_labourtype',),
         'edit': ('work.change_labourtype',)
     }
-    # Fix collection view for post-save redirect
-    collection_view_name = 'labour-types'
 
 
 class ActivityGroupView(StandardResourceView):
@@ -64,8 +62,6 @@ class ActivityGroupView(StandardResourceView):
         'add': ('work.add_activitygroup',),
         'edit': ('work.change_activitygroup',)
     }
-    # Fix collection view for post-save redirect
-    collection_view_name = 'activity-groups'
 
 
 class ActivityGroupTypeView(StandardResourceView):
@@ -79,8 +75,6 @@ class ActivityGroupTypeView(StandardResourceView):
         'add': ('work.add_activitygrouptype',),
         'edit': ('work.change_activitygrouptype',)
     }
-    # Fix collection view for post-save redirect
-    collection_view_name = 'activity-group-types'
 
 
 class ProjectWBSView(StandardResourceView):

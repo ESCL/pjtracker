@@ -30,8 +30,6 @@ class EquipmentView(StandardResourceView):
         'add': ('resources.add_equipment',),
         'edit': ('resources.change_equipment',)
     }
-    # Override collection view name to incorrect plural
-    collection_view_name = 'equipments'
 
 
 class EquipmentTypeView(StandardResourceView):
@@ -45,8 +43,6 @@ class EquipmentTypeView(StandardResourceView):
         'add': ('resources.add_equipmenttype',),
         'edit': ('resources.change_equipmenttype',)
     }
-    # Override default to make it "sluggish"
-    collection_view_name = 'equipment-types'
 
 
 class ResourceCategoryView(StandardResourceView):
@@ -60,5 +56,3 @@ class ResourceCategoryView(StandardResourceView):
         'add': ('resources.add_resourcecategory',),
         'edit': ('resources.change_resourcecategory',),
     }
-    # Override default to make it "sluggish"
-    collection_view_name = 'resource-categories'

@@ -107,11 +107,12 @@ class ReadOnlyResourceView(SafeView):
     list_template = None
     detail_template = None
     search_form = None
+    collection_view_name = None
 
     # Helper class methods
 
     @classmethod
-    def build_filters(cls, qd, **kwargs):
+    def build_filters(cls, query_dict, **kwargs):
         """
         Build the filters dict from a querydict (parsed querystring).
 
@@ -122,17 +123,17 @@ class ReadOnlyResourceView(SafeView):
         filters = {}
 
         # Populate it
-        for k in qd:
+        for k in query_dict:
             # Get value depending on key
             if k in ('p', 'ps',):
                 # page or page_size, skip it (not handled by filter)
                 continue
             elif k.endswith('__in') or k.endswith('__range'):
                 # membership, get value as list
-                v = qd.getlist(k)
+                v = query_dict.getlist(k)
             else:
                 # others, get value a simple object
-                v = qd.get(k)
+                v = query_dict.get(k)
 
             # Add key:value to filter if it has a value
             if v:
@@ -142,7 +143,7 @@ class ReadOnlyResourceView(SafeView):
         return filters
 
     @classmethod
-    def filter_objects(cls, user, qd, **kwargs):
+    def filter_objects(cls, user, query_dict, **kwargs):
         """
         Filter the model queryset for the given user and querydict.
 
@@ -150,7 +151,7 @@ class ReadOnlyResourceView(SafeView):
         filter construction.
         """
         # Build filters from querydict
-        filters = cls.build_filters(qd, **kwargs)
+        filters = cls.build_filters(query_dict, **kwargs)
 
         # Get the filtered queryset and return it
         qs = cls.model.objects.filter(**filters).for_user(user)
@@ -269,7 +270,6 @@ class StandardResourceView(ReadOnlyResourceView):
     edit_template = None
     main_form = None
     sub_form = None
-    collection_view_name = None
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
@@ -366,7 +366,7 @@ class StandardResourceView(ReadOnlyResourceView):
         else:
             sub_form = None
 
-        # Valiate forms
+        # Validate forms
         if main_form.is_valid() and (not sub_form or sub_form.is_valid()):
             # Everything's valid, save the form
             main_form.save()
