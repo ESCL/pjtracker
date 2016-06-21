@@ -4,7 +4,7 @@ from django.conf.urls import url, include
 from tastypie.api import Api
 
 from .api.resources import EmployeesResource, EquipmentResource
-from .views import EmployeeView, EquipmentView, EquipmentTypeView, ResourceCategoryView
+from .views import (EmployeeView, EquipmentView, EquipmentTypeView, ResourceCategoryView)
 
 
 api_v0 = Api(api_name='v0')

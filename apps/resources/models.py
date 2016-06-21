@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from ..common.db.models import OwnedEntity
 from .query import EmployeeQuerySet, EquipmentQuerySet
@@ -27,17 +28,42 @@ class EquipmentType(OwnedEntity):
         return '{} ({})'.format(self.name, self.code)
 
     def add_labour_type(self, labour_type, user=None):
+        """
+        Add the given labour type to this equipment type for the given user.
+
+        :param labour_type: LabourType instance
+        :param user: User instance (optional)
+        :return: None
+        """
         EquipmentTypeLabourType.objects.get_or_create(
             owner=user and user.owner, equipment_type=self,
             labour_type=labour_type
         )
 
     def get_labour_types_for(self, user):
+        """
+        Get queryset fo labour types for this equipment type and given user.
+
+        :param user: User instance
+        :return: LabourType queryset
+        """
         through = EquipmentTypeLabourType.objects.for_user(user)
         return self.labour_types.filter(equipmenttypelabourtype__in=through)
 
     def update_labour_types(self, labour_types, user):
-        EquipmentTypeLabourType.objects.filter(owner=user.owner, equipment_type=self).exclude(labour_type__in=labour_types).delete()
+        """
+        Update the labour types for this equipment type and given user.
+
+        :param labour_types: LabourType iterable
+        :param user: User instance
+        :return: None
+        """
+        # Remove labour types that no longer match
+        EquipmentTypeLabourType.objects.filter(
+            owner=user.owner, equipment_type=self
+        ).exclude(labour_type__in=labour_types).delete()
+
+        # Add new ones
         for lt in labour_types:
             self.add_labour_type(lt, user)
 
@@ -95,11 +121,6 @@ class Resource(OwnedEntity):
         null=True,
         blank=True
     )
-    project = models.ForeignKey(
-        'work.Project',
-        null=True,
-        blank=True
-    )
     location = models.ForeignKey(
         'geo.Location',
         null=True,
@@ -108,6 +129,17 @@ class Resource(OwnedEntity):
     resource_type = models.CharField(
         max_length=32,
     )
+
+    @property
+    def project(self):
+        try:
+            return self.project_assignments.get(
+                status=self.project_assignments.model.STATUS_APPROVED,
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date(),
+            )
+        except self.project_assignments.model.DoesNotExist:
+            return None
 
     def get_labour_types_for(self, user):
         return self.instance.get_labour_types_for(user)
@@ -208,3 +240,56 @@ class Equipment(Resource):
 
     def __str__(self):
         return '{} {} ({})'.format(self.model, self.type, self.identifier)
+
+
+class ResourceProjectAssignment(OwnedEntity):
+    """
+    Resource assignment to a Project.
+    """
+    STATUS_PENDING = 'P'
+    STATUS_APPROVED = 'A'
+    STATUS_REJECTED = 'R'
+
+    resource = models.ForeignKey(
+        'Resource',
+        related_name='project_assignments'
+    )
+    project = models.ForeignKey(
+        'work.Project',
+        related_name='resource_assignments'
+    )
+    start_date = models.DateField(
+        db_index=True
+    )
+    end_date = models.DateField(
+        null=True,
+        db_index=True
+    )
+    created_by = models.ForeignKey(
+        'accounts.User',
+        related_name='assignments_created'
+    )
+    created_timestamp = models.DateTimeField(
+        auto_now_add=True
+    )
+    reviewed_by = models.ForeignKey(
+        'accounts.User',
+        related_name='assignments_reviewed',
+        null=True,
+        blank=True
+    )
+    reviewed_timestamp = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    status = models.CharField(
+        db_index=True,
+        max_length=1,
+        choices=((STATUS_PENDING, 'Pending'),
+                 (STATUS_APPROVED, 'Approved'),
+                 (STATUS_REJECTED, 'Rejected'))
+    )
+
+    def __str__(self):
+        return '{} in {} ({}-{})'.format(self.resource, self.project,
+                                         self.start_date, self.end_date)

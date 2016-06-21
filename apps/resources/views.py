@@ -1,6 +1,7 @@
 
 from ..common.views.base import StandardResourceView
-from .models import Employee, Equipment, EquipmentType, ResourceCategory
+from .models import (Employee, Equipment, EquipmentType, ResourceCategory,
+                     ResourceProjectAssignment)
 from .forms import (EmployeeForm, EmployeeSearchForm, EquipmentForm,
                     EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm,
                     ResourceCategoryForm, ResourceCategorySearchForm)
