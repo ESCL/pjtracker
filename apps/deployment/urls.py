@@ -7,22 +7,25 @@ from .views import TimeSheetView, TimeSheetActionView, HoursView
 from .api.resources import HoursResource
 
 
+timesheet_view = TimeSheetView.as_view()
+timesheet_action_view = TimeSheetActionView.as_view()
+hours_view = HoursView.as_view()
+
 api = Api(api_name='v0')
 api.register(HoursResource())
 
-
 urlpatterns = [
     # Timesheet view
-    url(r'^timesheets/$', TimeSheetView.as_view(), name='timesheets'),
-    url(r'^timesheets/(?P<action>add)/$', TimeSheetView.as_view(), name='timesheet'),
-    url(r'^timesheets/(?P<pk>\d+)/$', TimeSheetView.as_view(), name='timesheet'),
-    url(r'^timesheets/(?P<pk>\d+)/(?P<action>edit)/$', TimeSheetView.as_view(), name='timesheet'),
+    url(r'^timesheets/$', timesheet_view, name='timesheets'),
+    url(r'^timesheets/(?P<action>add)/$', timesheet_view, name='timesheet'),
+    url(r'^timesheets/(?P<pk>\d+)/$', timesheet_view, name='timesheet'),
+    url(r'^timesheets/(?P<pk>\d+)/(?P<action>edit)/$', timesheet_view, name='timesheet'),
 
     # Timesheet action view
-    url(r'^timesheets/(?P<pk>\d+)/actions/$', TimeSheetActionView.as_view(), {'action': 'add'}, name='timesheet-action'),
+    url(r'^timesheets/(?P<pk>\d+)/actions/$', timesheet_action_view, {'action': 'add'}, name='timesheet-action'),
 
     # Hours summary view
-    url(r'^hours/$', HoursView.as_view(), name='hours'),
+    url(r'^hours/$', hours_view, name='hours'),
 
     # APIs
     url(r'^api/', include(api.urls)),

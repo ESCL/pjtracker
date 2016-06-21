@@ -9,7 +9,6 @@ from .api.resources import NotificationsResource
 api_v0 = Api(api_name='v0')
 api_v0.register(NotificationsResource())
 
-
 urlpatterns = [
     # APIs
     url('^api/', include(api_v0.urls))

@@ -19,7 +19,6 @@ class CalendarDayView(StandardResourceView):
     list_template = 'calendar.html'
     detail_template = 'calendar-day.html'
     edit_template = 'calendar-day-edit.html'
-    collection_view_name = 'calendar'
     permissions = {
         'add': ('payroll.add_calendarday',),
         'edit': ('payroll.change_calendarday',)
@@ -33,7 +32,6 @@ class HourTypeView(StandardResourceView):
     list_template = 'hour-types.html'
     detail_template = 'hour-type.html'
     edit_template = 'hour-type-edit.html'
-    collection_view_name = 'hour-types'
     permissions = {
         'add': ('payroll.add_hourtype',),
         'edit': ('payroll.change_hourtype',)

@@ -8,11 +8,17 @@ from .views.oauth import CustomAuthorizationView
 from .views.public import PublicView
 
 
-urlpatterns = [
-    url(r'^$', AppHomeView.as_view(), name='home'),
-    url(r'^(?P<page>\w+)$', PublicView.as_view(), name='public'),
+app_home_view = AppHomeView.as_view()
+public_view = PublicView.as_view()
+oauth_auth_view = CustomAuthorizationView.as_view()
+oauth_token_view = TokenView.as_view()
+oauth_revoke_view = RevokeTokenView.as_view()
 
-    url(r'^oauth/authorize/$', CustomAuthorizationView.as_view(), name="authorize"),
-    url(r'^oauth/token/$', TokenView.as_view(), name="token"),
-    url(r'^oauth/revoke_token/$', RevokeTokenView.as_view(), name="revoke-token"),
+urlpatterns = [
+    url(r'^$', app_home_view, name='home'),
+    url(r'^(?P<page>\w+)$', public_view, name='public'),
+
+    url(r'^oauth/authorize/$', oauth_auth_view, name="authorize"),
+    url(r'^oauth/token/$', oauth_token_view, name="token"),
+    url(r'^oauth/revoke_token/$', oauth_revoke_view, name="revoke-token"),
 ]

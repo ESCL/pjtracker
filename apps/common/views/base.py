@@ -107,6 +107,7 @@ class ReadOnlyResourceView(SafeView):
     list_template = None
     detail_template = None
     search_form = None
+    collection_view_name = None
 
     # Helper class methods
 
@@ -269,7 +270,6 @@ class StandardResourceView(ReadOnlyResourceView):
     edit_template = None
     main_form = None
     sub_form = None
-    collection_view_name = None
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
