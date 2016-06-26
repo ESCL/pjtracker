@@ -50,13 +50,12 @@ class PeriodView(StandardResourceView):
         'edit': ('payroll.change_period',)
     }
 
-    @classmethod
-    def get_instance_context(cls, request, obj):
+    def get_instance_context(self, request, obj, **kwargs):
         """
         Override to add worked hours subtotals.
         """
         # First get default context
-        ctx = super(PeriodView, cls).get_instance_context(request, obj)
+        ctx = super(PeriodView, self).get_instance_context(request, obj)
 
         # Add worked hours and return context
         ctx['worked_hours'] = WorkedHours.objects.for_payroll(obj)\

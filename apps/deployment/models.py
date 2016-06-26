@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.dispatch import Signal
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -125,37 +125,51 @@ class TimeSheet(SignalsMixin, OwnedEntity):
         if user not in self.team.timekeepers.all():
             raise NotAuthorizedError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.ISSUED
-        )
-        self.status = self.STATUS_ISSUED
-        self.save()
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.ISSUED
+            )
+            self.status = self.STATUS_ISSUED
+            self.save()
+
+        # Signal issued
         self.signal('issued')
 
     def reject(self, user):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.REJECTED
-        )
-        if self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED):
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.REJECTED
+            )
+            updated = self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED)
+
+        # Signal rejected if status was changed
+        if updated:
             self.signal('rejected')
 
     def approve(self, user):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.APPROVED
-        )
-        if self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED):
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.APPROVED
+            )
+            updated = self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED)
+
+        # Signal rejected if status was changed
+        if updated:
             self.signal('approved')
 
     def update_status(self, operation, action, status):

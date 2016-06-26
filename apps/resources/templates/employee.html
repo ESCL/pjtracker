@@ -35,13 +35,43 @@
 <hr>
 
 <div class="row">
-    <h4>Assignment</h4>
+    <h4>Organization</h4>
     <dl>
         <dt>Company</dt><dd>{{ employee.company }}</dd>
         <dt>Team</dt><dd>{{ employee.team|default:'-' }}</dd>
         <dt>Position</dt><dd>{{ employee.position.name }}</dd>
-        <dt>Project</dt><dd>{{ employee.project }}</dd>
     </dl>
+</div>
+
+<hr>
+
+<div class="row">
+
+    <ul class="action-group header-action-group">
+        <li><a href="{% url 'employee-projects' parent_pk=employee.resource_ptr_id %}">view all</a></li>
+        <li><a href="{% url 'employee-project' parent_pk=employee.resource_ptr_id action='add' %}">add</a></li>
+    </ul>
+    <h4>Projects</h4>
+
+    {% if employee.assigned_projects.exists %}
+        <table>
+            <thead>
+                <th colspan="2">Project</th><th colspan="2">Period</th>
+            </thead>
+            <tbody>
+                {% for pa in employee.assigned_projects %}
+                    <tr class="{% if pa.is_current %}dark{% endif %}">
+                        <td>{{ pa.project.code }}</td>
+                        <td>{{ pa.project.name }}</td>
+                        <td>{{ pa.start_date }}</td>
+                        <td>{{ pa.end_date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        Employee has no approved project assignments.
+    {% endif %}
 </div>
 
 {% endblock %}

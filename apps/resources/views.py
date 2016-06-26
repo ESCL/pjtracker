@@ -1,10 +1,12 @@
 
-from ..common.views.base import StandardResourceView
+from ..common.views.base import StandardResourceView, SubResourceView
 from .models import (Employee, Equipment, EquipmentType, ResourceCategory,
-                     ResourceProjectAssignment)
+                     ResourceProjectAssignment, Resource)
 from .forms import (EmployeeForm, EmployeeSearchForm, EquipmentForm,
                     EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm,
-                    ResourceCategoryForm, ResourceCategorySearchForm)
+                    ResourceCategoryForm, ResourceCategorySearchForm,
+                    ResourceProjectAssignmentForm, ResourceProjectAssignmentSearchForm,
+                    ResourceProjectAssignmentActionForm)
 
 
 class EmployeeView(StandardResourceView):
@@ -56,4 +58,31 @@ class ResourceCategoryView(StandardResourceView):
     permissions = {
         'add': ('resources.add_resourcecategory',),
         'edit': ('resources.change_resourcecategory',),
+    }
+
+
+class ResourceProjectAssignmentView(SubResourceView):
+    parent_model = Resource
+    parent_attr = 'resource'
+    model = ResourceProjectAssignment
+    list_template = 'resource-projects.html'
+    detail_template = 'resource-project.html'
+    edit_template = 'resource-project-edit.html'
+    main_form = ResourceProjectAssignmentForm
+    search_form = ResourceProjectAssignmentSearchForm
+    permissions = {
+        'add': ('resources.add_resourceprojectassignment',),
+        'edit': ('resources.change_resourceprojectassignment',)
+    }
+
+
+class ResourceProjectAssignmentActionView(SubResourceView):
+    parent_model = Resource
+    parent_attr = 'resource'
+    model = ResourceProjectAssignment
+    edit_template = 'resource-project-action.html'
+    main_form = ResourceProjectAssignmentActionForm
+    permissions = {
+        'add': ('resources.issue_resourceprojectassignment',
+                'resources.review_resourceprojectassignment',)
     }

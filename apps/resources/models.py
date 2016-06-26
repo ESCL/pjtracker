@@ -1,8 +1,9 @@
-from django.db import models
+
+from django.db import models, transaction
 from django.utils import timezone
 
 from ..common.db.models import OwnedEntity
-from .query import EmployeeQuerySet, EquipmentQuerySet
+from .query import EmployeeQuerySet, EquipmentQuerySet, ResourceProjectAssignmentQuerySet
 
 
 class EquipmentType(OwnedEntity):
@@ -133,13 +134,18 @@ class Resource(OwnedEntity):
     @property
     def project(self):
         try:
-            return self.project_assignments.get(
-                status=self.project_assignments.model.STATUS_APPROVED,
+            return self.projects.get(
                 start_date__lte=timezone.now().date(),
                 end_date__gte=timezone.now().date(),
             )
         except self.project_assignments.model.DoesNotExist:
             return None
+
+    @property
+    def assigned_projects(self):
+        return self.project_assignments.filter(
+            status=self.project_assignments.model.STATUS_APPROVED,
+        )
 
     def get_labour_types_for(self, user):
         return self.instance.get_labour_types_for(user)
@@ -239,7 +245,7 @@ class Equipment(Resource):
         work_log.equipment_type = self.type
 
     def __str__(self):
-        return '{} {} ({})'.format(self.model, self.type, self.identifier)
+        return '{} {} ({})'.format(self.model, self.type.name, self.identifier)
 
 
 class ResourceProjectAssignment(OwnedEntity):
@@ -247,8 +253,18 @@ class ResourceProjectAssignment(OwnedEntity):
     Resource assignment to a Project.
     """
     STATUS_PENDING = 'P'
+    STATUS_ISSUED = 'I'
     STATUS_APPROVED = 'A'
     STATUS_REJECTED = 'R'
+
+    STATUS_ALLOWED_ACTIONS = {
+        STATUS_PENDING: (('issue', 'Issue'),),
+        STATUS_ISSUED: (('approve', 'Approve'),
+                        ('reject', 'Reject')),
+        STATUS_REJECTED: (('issue', 'Issue'),)
+    }
+
+    objects = ResourceProjectAssignmentQuerySet.as_manager()
 
     resource = models.ForeignKey(
         'Resource',
@@ -262,34 +278,119 @@ class ResourceProjectAssignment(OwnedEntity):
         db_index=True
     )
     end_date = models.DateField(
+        blank=True,
         null=True,
         db_index=True
     )
-    created_by = models.ForeignKey(
-        'accounts.User',
-        related_name='assignments_created'
-    )
-    created_timestamp = models.DateTimeField(
-        auto_now_add=True
-    )
-    reviewed_by = models.ForeignKey(
-        'accounts.User',
-        related_name='assignments_reviewed',
-        null=True,
-        blank=True
-    )
-    reviewed_timestamp = models.DateTimeField(
-        null=True,
-        blank=True
+    timestamp = models.DateTimeField(
+        default=timezone.now
     )
     status = models.CharField(
         db_index=True,
         max_length=1,
         choices=((STATUS_PENDING, 'Pending'),
+                 (STATUS_ISSUED, 'Issued'),
                  (STATUS_APPROVED, 'Approved'),
-                 (STATUS_REJECTED, 'Rejected'))
+                 (STATUS_REJECTED, 'Rejected')),
+        default=STATUS_PENDING
     )
+
+    @property
+    def allowed_actions(self):
+        return self.STATUS_ALLOWED_ACTIONS.get(self.status, [])
+
+    @property
+    def is_current(self):
+        return self.start_date <= timezone.now().date() <= self.end_date
+
+    @property
+    def is_issuable(self):
+        # Not sure whether this is correct, but it's very late
+        return not self.is_reviewable
+
+    @property
+    def is_reviewable(self):
+        return self.status == self.STATUS_ISSUED
 
     def __str__(self):
         return '{} in {} ({}-{})'.format(self.resource, self.project,
                                          self.start_date, self.end_date)
+
+    def approve(self, user):
+        """
+        Approve this assignment.
+
+        :param user: User instance
+        :return: None
+        """
+        with transaction.atomic():
+            # Create related action instance
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.APPROVED
+            )
+
+            # Set status and save
+            self.status = self.STATUS_APPROVED
+            self.save()
+
+    def issue(self, user):
+        """
+        Issue the assignment for approval.
+
+        :param user: User instance
+        :return: None
+        """
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.ISSUED
+            )
+            self.status = self.STATUS_ISSUED
+            self.save()
+
+    def reject(self, user):
+        """
+        Reject this assignment.
+
+        :param user: User instance
+        :return: None
+        """
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.REJECTED
+            )
+            self.status = self.STATUS_REJECTED
+            self.save()
+
+
+class ResourceProjectAssignmentAction(OwnedEntity):
+
+    ISSUED = 'I'
+    REJECTED = 'R'
+    APPROVED = 'A'
+
+    assignment = models.ForeignKey(
+        'ResourceProjectAssignment',
+        related_name='actions'
+    )
+    actor = models.ForeignKey(
+        'accounts.User'
+    )
+    action = models.CharField(
+        max_length=16,
+        choices=((ISSUED, 'Issued'),
+                 (REJECTED, 'Rejected'),
+                 (APPROVED, 'Approved'))
+    )
+    feedback = models.TextField(
+        blank=True
+    )
+    timestamp = models.DateTimeField(
+        default=timezone.now
+    )
+

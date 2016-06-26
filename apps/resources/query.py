@@ -25,3 +25,12 @@ class EquipmentQuerySet(OwnedEntityQuerySet):
             args.append(Q(Q(type__name__icontains=type)|Q(type__parent__name__icontains=type)))
 
         return super(EquipmentQuerySet, self).filter(*args, **kwargs)
+
+
+class ResourceProjectAssignmentQuerySet(OwnedEntityQuerySet):
+
+    def in_dates(self, start, end):
+        qs = self.exclude(end_date__lt=start)
+        if end:
+            qs = qs.exclude(start_date__gt=end)
+        return qs

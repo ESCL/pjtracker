@@ -1,0 +1,68 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url views.parent_collection %}">{{ views.parent_collection}}</a></li>
+<li><a href="{% url views.parent_instance pk=resource.instance.pk %}">{{ resource.identifier }}</a></li>
+<li><span>projects</span></li>
+<li><a href="{% url views.instance parent_pk=resource.instance.pk action='add' %}">+</a></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% include 'apps/search-form.html' %}
+{% include 'apps/paginator.html' with list=resourceprojectassignments %}
+
+{% if resourceprojectassignments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Resource</th>
+                <th>Project</th>
+                <th>Date Range</th>
+                <th>Status</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pa in resourceprojectassignments %}
+                <tr>
+                    <td>{{ pa.resource }}</td>
+                    <td>{{ pa.project }}</td>
+                    <td>{{ pa.start_date }} - {{ pa.end_date|default:'..' }}</td>
+                    <td>{{ pa.get_status_display }}</td>
+                    <td class="actions">
+                        <ul class="action-group">
+                            <li><a href="{% url views.instance parent_pk=resource.pk pk=pa.id %}">view</a></li>
+                            <li><a href="{% url views.instance parent_pk=resource.pk pk=pa.id action='edit' %}">edit</a></li>
+                            {% if pa.is_issuable %}
+                                <li><a href="{% url views.action parent_pk=resource.pk pk=pa.id action='add' %}">issue</a></li>
+                            {% elif pa.is_reviewable %}
+                                <li><a href="{% url views.action parent_pk=resource.pk pk=pa.id action='add' %}">review</a></li>
+                            {% endif %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No resource project assignments found matching the current search criteria.</p>
+{% endif %}
+
+{% endblock %}
