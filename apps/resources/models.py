@@ -3,6 +3,7 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from ..common.db.models import OwnedEntity
+from ..common.exceptions import NotAuthorizedError
 from .query import EmployeeQuerySet, EquipmentQuerySet, ResourceProjectAssignmentQuerySet
 
 
@@ -306,7 +307,7 @@ class ResourceProjectAssignment(OwnedEntity):
     @property
     def is_issuable(self):
         # Not sure whether this is correct, but it's very late
-        return not self.is_reviewable
+        return self.status != self.STATUS_APPROVED
 
     @property
     def is_reviewable(self):
@@ -323,6 +324,11 @@ class ResourceProjectAssignment(OwnedEntity):
         :param user: User instance
         :return: None
         """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('resources.review_resourceprojectassignment'):
+            raise NotAuthorizedError('Only project managers can approve a project assignment.')
+
         with transaction.atomic():
             # Create related action instance
             ResourceProjectAssignmentAction.objects.create(
@@ -342,6 +348,11 @@ class ResourceProjectAssignment(OwnedEntity):
         :param user: User instance
         :return: None
         """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('resources.issue_resourceprojectassignment'):
+            raise NotAuthorizedError('Only human resource officers can issue a project assignment.')
+
         with transaction.atomic():
             ResourceProjectAssignmentAction.objects.create(
                 assignment=self,
@@ -358,6 +369,11 @@ class ResourceProjectAssignment(OwnedEntity):
         :param user: User instance
         :return: None
         """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('resources.review_resourceprojectassignment'):
+            raise NotAuthorizedError('Only project managers can review a project assignment.')
+
         with transaction.atomic():
             ResourceProjectAssignmentAction.objects.create(
                 assignment=self,

@@ -54,21 +54,17 @@
     <h4>Projects</h4>
 
     {% if equipment.assigned_projects.exists %}
-        <table>
-            <thead>
-                <th colspan="2">Project</th><th colspan="2">Period</th>
-            </thead>
-            <tbody>
-                {% for pa in equipment.assigned_projects %}
-                    <tr class="{% if pa.is_current %}dark{% endif %}">
-                        <td>{{ pa.project.code }}</td>
-                        <td>{{ pa.project.name }}</td>
-                        <td>{{ pa.start_date }}</td>
-                        <td>{{ pa.end_date }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <dl>
+            {% for pa in equipment.assigned_projects %}
+                <dt>{{ pa.project.code }}</dt>
+                <dd>
+                    <ul>
+                        <li>{{ pa.project.name }}</li>
+                        <li>{{ pa.start_date }} - {{ pa.end_date|default:'..' }}</li>
+                    </ul>
+                </dd>
+            {% endfor %}
+        </dl>
     {% else %}
         Equipment has no approved project assignments.
     {% endif %}

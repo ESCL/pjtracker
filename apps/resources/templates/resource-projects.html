@@ -32,9 +32,8 @@
     <table>
         <thead>
             <tr>
-                <th>Resource</th>
-                <th>Project</th>
-                <th>Date Range</th>
+                <th colspan="2">Project</th>
+                <th colspan="2">Period</th>
                 <th>Status</th>
                 <th class="actions">Actions</th>
             </tr>
@@ -42,9 +41,10 @@
         <tbody>
             {% for pa in resourceprojectassignments %}
                 <tr>
-                    <td>{{ pa.resource }}</td>
-                    <td>{{ pa.project }}</td>
-                    <td>{{ pa.start_date }} - {{ pa.end_date|default:'..' }}</td>
+                    <td>{{ pa.project.code }}</td>
+                    <td>{{ pa.project.name }}</td>
+                    <td>{{ pa.start_date }}</td>
+                    <td>{{ pa.end_date|default:'..' }}</td>
                     <td>{{ pa.get_status_display }}</td>
                     <td class="actions">
                         <ul class="action-group">
