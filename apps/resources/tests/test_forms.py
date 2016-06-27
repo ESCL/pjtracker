@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.test import TestCase
+from django.contrib.auth.models import Group
 
 from ...accounts.factories import UserFakeFactory
 from ...accounts.utils import ensure_permissions
@@ -18,9 +19,9 @@ class ResourceProjectAssignmentFormTest(TestCase):
         self.employee = EmployeeFakeFactory.create()
         self.pj = ProjectFakeFactory.create(owner=self.employee.owner)
 
-        # Create user with add+change permissions
-        self.user = UserFakeFactory.create(owner=self.employee.owner)
-        self.user.user_permissions.add(*ensure_permissions(ResourceProjectAssignment, ['add', 'change']))
+        # Create user with HR group
+        self.user = UserFakeFactory.create(owner=self.employee.owner,
+                                           groups=[Group.objects.get(name='Human Resources')])
 
     def test_validate(self):
         # New instance with fields missing, fail
@@ -75,10 +76,10 @@ class ResourceProjectAssignmentActionFormTest(TestCase):
         )
 
         # Create users with permissions
-        self.user = UserFakeFactory.create(owner=self.employee.owner)
-        self.user.user_permissions.add(*ensure_permissions(ResourceProjectAssignment, ['add', 'change']))
-        self.boss = UserFakeFactory.create(owner=self.employee.owner)
-        self.boss.user_permissions.add(*ensure_permissions(ResourceProjectAssignment, ['review']))
+        self.user = UserFakeFactory.create(owner=self.employee.owner,
+                                           groups=[Group.objects.get(name='Human Resources')])
+        self.boss = UserFakeFactory.create(owner=self.employee.owner,
+                                           groups=[Group.objects.get(name='Project Management')])
 
     def test_init(self):
         # Pending assignment, should allow only Issue
@@ -115,13 +116,13 @@ class ResourceProjectAssignmentActionFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
         # Create an issued, colliding assignment
-        self.assignment = ResourceProjectAssignmentFakeFactory.create(
+        ResourceProjectAssignmentFakeFactory.create(
             owner=self.employee.owner, resource=self.employee.resource_ptr,
             status=ResourceProjectAssignment.STATUS_ISSUED,
             start_date=date(2015, 12, 20)
         )
 
-        # Reject w/ feedback, still OK due to collision
+        # Reject w/ feedback, OK even with collision
         form = ResourceProjectAssignmentActionForm(data, user=self.user, instance=self.assignment)
         self.assertTrue(form.is_valid())
 
