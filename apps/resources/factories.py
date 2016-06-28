@@ -1,6 +1,5 @@
 __author__ = 'kako'
 
-from datetime import date, timedelta
 from factory import DjangoModelFactory, SubFactory, Faker, SelfAttribute, LazyAttribute
 
 from ..common.factories import NullableSubFactory
@@ -11,7 +10,7 @@ from ..organizations.factories import (
     DepartmentFakeFactory, PositionFakeFactory, PositionFactory, TeamFakeFactory,
 )
 from ..work.factories import ProjectFactory, ProjectFakeFactory
-from .models import Employee, Equipment, EquipmentType, ResourceCategory, ResourceProjectAssignment
+from .models import Employee, Equipment, EquipmentType, ResourceCategory
 
 
 # Base factories
@@ -128,14 +127,3 @@ class EmployeeFakeFactory(DjangoModelFactory):
     team = SubFactory(TeamFakeFactory, owner=SelfAttribute('..owner'),
                       company=SelfAttribute('..company'))
     location = SubFactory(LocationFakeFactory, owner=SelfAttribute('..owner'))
-
-
-class ResourceProjectAssignmentFakeFactory(DjangoModelFactory):
-
-    class Meta:
-        model = ResourceProjectAssignment
-
-    owner = SubFactory(AccountFakeFactory)
-    project = SubFactory(ProjectFakeFactory, owner=SelfAttribute('..owner'))
-    start_date = LazyAttribute(lambda obj: date.today())
-    end_date = LazyAttribute(lambda obj: obj.start_date + timedelta(days=364))

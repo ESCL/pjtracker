@@ -1,12 +1,9 @@
-__author__ = 'kako'
-
-
 from django import forms
 
 from ..common.forms import OwnedEntityForm, OwnedEntitiesForm
 from ..work.models import LabourType
-from .models import (Employee, Equipment, EquipmentType, ResourceCategory,
-                     ResourceProjectAssignment,)
+from ..deployment.models import ResourceProjectAssignment
+from .models import (Employee, Equipment, EquipmentType, ResourceCategory)
 
 
 class EmployeeSearchForm(OwnedEntitiesForm):

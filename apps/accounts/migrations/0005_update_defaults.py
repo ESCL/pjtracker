@@ -16,7 +16,7 @@ def update_default_groups(apps, schema_editor):
     # version than this migration expects
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
-    ResourceProjectAssignment = apps.get_model('resources', 'ResourceProjectAssignment')
+    ResourceProjectAssignment = apps.get_model('deployment', 'ResourceProjectAssignment')
 
     # Get HR+PMGT groups
     hr = Group.objects.get_or_create(name='Human Resources')[0]
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('accounts', '0004_auto_20160618_1521'),
-        ('resources', '0006_auto_20160626_2039'),
+        ('deployment', '0006_resourceprojectassignment_resourceprojectassignmentaction'),
     ]
 
     operations = [

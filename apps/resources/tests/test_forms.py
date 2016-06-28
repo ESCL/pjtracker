@@ -4,12 +4,11 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 
 from ...accounts.factories import UserFakeFactory
-from ...accounts.utils import ensure_permissions
+from ...deployment.factories import ResourceProjectAssignmentFakeFactory
+from ...deployment.models import ResourceProjectAssignment, ResourceProjectAssignmentAction
 from ...resources.factories import EmployeeFakeFactory
 from ...work.factories import ProjectFakeFactory
-from ..factories import ResourceProjectAssignmentFakeFactory
 from ..forms import ResourceProjectAssignmentForm, ResourceProjectAssignmentActionForm
-from ..models import ResourceProjectAssignment, ResourceProjectAssignmentAction
 
 
 class ResourceProjectAssignmentFormTest(TestCase):

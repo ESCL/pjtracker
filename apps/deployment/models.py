@@ -9,7 +9,7 @@ from django_signals_mixin import SignalsMixin
 
 from ..common.db.models import OwnedEntity
 from ..common.exceptions import NotAuthorizedError
-from .query import WorkLogQuerySet
+from .query import WorkLogQuerySet, ResourceProjectAssignmentQuerySet
 
 
 class TimeSheet(SignalsMixin, OwnedEntity):
@@ -326,3 +326,164 @@ class TimeSheetSettings(models.Model):
         default=TimeSheet.REVIEW_POLICY_FIRST
     )
 
+
+class ResourceProjectAssignment(OwnedEntity):
+    """
+    Resource assignment to a Project.
+    """
+    STATUS_PENDING = 'P'
+    STATUS_ISSUED = 'I'
+    STATUS_APPROVED = 'A'
+    STATUS_REJECTED = 'R'
+
+    STATUS_ALLOWED_ACTIONS = {
+        STATUS_PENDING: (('issue', 'Issue'),),
+        STATUS_ISSUED: (('approve', 'Approve'),
+                        ('reject', 'Reject')),
+        STATUS_REJECTED: (('issue', 'Issue'),)
+    }
+
+    objects = ResourceProjectAssignmentQuerySet.as_manager()
+
+    resource = models.ForeignKey(
+        'resources.Resource',
+        related_name='project_assignments'
+    )
+    project = models.ForeignKey(
+        'work.Project',
+        related_name='resource_assignments'
+    )
+    start_date = models.DateField(
+        db_index=True
+    )
+    end_date = models.DateField(
+        blank=True,
+        null=True,
+        db_index=True
+    )
+    timestamp = models.DateTimeField(
+        default=timezone.now
+    )
+    status = models.CharField(
+        db_index=True,
+        max_length=1,
+        choices=((STATUS_PENDING, 'Pending'),
+                 (STATUS_ISSUED, 'Issued'),
+                 (STATUS_APPROVED, 'Approved'),
+                 (STATUS_REJECTED, 'Rejected')),
+        default=STATUS_PENDING
+    )
+
+    @property
+    def allowed_actions(self):
+        return self.STATUS_ALLOWED_ACTIONS.get(self.status, [])
+
+    @property
+    def is_current(self):
+        return self.start_date <= timezone.now().date() <= self.end_date
+
+    @property
+    def is_issuable(self):
+        # Not sure whether this is correct, but it's very late
+        return self.status not in (self.STATUS_APPROVED, self.STATUS_ISSUED)
+
+    @property
+    def is_reviewable(self):
+        return self.status == self.STATUS_ISSUED
+
+    def __str__(self):
+        return '{} in {} ({}-{})'.format(self.resource, self.project,
+                                         self.start_date, self.end_date)
+
+    def approve(self, user):
+        """
+        Approve this assignment.
+
+        :param user: User instance
+        :return: None
+        """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('deployment.review_resourceprojectassignment'):
+            raise NotAuthorizedError('Only project managers can approve a project assignment.')
+
+        with transaction.atomic():
+            # Create related action instance
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.APPROVED
+            )
+
+            # Set status and save
+            self.status = self.STATUS_APPROVED
+            self.save()
+
+    def issue(self, user):
+        """
+        Issue the assignment for approval.
+
+        :param user: User instance
+        :return: None
+        """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('deployment.issue_resourceprojectassignment'):
+            raise NotAuthorizedError('Only human resource officers can issue a project assignment.')
+
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.ISSUED
+            )
+            self.status = self.STATUS_ISSUED
+            self.save()
+
+    def reject(self, user):
+        """
+        Reject this assignment.
+
+        :param user: User instance
+        :return: None
+        """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        if not user.has_perm('deployment.review_resourceprojectassignment'):
+            raise NotAuthorizedError('Only project managers can review a project assignment.')
+
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.REJECTED
+            )
+            self.status = self.STATUS_REJECTED
+            self.save()
+
+
+class ResourceProjectAssignmentAction(OwnedEntity):
+
+    ISSUED = 'I'
+    REJECTED = 'R'
+    APPROVED = 'A'
+
+    assignment = models.ForeignKey(
+        'ResourceProjectAssignment',
+        related_name='actions'
+    )
+    actor = models.ForeignKey(
+        'accounts.User'
+    )
+    action = models.CharField(
+        max_length=16,
+        choices=((ISSUED, 'Issued'),
+                 (REJECTED, 'Rejected'),
+                 (APPROVED, 'Approved'))
+    )
+    feedback = models.TextField(
+        blank=True
+    )
+    timestamp = models.DateTimeField(
+        default=timezone.now
+    )

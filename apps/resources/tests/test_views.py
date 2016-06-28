@@ -4,10 +4,8 @@ from django.test import TestCase
 
 from ...common.test import PermissionTestMixin
 from ..factories import (EmployeeFakeFactory, EquipmentFakeFactory,
-                         EquipmentTypeFakeFactory, ResourceCategoryFakeFactory,
-                         ResourceProjectAssignmentFakeFactory, )
-from ..models import (Employee, Equipment, EquipmentType, ResourceCategory,
-                      ResourceProjectAssignment)
+                         EquipmentTypeFakeFactory, ResourceCategoryFakeFactory)
+from ..models import (Employee, Equipment, EquipmentType, ResourceCategory)
 
 
 class EmployeeViewTest(PermissionTestMixin, TestCase):

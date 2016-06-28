@@ -31,7 +31,7 @@
     <dt>{{ resource.resource_type|title }}</dt><dd>{{ resource }}</dd>
     {% if resourceprojectassignment.id %}
         <dt>Project</dt><dd>{{ resourceprojectassignment.project }}</dd>
-        <dt>Date Range</dt><dd>{{ resourceprojectassignment.start_date}} - {{ resourceprojectassignment.end_date }}</dd>
+        <dt>Date Range</dt><dd>{{ resourceprojectassignment.start_date}} - {{ resourceprojectassignment.end_date|default:'..' }}</dd>
     {% endif %}
 </dl>
 

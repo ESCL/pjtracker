@@ -1,11 +1,9 @@
-from datetime import date
-
 from django.test import TestCase
 
 from ...accounts.factories import UserFakeFactory
 from ...work.models import LabourType
-from ..models import EquipmentTypeLabourType, ResourceProjectAssignment
-from ..factories import EquipmentTypeFakeFactory, ResourceProjectAssignmentFakeFactory, EmployeeFakeFactory
+from ..models import EquipmentTypeLabourType
+from ..factories import EquipmentTypeFakeFactory
 
 
 class EquipmentTypeTest(TestCase):
@@ -76,57 +74,3 @@ class EquipmentTypeTest(TestCase):
         # Update with nothing, should remove it
         self.et.update_labour_types([], self.user1)
         self.assertEqual(EquipmentTypeLabourType.objects.count(), 0)
-
-
-class ResourceProjectAssignmentTest(TestCase):
-
-    def setUp(self):
-        self.res = EmployeeFakeFactory.create().resource_ptr
-        ResourceProjectAssignment.objects.all().delete()
-
-    def test_in_dates(self):
-        start_date = date(2016, 1, 1)
-        end_date = date(2016, 12, 31)
-
-        # Not collisions, empty qs
-        self.assertFalse(ResourceProjectAssignment.objects.in_dates(start_date, end_date).exists())
-
-        # Add two non-collisions
-        # 1. Start and end before
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2015, 2, 20), end_date=date(2015, 12, 31)
-        )
-        # 2. Start later, never end
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2017, 1, 1)
-        )
-
-        # Still empty
-        self.assertEqual(ResourceProjectAssignment.objects.in_dates(start_date, end_date).count(), 0)
-
-        # Add 4 collisions
-        # 1. Start before, end in the middle
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2015, 2, 20), end_date=date(2016, 4, 20)
-        )
-        # 2. Start in the middle, end after
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2016, 2, 20), end_date=date(2017, 2, 19)
-        )
-        # 3. Start before, end later
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2015, 2, 20), end_date=date(2017, 2, 19)
-        )
-        # 4. Start in the middle, never end
-        ResourceProjectAssignmentFakeFactory.create(
-            resource=self.res,
-            start_date=date(2016, 6, 20)
-        )
-
-        # Now we get all collisions
-        self.assertEqual(ResourceProjectAssignment.objects.in_dates(start_date, end_date).count(), 4)

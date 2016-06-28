@@ -26,11 +26,3 @@ class EquipmentQuerySet(OwnedEntityQuerySet):
 
         return super(EquipmentQuerySet, self).filter(*args, **kwargs)
 
-
-class ResourceProjectAssignmentQuerySet(OwnedEntityQuerySet):
-
-    def in_dates(self, start, end):
-        qs = self.exclude(end_date__lt=start)
-        if end:
-            qs = qs.exclude(start_date__gt=end)
-        return qs

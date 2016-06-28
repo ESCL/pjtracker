@@ -1,7 +1,7 @@
 
 from ..common.views.base import StandardResourceView, SubResourceView
-from .models import (Employee, Equipment, EquipmentType, ResourceCategory,
-                     ResourceProjectAssignment, Resource)
+from ..deployment.models import ResourceProjectAssignment
+from .models import (Employee, Equipment, EquipmentType, ResourceCategory, Resource)
 from .forms import (EmployeeForm, EmployeeSearchForm, EquipmentForm,
                     EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm,
                     ResourceCategoryForm, ResourceCategorySearchForm,
@@ -71,8 +71,8 @@ class ResourceProjectAssignmentView(SubResourceView):
     main_form = ResourceProjectAssignmentForm
     search_form = ResourceProjectAssignmentSearchForm
     permissions = {
-        'add': ('resources.add_resourceprojectassignment',),
-        'edit': ('resources.change_resourceprojectassignment',)
+        'add': ('deployment.add_resourceprojectassignment',),
+        'edit': ('deployment.change_resourceprojectassignment',)
     }
 
 
@@ -83,6 +83,6 @@ class ResourceProjectAssignmentActionView(SubResourceView):
     edit_template = 'resource-project-action.html'
     main_form = ResourceProjectAssignmentActionForm
     permissions = {
-        'add': ('resources.issue_resourceprojectassignment',
-                'resources.review_resourceprojectassignment',)
+        'add': ('deployment.issue_resourceprojectassignment',
+                'deployment.review_resourceprojectassignment',)
     }
