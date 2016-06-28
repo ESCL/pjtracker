@@ -403,9 +403,9 @@ class ResourceProjectAssignment(OwnedEntity):
         :return: None
         """
         # Make sure user can do this
-        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
-        if not user.has_perm('deployment.review_resourceprojectassignment'):
-            raise NotAuthorizedError('Only project managers can approve a project assignment.')
+        # TODO: this should be in the form!
+        if user not in self.project.managers.all():
+            raise NotAuthorizedError('Only {} managers can approve this assignment.'.format(self.project))
 
         with transaction.atomic():
             # Create related action instance
@@ -428,6 +428,7 @@ class ResourceProjectAssignment(OwnedEntity):
         """
         # Make sure user can do this
         # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        # TODO: this should be in the form!
         if not user.has_perm('deployment.issue_resourceprojectassignment'):
             raise NotAuthorizedError('Only human resource officers can issue a project assignment.')
 
@@ -448,9 +449,9 @@ class ResourceProjectAssignment(OwnedEntity):
         :return: None
         """
         # Make sure user can do this
-        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
-        if not user.has_perm('deployment.review_resourceprojectassignment'):
-            raise NotAuthorizedError('Only project managers can review a project assignment.')
+        # TODO: this should be in the form!
+        if user not in self.project.managers.all():
+            raise NotAuthorizedError('Only {} managers can reject this assignment.'.format(self.project))
 
         with transaction.atomic():
             ResourceProjectAssignmentAction.objects.create(

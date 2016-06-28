@@ -1,6 +1,5 @@
-__author__ = 'kako'
-
 from django import forms
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 from ..common.forms import OwnedEntityForm, OwnedEntitiesForm
@@ -35,13 +34,30 @@ class LabourTypeSearchForm(OwnedEntitiesForm):
     name__icontains = forms.CharField(min_length=4, max_length=32, required=False, label='Labour type name')
 
 
-# Edit forms for edit views
+# Edit forms
 
 class ProjectForm(OwnedEntityForm):
 
     class Meta:
         model = Project
         exclude = ('owner',)
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+
+        # Limit project managers
+        self._limit_managers()
+
+    def _limit_managers(self):
+        """
+        Limit the managers queryset to users in the project managers group.
+        """
+        f = self.fields.get('managers')
+        if f:
+            f.queryset = f.queryset.filter(
+                Q(user_permissions__codename='review_resourceprojectassignment') |
+                Q(groups__permissions__codename='review_resourceprojectassignment')
+            )
 
 
 class ActivityForm(OwnedEntityForm):

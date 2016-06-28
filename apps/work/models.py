@@ -16,6 +16,10 @@ class Project(OwnedEntity):
     code = models.CharField(
         max_length=8
     )
+    managers = models.ManyToManyField(
+        'accounts.User',
+        blank=True
+    )
 
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)

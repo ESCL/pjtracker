@@ -30,7 +30,6 @@ class TeamSearchForm(OwnedEntitiesForm):
     company__code__iexact = forms.CharField(max_length=32, required=False, label='Company code')
 
 
-
 class CompanyForm(OwnedEntityForm):
 
     class Meta:

@@ -3,6 +3,7 @@ from datetime import date
 from django.test import TestCase
 from django.contrib.auth.models import Group
 
+from ...common.exceptions import NotAuthorizedError
 from ...accounts.factories import UserFakeFactory
 from ...deployment.factories import ResourceProjectAssignmentFakeFactory
 from ...deployment.models import ResourceProjectAssignment, ResourceProjectAssignmentAction
@@ -143,7 +144,18 @@ class ResourceProjectAssignmentActionFormTest(TestCase):
         self.assertEqual(a.action, ResourceProjectAssignmentAction.ISSUED)
         self.assertEqual(a.actor, self.user)
 
-        # Reject assignment
+        # Attempt to reject assignment, fail because boss is not manager (yet)
+        data = {'action': 'reject', 'feedback': 'wrong.'}
+        form = ResourceProjectAssignmentActionForm(data, user=self.boss, instance=self.assignment)
+        self.assertTrue(form.is_valid())
+        with self.assertRaises(NotAuthorizedError):
+            form.save()
+
+        # Make boss project manager, refresh all involved objects (simulate new request)
+        self.assignment.project.managers.add(self.boss)
+        self.boss.refresh_from_db()
+
+        # Reject OK now
         data = {'action': 'reject', 'feedback': 'wrong.'}
         form = ResourceProjectAssignmentActionForm(data, user=self.boss, instance=self.assignment)
         form.is_valid()
