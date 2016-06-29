@@ -5,7 +5,7 @@ from django.test import TestCase
 from ...common.test import PermissionTestMixin
 from ..factories import (EmployeeFakeFactory, EquipmentFakeFactory,
                          EquipmentTypeFakeFactory, ResourceCategoryFakeFactory)
-from ..models import Employee, Equipment, EquipmentType, ResourceCategory
+from ..models import (Employee, Equipment, EquipmentType, ResourceCategory)
 
 
 class EmployeeViewTest(PermissionTestMixin, TestCase):
@@ -34,3 +34,5 @@ class ResourceCategoryViewTest(PermissionTestMixin, TestCase):
     model_factory = ResourceCategoryFakeFactory
     list_view_name = 'resource-categories'
     instance_view_name = 'resource-category'
+
+# TODO: add tests for project assignment view

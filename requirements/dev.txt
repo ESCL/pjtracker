@@ -2,3 +2,4 @@
 
 # Testing functionality
 coverage==4.1
+django-nose==1.4.3

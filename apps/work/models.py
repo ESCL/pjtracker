@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.utils import timezone
 
 from ..common.db.models import OwnedEntity
 from .query import ActivityQuerySet
@@ -15,15 +16,31 @@ class Project(OwnedEntity):
     code = models.CharField(
         max_length=8
     )
+    managers = models.ManyToManyField(
+        'accounts.User',
+        blank=True
+    )
 
     def __str__(self):
         return '{} ({})'.format(self.code, self.name)
 
+    @property
+    def resources(self):
+        return self.resource_assignments.filter(
+            status=self.resource_assignments.model.STATUS_APPROVED,
+            start_date__lte=timezone.now().date(),
+            end_date__gte=timezone.now().date(),
+        )
+
     def employees_count(self):
-        return self.resource_set.filter(resource_type='employee').count()
+        return self.resources.filter(
+            resource__resource_type='employee',
+        ).count()
 
     def equipment_count(self):
-        return self.resource_set.filter(resource_type='equipment').count()
+        return self.resources.filter(
+            resource__resource_type='equipment',
+        ).count()
 
 
 class Activity(OwnedEntity):

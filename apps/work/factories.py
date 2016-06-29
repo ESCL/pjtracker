@@ -55,6 +55,11 @@ class ProjectFakeFactory(ProjectFactory):
     name = Faker('street_address')
     code = Faker('military_ship')
 
+    @post_generation
+    def managers(self, create, values):
+        if create and values:
+            self.managers.add(*values)
+
 
 class ActivityFakeFactory(ActivityFactory):
 

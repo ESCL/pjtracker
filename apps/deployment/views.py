@@ -37,12 +37,12 @@ class HoursView(ReadOnlyResourceView):
     list_template = 'hours.html'
     search_form = HoursSearchForm
 
-    @classmethod
-    def get_list_context(cls, request, objs):
-        ctx = super(HoursView, cls).get_list_context(request, objs)
+    def get_list_context(self, request, objs, **kwargs):
+        ctx = super(HoursView, self).get_list_context(request, objs, **kwargs)
         ctx['groups'] = request.GET.getlist('group_by') or ['project']
         return ctx
 
+    @classmethod
     def filter_objects(cls, user, qs, **kwargs):
         # Apply filters AND groupings (despite method name)
         # Note: we don't need to process the default filters

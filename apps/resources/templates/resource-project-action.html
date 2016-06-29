@@ -1,0 +1,50 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+<li><a href="/">home</a></li>
+<li><a href="{% url views.parent_collection %}">{{ views.parent_collection}}</a></li>
+<li><a href="{% url views.parent_instance pk=resource.instance.pk %}">{{ resource.identifier }}</a></li>
+<li><a href="{% url views.collection parent_pk=resource.instance.pk %}">projects</a></li>
+<li><a href="{% url views.instance parent_pk=resource.pk pk=resourceprojectassignment.pk %}">{{ resourceprojectassignment.project.code }}</a></li>
+<li><span>action</span></li>
+
+{% endblock %}
+
+
+{% block body %}
+
+<h3>{% if resourceprojectassignment.is_reviewable %}Review{% else %}Issue{% endif %} Project Assignment</h3>
+
+<dl>
+    <dt>{{ resource.resource_type|title }}</dt><dd>{{ resource }}</dd>
+    {% if resourceprojectassignment.id %}
+        <dt>Project</dt><dd>{{ resourceprojectassignment.project }}</dd>
+        <dt>Date Range</dt><dd>{{ resourceprojectassignment.start_date}} - {{ resourceprojectassignment.end_date|default:'..' }}</dd>
+    {% endif %}
+</dl>
+
+<form method="POST">
+
+    {% csrf_token %}
+    {{ main_form }}
+
+    <div class="buttons">
+        <button type="reset">Reset</button>
+        <button type="submit" class="button-primary">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}
