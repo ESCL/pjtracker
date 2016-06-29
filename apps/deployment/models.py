@@ -13,7 +13,9 @@ from .query import WorkLogQuerySet, ResourceProjectAssignmentQuerySet
 
 
 class TimeSheet(SignalsMixin, OwnedEntity):
-
+    """
+    TimeSheet instance, groups worklogs for a particular team and date.
+    """
     CUSTOM_SIGNALS = {
         'issued': Signal(),
         'approved': Signal(),
@@ -121,7 +123,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
 
-    def issue(self, user):
+    def issue(self, user, feedback=''):
         if user not in self.team.timekeepers.all():
             raise NotAuthorizedError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
 
@@ -130,7 +132,8 @@ class TimeSheet(SignalsMixin, OwnedEntity):
             TimeSheetAction.objects.create(
                 timesheet=self,
                 actor=user,
-                action=TimeSheetAction.ISSUED
+                action=TimeSheetAction.ISSUED,
+                feedback=feedback
             )
             self.status = self.STATUS_ISSUED
             self.save()
@@ -138,7 +141,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
         # Signal issued
         self.signal('issued')
 
-    def reject(self, user):
+    def reject(self, user, feedback=''):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
@@ -147,7 +150,8 @@ class TimeSheet(SignalsMixin, OwnedEntity):
             TimeSheetAction.objects.create(
                 timesheet=self,
                 actor=user,
-                action=TimeSheetAction.REJECTED
+                action=TimeSheetAction.REJECTED,
+                feedback=feedback
             )
             updated = self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED)
 
@@ -155,7 +159,7 @@ class TimeSheet(SignalsMixin, OwnedEntity):
         if updated:
             self.signal('rejected')
 
-    def approve(self, user):
+    def approve(self, user, feedback=''):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
@@ -164,7 +168,8 @@ class TimeSheet(SignalsMixin, OwnedEntity):
             TimeSheetAction.objects.create(
                 timesheet=self,
                 actor=user,
-                action=TimeSheetAction.APPROVED
+                action=TimeSheetAction.APPROVED,
+                feedback=feedback
             )
             updated = self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED)
 
@@ -327,10 +332,16 @@ class TimeSheetSettings(models.Model):
     )
 
 
-class ResourceProjectAssignment(OwnedEntity):
+class ResourceProjectAssignment(SignalsMixin, OwnedEntity):
     """
     Resource assignment to a Project.
     """
+    CUSTOM_SIGNALS = {
+        'issued': Signal(),
+        'approved': Signal(),
+        'rejected': Signal(),
+    }
+
     STATUS_PENDING = 'P'
     STATUS_ISSUED = 'I'
     STATUS_APPROVED = 'A'
@@ -388,6 +399,20 @@ class ResourceProjectAssignment(OwnedEntity):
         return self.status not in (self.STATUS_APPROVED, self.STATUS_ISSUED)
 
     @property
+    def is_rejected(self):
+        return self.status == self.STATUS_REJECTED
+
+    @cached_property
+    def last_rejection(self):
+        """
+        Last rejection action for this assignment.
+        """
+        try:
+            return self.actions.filter(action=ResourceProjectAssignmentAction.REJECTED).last()
+        except ResourceProjectAssignmentAction.DoesNotExist:
+            pass
+
+    @property
     def is_reviewable(self):
         return self.status == self.STATUS_ISSUED
 
@@ -395,11 +420,12 @@ class ResourceProjectAssignment(OwnedEntity):
         return '{} in {} ({}-{})'.format(self.resource, self.project,
                                          self.start_date, self.end_date)
 
-    def approve(self, user):
+    def approve(self, user, feedback=''):
         """
         Approve this assignment.
 
         :param user: User instance
+        :param feedback: feedback to add to action
         :return: None
         """
         # Make sure user can do this
@@ -412,18 +438,23 @@ class ResourceProjectAssignment(OwnedEntity):
             ResourceProjectAssignmentAction.objects.create(
                 assignment=self,
                 actor=user,
-                action=ResourceProjectAssignmentAction.APPROVED
+                action=ResourceProjectAssignmentAction.APPROVED,
+                feedback=feedback
             )
 
             # Set status and save
             self.status = self.STATUS_APPROVED
             self.save()
 
-    def issue(self, user):
+        # Signal approval
+        self.signal('approved')
+
+    def issue(self, user, feedback=''):
         """
         Issue the assignment for approval.
 
         :param user: User instance
+        :param feedback: feedback to add to action
         :return: None
         """
         # Make sure user can do this
@@ -436,16 +467,21 @@ class ResourceProjectAssignment(OwnedEntity):
             ResourceProjectAssignmentAction.objects.create(
                 assignment=self,
                 actor=user,
-                action=ResourceProjectAssignmentAction.ISSUED
+                action=ResourceProjectAssignmentAction.ISSUED,
+                feedback=feedback
             )
             self.status = self.STATUS_ISSUED
             self.save()
 
-    def reject(self, user):
+        # Signal issued
+        self.signal('issued')
+
+    def reject(self, user, feedback=''):
         """
         Reject this assignment.
 
         :param user: User instance
+        :param feedback: feedback to add to action
         :return: None
         """
         # Make sure user can do this
@@ -457,14 +493,20 @@ class ResourceProjectAssignment(OwnedEntity):
             ResourceProjectAssignmentAction.objects.create(
                 assignment=self,
                 actor=user,
-                action=ResourceProjectAssignmentAction.REJECTED
+                action=ResourceProjectAssignmentAction.REJECTED,
+                feedback=feedback
             )
             self.status = self.STATUS_REJECTED
             self.save()
 
+        # Signal rejected
+        self.signal('rejected')
 
-class ResourceProjectAssignmentAction(OwnedEntity):
 
+class ResourceProjectAssignmentAction(SignalsMixin, OwnedEntity):
+    """
+    Action for an assignment.
+    """
     ISSUED = 'I'
     REJECTED = 'R'
     APPROVED = 'A'

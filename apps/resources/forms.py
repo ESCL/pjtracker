@@ -197,5 +197,6 @@ class ResourceProjectAssignmentActionForm(forms.Form):
     def save(self):
         # Determine method and execute it
         action = self.cleaned_data.get('action')
+        feedback = self.cleaned_data.get('feedback')
         method = getattr(self.assignment, action)
-        method(self.user)
+        method(self.user, feedback)

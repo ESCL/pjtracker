@@ -121,11 +121,12 @@ class TimeSheetActionFormTest(TestCase):
     @mock.patch('apps.deployment.models.TimeSheet.approve', mock.MagicMock())
     @mock.patch('apps.deployment.models.TimeSheet.reject', mock.MagicMock())
     def test_save(self):
+        # TODO: remove mocks to check action instance creation
         # Post an issue, should call issue
         form = TimeSheetActionForm({'action': 'issue', 'feedback': ''}, instance=self.ts, user=self.user)
         form.is_valid()
         form.save()
-        TimeSheet.issue.assert_called_once_with(self.user)
+        TimeSheet.issue.assert_called_once_with(self.user, '')
         self.assertFalse(TimeSheet.approve.called)
         self.assertFalse(TimeSheet.reject.called)
         TimeSheet.issue.reset_mock()
@@ -136,7 +137,7 @@ class TimeSheetActionFormTest(TestCase):
         form.is_valid()
         form.save()
         self.assertFalse(TimeSheet.issue.called)
-        TimeSheet.approve.assert_called_once_with(self.user)
+        TimeSheet.approve.assert_called_once_with(self.user, '')
         self.assertFalse(TimeSheet.reject.called)
         TimeSheet.approve.reset_mock()
 
@@ -146,7 +147,7 @@ class TimeSheetActionFormTest(TestCase):
         form.save()
         self.assertFalse(TimeSheet.issue.called)
         self.assertFalse(TimeSheet.approve.called)
-        TimeSheet.reject.assert_called_once_with(self.user)
+        TimeSheet.reject.assert_called_once_with(self.user, 'that is so wrong')
 
 
 class TimeSheetSettingsFormTest(TestCase):

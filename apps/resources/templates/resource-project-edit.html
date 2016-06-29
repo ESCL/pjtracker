@@ -33,6 +33,15 @@
 
 <dl>
     <dt>{{ resource.resource_type|title }}</dt><dd>{{ resource }}</dd>
+    {% if resourceprojectassignment.is_rejected %}
+        <dt>Review</dt>
+        <dd>
+            <ul>
+                <li>Rejected by <b>{{ resourceprojectassignment.last_rejection.actor }}</b> at {{ resourceprojectassignment.last_rejection.timestamp }}</li>
+                <li>Reason: {{ resourceprojectassignment.last_rejection.feedback }}</li>
+            </ul>
+        </dd>
+    {% endif %}
 </dl>
 
 

@@ -166,6 +166,7 @@ class ResourceProjectAssignmentActionFormTest(TestCase):
         a = self.assignment.actions.last()
         self.assertEqual(a.action, ResourceProjectAssignmentAction.REJECTED)
         self.assertEqual(a.actor, self.boss)
+        self.assertEqual(a.feedback, 'wrong.')
 
         # Issue again
         data = {'action': 'issue'}
