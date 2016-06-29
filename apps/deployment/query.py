@@ -6,6 +6,15 @@ from django_group_by import GroupByMixin
 from ..common.db.query import OwnedEntityQuerySet
 
 
+class ResourceProjectAssignmentQuerySet(OwnedEntityQuerySet):
+
+    def in_dates(self, start, end):
+        qs = self.exclude(end_date__lt=start)
+        if end:
+            qs = qs.exclude(start_date__gt=end)
+        return qs
+
+
 class WorkLogQuerySet(OwnedEntityQuerySet, GroupByMixin):
 
     def filter_for_querystring(self, querystring):

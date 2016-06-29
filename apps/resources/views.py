@@ -1,9 +1,12 @@
 
-from ..common.views.base import StandardResourceView
-from .models import Employee, Equipment, EquipmentType, ResourceCategory
+from ..common.views.base import StandardResourceView, SubResourceView
+from ..deployment.models import ResourceProjectAssignment
+from .models import (Employee, Equipment, EquipmentType, ResourceCategory, Resource)
 from .forms import (EmployeeForm, EmployeeSearchForm, EquipmentForm,
                     EquipmentSearchForm, EquipmentTypeForm, EquipmentTypeSearchForm,
-                    ResourceCategoryForm, ResourceCategorySearchForm)
+                    ResourceCategoryForm, ResourceCategorySearchForm,
+                    ResourceProjectAssignmentForm, ResourceProjectAssignmentSearchForm,
+                    ResourceProjectAssignmentActionForm)
 
 
 class EmployeeView(StandardResourceView):
@@ -30,8 +33,6 @@ class EquipmentView(StandardResourceView):
         'add': ('resources.add_equipment',),
         'edit': ('resources.change_equipment',)
     }
-    # Override collection view name to incorrect plural
-    collection_view_name = 'equipments'
 
 
 class EquipmentTypeView(StandardResourceView):
@@ -45,8 +46,6 @@ class EquipmentTypeView(StandardResourceView):
         'add': ('resources.add_equipmenttype',),
         'edit': ('resources.change_equipmenttype',)
     }
-    # Override default to make it "sluggish"
-    collection_view_name = 'equipment-types'
 
 
 class ResourceCategoryView(StandardResourceView):
@@ -60,5 +59,30 @@ class ResourceCategoryView(StandardResourceView):
         'add': ('resources.add_resourcecategory',),
         'edit': ('resources.change_resourcecategory',),
     }
-    # Override default to make it "sluggish"
-    collection_view_name = 'resource-categories'
+
+
+class ResourceProjectAssignmentView(SubResourceView):
+    parent_model = Resource
+    parent_attr = 'resource'
+    model = ResourceProjectAssignment
+    list_template = 'resource-projects.html'
+    detail_template = 'resource-project.html'
+    edit_template = 'resource-project-edit.html'
+    main_form = ResourceProjectAssignmentForm
+    search_form = ResourceProjectAssignmentSearchForm
+    permissions = {
+        'add': ('deployment.add_resourceprojectassignment',),
+        'edit': ('deployment.change_resourceprojectassignment',)
+    }
+
+
+class ResourceProjectAssignmentActionView(SubResourceView):
+    parent_model = Resource
+    parent_attr = 'resource'
+    model = ResourceProjectAssignment
+    edit_template = 'resource-project-action.html'
+    main_form = ResourceProjectAssignmentActionForm
+    permissions = {
+        'add': ('deployment.issue_resourceprojectassignment',
+                'deployment.review_resourceprojectassignment',)
+    }

@@ -14,7 +14,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><a href="{% url 'equipments' %}">equipment</a></li>
+<li><a href="{% url 'equipments' %}">equipments</a></li>
 <li><span>{{ equipment.identifier }}</span></li>
 <li><a href="{% url 'equipment' pk=equipment.id action='edit' %}">edit</a></li>
 
@@ -36,12 +36,38 @@
 <hr>
 
 <div class="row">
-    <h4>Assignment</h4>
+    <h4>Organization</h4>
     <dl>
         <dt>Company</dt><dd>{{ equipment.company }}</dd>
         <dt>Team</dt><dd>{{ equipment.team|default:'-' }}</dd>
-        <dt>Project</dt><dd>{{ equipment.project }}</dd>
     </dl>
+</div>
+
+<hr>
+
+<div class="row">
+
+    <ul class="action-group header-action-group">
+        <li><a href="{% url 'equipment-projects' parent_pk=equipment.resource_ptr_id %}">view all</a></li>
+        <li><a href="{% url 'equipment-project' parent_pk=equipment.resource_ptr_id action='add' %}">add</a></li>
+    </ul>
+    <h4>Projects</h4>
+
+    {% if equipment.assigned_projects.exists %}
+        <dl>
+            {% for pa in equipment.assigned_projects %}
+                <dt>{{ pa.project.code }}</dt>
+                <dd>
+                    <ul>
+                        <li>{{ pa.project.name }}</li>
+                        <li>{{ pa.start_date }} - {{ pa.end_date|default:'..' }}</li>
+                    </ul>
+                </dd>
+            {% endfor %}
+        </dl>
+    {% else %}
+        Equipment has no approved project assignments.
+    {% endif %}
 </div>
 
 {% endblock %}

@@ -17,6 +17,7 @@ class Command(BaseCommand):
         hr = Group.objects.get(name='Human Resources')
         tmgt = Group.objects.get(name='Team Management')
         pcon = Group.objects.get(name='Project Control')
+        pmgt = Group.objects.get(name='Project Management')
         tk = Group.objects.get(name='Time-Keeping')
         sup = Group.objects.get(name='Supervision')
 
@@ -28,6 +29,7 @@ class Command(BaseCommand):
         users.append(UserFakeFactory.create(username='hr', password='123', owner=account, groups=[hr]))
         users.append(UserFakeFactory.create(username='tmgt', password='123', owner=account, groups=[tmgt]))
         users.append(UserFakeFactory.create(username='pcon', password='123', owner=account, groups=[pcon]))
+        users.append(UserFakeFactory.create(username='pmgt', password='123', owner=account, groups=[pmgt]))
         users.append(UserFakeFactory.create(username='timekeeper', password='123', owner=account, groups=[tk]))
         users.append(UserFakeFactory.create(username='supervisor', password='123', owner=account, groups=[sup]))
 

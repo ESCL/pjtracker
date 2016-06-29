@@ -35,3 +35,20 @@
 </form>
 
 {% endblock %}
+
+
+{% block scripts %}
+
+    <script src="{% static 'js/filter-multi-select.js' %}"></script>
+    <script>
+        (function() {
+            // Use FilterMultiSelect to turn multi-select into something usable
+            var managers = document.querySelector('#id_main-managers');
+
+            var managersSelect = new FilterMultiSelect(managers);
+
+            managersSelect.start();
+        })();
+    </script>
+
+{% endblock %}

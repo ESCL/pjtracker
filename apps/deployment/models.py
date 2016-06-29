@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.dispatch import Signal
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -9,11 +9,13 @@ from django_signals_mixin import SignalsMixin
 
 from ..common.db.models import OwnedEntity
 from ..common.exceptions import NotAuthorizedError
-from .query import WorkLogQuerySet
+from .query import WorkLogQuerySet, ResourceProjectAssignmentQuerySet
 
 
 class TimeSheet(SignalsMixin, OwnedEntity):
-
+    """
+    TimeSheet instance, groups worklogs for a particular team and date.
+    """
     CUSTOM_SIGNALS = {
         'issued': Signal(),
         'approved': Signal(),
@@ -121,41 +123,58 @@ class TimeSheet(SignalsMixin, OwnedEntity):
     def __str__(self):
         return '{} - {}'.format(self.team, self.date.isoformat())
 
-    def issue(self, user):
+    def issue(self, user, feedback=''):
         if user not in self.team.timekeepers.all():
             raise NotAuthorizedError('Only team {} timekeepers can issue a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.ISSUED
-        )
-        self.status = self.STATUS_ISSUED
-        self.save()
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.ISSUED,
+                feedback=feedback
+            )
+            self.status = self.STATUS_ISSUED
+            self.save()
+
+        # Signal issued
         self.signal('issued')
 
-    def reject(self, user):
+    def reject(self, user, feedback=''):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can reject a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.REJECTED
-        )
-        if self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED):
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.REJECTED,
+                feedback=feedback
+            )
+            updated = self.update_status('rejection', TimeSheetAction.REJECTED, self.STATUS_REJECTED)
+
+        # Signal rejected if status was changed
+        if updated:
             self.signal('rejected')
 
-    def approve(self, user):
+    def approve(self, user, feedback=''):
         if user not in self.team.supervisors.all():
             raise NotAuthorizedError('Only team {} supervisor can approve a TimeSheet.'.format(self.team))
 
-        TimeSheetAction.objects.create(
-            timesheet=self,
-            actor=user,
-            action=TimeSheetAction.APPROVED
-        )
-        if self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED):
+        # Create action and update status atomically
+        with transaction.atomic():
+            TimeSheetAction.objects.create(
+                timesheet=self,
+                actor=user,
+                action=TimeSheetAction.APPROVED,
+                feedback=feedback
+            )
+            updated = self.update_status('approval', TimeSheetAction.APPROVED, self.STATUS_APPROVED)
+
+        # Signal rejected if status was changed
+        if updated:
             self.signal('approved')
 
     def update_status(self, operation, action, status):
@@ -312,3 +331,202 @@ class TimeSheetSettings(models.Model):
         default=TimeSheet.REVIEW_POLICY_FIRST
     )
 
+
+class ResourceProjectAssignment(SignalsMixin, OwnedEntity):
+    """
+    Resource assignment to a Project.
+    """
+    CUSTOM_SIGNALS = {
+        'issued': Signal(),
+        'approved': Signal(),
+        'rejected': Signal(),
+    }
+
+    STATUS_PENDING = 'P'
+    STATUS_ISSUED = 'I'
+    STATUS_APPROVED = 'A'
+    STATUS_REJECTED = 'R'
+
+    STATUS_ALLOWED_ACTIONS = {
+        STATUS_PENDING: (('issue', 'Issue'),),
+        STATUS_ISSUED: (('approve', 'Approve'),
+                        ('reject', 'Reject')),
+        STATUS_REJECTED: (('issue', 'Issue'),)
+    }
+
+    objects = ResourceProjectAssignmentQuerySet.as_manager()
+
+    resource = models.ForeignKey(
+        'resources.Resource',
+        related_name='project_assignments'
+    )
+    project = models.ForeignKey(
+        'work.Project',
+        related_name='resource_assignments'
+    )
+    start_date = models.DateField(
+        db_index=True
+    )
+    end_date = models.DateField(
+        blank=True,
+        null=True,
+        db_index=True
+    )
+    timestamp = models.DateTimeField(
+        default=timezone.now
+    )
+    status = models.CharField(
+        db_index=True,
+        max_length=1,
+        choices=((STATUS_PENDING, 'Pending'),
+                 (STATUS_ISSUED, 'Issued'),
+                 (STATUS_APPROVED, 'Approved'),
+                 (STATUS_REJECTED, 'Rejected')),
+        default=STATUS_PENDING
+    )
+
+    @property
+    def allowed_actions(self):
+        return self.STATUS_ALLOWED_ACTIONS.get(self.status, [])
+
+    @property
+    def is_current(self):
+        return self.start_date <= timezone.now().date() <= self.end_date
+
+    @property
+    def is_issuable(self):
+        # Not sure whether this is correct, but it's very late
+        return self.status not in (self.STATUS_APPROVED, self.STATUS_ISSUED)
+
+    @property
+    def is_rejected(self):
+        return self.status == self.STATUS_REJECTED
+
+    @cached_property
+    def last_rejection(self):
+        """
+        Last rejection action for this assignment.
+        """
+        try:
+            return self.actions.filter(action=ResourceProjectAssignmentAction.REJECTED).last()
+        except ResourceProjectAssignmentAction.DoesNotExist:
+            pass
+
+    @property
+    def is_reviewable(self):
+        return self.status == self.STATUS_ISSUED
+
+    def __str__(self):
+        return '{} in {} ({}-{})'.format(self.resource, self.project,
+                                         self.start_date, self.end_date)
+
+    def approve(self, user, feedback=''):
+        """
+        Approve this assignment.
+
+        :param user: User instance
+        :param feedback: feedback to add to action
+        :return: None
+        """
+        # Make sure user can do this
+        # TODO: this should be in the form!
+        if user not in self.project.managers.all():
+            raise NotAuthorizedError('Only {} managers can approve this assignment.'.format(self.project))
+
+        with transaction.atomic():
+            # Create related action instance
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.APPROVED,
+                feedback=feedback
+            )
+
+            # Set status and save
+            self.status = self.STATUS_APPROVED
+            self.save()
+
+        # Signal approval
+        self.signal('approved')
+
+    def issue(self, user, feedback=''):
+        """
+        Issue the assignment for approval.
+
+        :param user: User instance
+        :param feedback: feedback to add to action
+        :return: None
+        """
+        # Make sure user can do this
+        # Note: workaround for https://github.com/ESCL/pjtracker/issues/117
+        # TODO: this should be in the form!
+        if not user.has_perm('deployment.issue_resourceprojectassignment'):
+            raise NotAuthorizedError('Only human resource officers can issue a project assignment.')
+
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.ISSUED,
+                feedback=feedback
+            )
+            self.status = self.STATUS_ISSUED
+            self.save()
+
+        # Signal issued
+        self.signal('issued')
+
+    def reject(self, user, feedback=''):
+        """
+        Reject this assignment.
+
+        :param user: User instance
+        :param feedback: feedback to add to action
+        :return: None
+        """
+        # Make sure user can do this
+        # TODO: this should be in the form!
+        if user not in self.project.managers.all():
+            raise NotAuthorizedError('Only {} managers can reject this assignment.'.format(self.project))
+
+        with transaction.atomic():
+            ResourceProjectAssignmentAction.objects.create(
+                assignment=self,
+                actor=user,
+                action=ResourceProjectAssignmentAction.REJECTED,
+                feedback=feedback
+            )
+            self.status = self.STATUS_REJECTED
+            self.save()
+
+        # Signal rejected
+        self.signal('rejected')
+
+
+class ResourceProjectAssignmentAction(SignalsMixin, OwnedEntity):
+    """
+    Action for an assignment.
+    """
+    ISSUED = 'I'
+    REJECTED = 'R'
+    APPROVED = 'A'
+
+    assignment = models.ForeignKey(
+        'ResourceProjectAssignment',
+        related_name='actions'
+    )
+    actor = models.ForeignKey(
+        'accounts.User'
+    )
+    action = models.CharField(
+        max_length=16,
+        choices=((ISSUED, 'Issued'),
+                 (REJECTED, 'Rejected'),
+                 (APPROVED, 'Approved'))
+    )
+    feedback = models.TextField(
+        blank=True
+    )
+    timestamp = models.DateTimeField(
+        default=timezone.now
+    )

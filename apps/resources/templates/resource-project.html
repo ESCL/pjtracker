@@ -1,0 +1,51 @@
+{% extends 'apps/base.html' %}
+
+{% load staticfiles %}
+{% load tags %}
+
+
+{% block styles %}
+
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+{% with resourceprojectassignment.resource as resource %}
+    <li><a href="/">home</a></li>
+    <li><a href="{% url views.parent_collection %}">{{ views.parent_collection }}</a></li>
+    <li><a href="{% url views.parent_instance pk=resource.instance.pk %}">{{ resource.identifier }}</a></li>
+    <li><a href="{% url views.collection parent_pk=resource.instance.pk %}">projects</a></li>
+    <li><span>{{ resourceprojectassignment.project.code }}</span></li>
+    <li><a href="{% url views.instance parent_pk=resource.instance.pk pk=resourceprojectassignment.id action='edit' %}">edit</a></li>
+{% endwith %}
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row">
+    <h3>Project Assignment</h3>
+    <dl>
+        <dt>Resource</dt><dd>{{ resourceprojectassignment.resource }}</dd>
+        <dt>Project</dt><dd>{{ resourceprojectassignment.project }}</dd>
+        <dt>Date Range</dt><dd>{{ resourceprojectassignment.start_date}} - {{ resourceprojectassignment.end_date }}</dd>
+        <dt>Status</dt><dd>{{ resourceprojectassignment.get_status_display }}</dd>
+        <dt>Workflow</dt>
+        <dd>
+            <ul>
+                {% for ta in resourceprojectassignment.actions.all %}
+                    <li><b>{{ ta.get_action_display|title }}</b> by {{ ta.actor }} on {{ ta.timestamp }}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </dd>
+    </dl>
+</div>
+
+{% endblock %}

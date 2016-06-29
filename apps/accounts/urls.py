@@ -6,6 +6,9 @@ from django.contrib.auth import views as auth_views
 from .views import SettingsView, UserView
 
 
+settings_view = SettingsView.as_view()
+user_view = UserView.as_view()
+
 urlpatterns = [
     # Auth views
     url(r'^login/', auth_views.login, {'template_name': 'login.html'}, name='login'),
@@ -16,10 +19,10 @@ urlpatterns = [
         {'template_name': 'password-changed.html'}, name='password_change_done'),
 
     # Settings view
-    url(r'^settings/$', SettingsView.as_view(), name='settings'),
+    url(r'^settings/$', settings_view, name='settings'),
 
     # Users view
-    url(r'^users/$', UserView.as_view(), name='users'),
-    url(r'^users/(?P<pk>\d+)/$', UserView.as_view(), name='user'),
-    url(r'^users/(?P<pk>\d+)/(?P<action>edit)/$', UserView.as_view(), name='user'),
+    url(r'^users/$', user_view, name='users'),
+    url(r'^users/(?P<pk>\d+)/$', user_view, name='user'),
+    url(r'^users/(?P<pk>\d+)/(?P<action>edit)/$', user_view, name='user'),
 ]

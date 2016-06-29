@@ -36,3 +36,9 @@ dd ul {
 dd li {
     list-style-type: none;
 }
+
+.header-action-group {
+    margin-top: 6px;
+    float: right;
+    clear: left;
+}

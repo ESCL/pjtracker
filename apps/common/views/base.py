@@ -107,11 +107,13 @@ class ReadOnlyResourceView(SafeView):
     list_template = None
     detail_template = None
     search_form = None
+    views = None
+    collection_view_name = None
 
     # Helper class methods
 
     @classmethod
-    def build_filters(cls, qd, **kwargs):
+    def build_filters(cls, query_dict, **kwargs):
         """
         Build the filters dict from a querydict (parsed querystring).
 
@@ -122,17 +124,17 @@ class ReadOnlyResourceView(SafeView):
         filters = {}
 
         # Populate it
-        for k in qd:
+        for k in query_dict:
             # Get value depending on key
             if k in ('p', 'ps',):
                 # page or page_size, skip it (not handled by filter)
                 continue
             elif k.endswith('__in') or k.endswith('__range'):
                 # membership, get value as list
-                v = qd.getlist(k)
+                v = query_dict.getlist(k)
             else:
                 # others, get value a simple object
-                v = qd.get(k)
+                v = query_dict.get(k)
 
             # Add key:value to filter if it has a value
             if v:
@@ -142,7 +144,7 @@ class ReadOnlyResourceView(SafeView):
         return filters
 
     @classmethod
-    def filter_objects(cls, user, qd, **kwargs):
+    def filter_objects(cls, user, query_dict, **kwargs):
         """
         Filter the model queryset for the given user and querydict.
 
@@ -150,24 +152,23 @@ class ReadOnlyResourceView(SafeView):
         filter construction.
         """
         # Build filters from querydict
-        filters = cls.build_filters(qd, **kwargs)
+        filters = cls.build_filters(query_dict, **kwargs)
 
         # Get the filtered queryset and return it
         qs = cls.model.objects.filter(**filters).for_user(user)
         return qs
 
-    @classmethod
-    def get_instance_context(cls, request, obj):
+    def get_instance_context(self, request, obj, **kwargs):
         """
         Build the context for the single instance view.
 
         Override if you need something different from the default, which is:
           - model verbose name singular: instance
         """
-        return {cls.model._meta.verbose_name.replace(' ', ''): obj}
+        return {'views': self.views,
+                self.model._meta.verbose_name.replace(' ', ''): obj}
 
-    @classmethod
-    def get_list_context(cls, request, objs):
+    def get_list_context(self, request, objs, **kwargs):
         """
         Build the context for the list view.
 
@@ -175,7 +176,8 @@ class ReadOnlyResourceView(SafeView):
           - model verbose name plural: queryset
           - qs: querystring
         """
-        return {cls.model._meta.verbose_name_plural.replace(' ', ''): objs,
+        return {'views': self.views,
+                self.model._meta.verbose_name_plural.replace(' ', ''): objs,
                 'qs': re.sub(r'[&]?p(s)?=\d+', '', request.GET.urlencode())}
 
     @classmethod
@@ -197,7 +199,7 @@ class ReadOnlyResourceView(SafeView):
         to the custom behaviour instead.
         """
         if pk:
-            return self.show_instance(request, pk)
+            return self.show_instance(request, pk, **kwargs)
         else:
             return self.show_list(request, **kwargs)
 
@@ -234,7 +236,7 @@ class ReadOnlyResourceView(SafeView):
             objs = p.page(page_num)
 
         # Build the context (include form if required)
-        context = self.get_list_context(request, objs)
+        context = self.get_list_context(request, objs, **kwargs)
         context.update({'p': page_num, 'ps': page_size})
         if self.search_form:
             search_form = self.search_form(request.GET, user=request.user)
@@ -243,7 +245,7 @@ class ReadOnlyResourceView(SafeView):
         # Finally, render the template
         return render(request, self.list_template, context, status=status)
 
-    def show_instance(self, request, pk):
+    def show_instance(self, request, pk, **kwargs):
         """
         Render the single-object view.
 
@@ -254,7 +256,7 @@ class ReadOnlyResourceView(SafeView):
         obj = self.get_object(request.user, pk)
 
         # Build context
-        context = self.get_instance_context(request, obj)
+        context = self.get_instance_context(request, obj, **kwargs)
         return render(request, self.detail_template, context)
 
 
@@ -269,7 +271,6 @@ class StandardResourceView(ReadOnlyResourceView):
     edit_template = None
     main_form = None
     sub_form = None
-    collection_view_name = None
 
     # Main http methods (proxy to worker methods)
     # Usually you won't need to override, unless you're doing something weird
@@ -283,7 +284,7 @@ class StandardResourceView(ReadOnlyResourceView):
         """
         # User wants to add or edit, show edit forms
         if action in ('add', 'edit'):
-            return self.show_forms(request, pk)
+            return self.show_forms(request, pk, **kwargs)
 
         # Other cases, handle are super class
         return super(StandardResourceView, self).get(request, pk,
@@ -319,7 +320,7 @@ class StandardResourceView(ReadOnlyResourceView):
     # Worker methods
     # Override to modify standard behaviour
 
-    def show_forms(self, request, pk):
+    def show_forms(self, request, pk, **kwargs):
         """
         Render the main form and subform for the given instance pk.
 
@@ -366,7 +367,7 @@ class StandardResourceView(ReadOnlyResourceView):
         else:
             sub_form = None
 
-        # Valiate forms
+        # Validate forms
         if main_form.is_valid() and (not sub_form or sub_form.is_valid()):
             # Everything's valid, save the form
             main_form.save()
@@ -396,3 +397,104 @@ class StandardResourceView(ReadOnlyResourceView):
         view_name = (self.collection_view_name or
                      self.model._meta.verbose_name_plural.lower().replace(' ', ''))
         return redirect(view_name, **kwargs)
+
+
+class SubResourceView(StandardResourceView):
+    """
+    Base class for resource views that provide the full set of CRUD operations
+    for a model's collection (list) and instance (detail) as a subresource
+    of another object.
+
+    In most cases, you won't need to modify any methods, only assign the model,
+    the templates, the edit form and the permissions.
+    """
+    parent_model = None
+    parent_attr = None
+
+    @classmethod
+    def build_filters(cls, query_dict, **kwargs):
+        """
+        Override to filter by parent as well.
+        """
+        parent_pk = kwargs.pop('parent_pk')
+        filters = super(SubResourceView, cls).build_filters(query_dict, **kwargs)
+        filters[cls.parent_attr] = parent_pk
+        return filters
+
+    def get_list_context(self, request, objs, **kwargs):
+        """
+        Override to include parent instance.
+        """
+        context = super(SubResourceView, self).get_list_context(request, objs, **kwargs)
+        context[self.parent_attr] = self.parent_model.objects.get(pk=kwargs['parent_pk'])
+        return context
+
+    # Worker methods
+    # Override to modify standard behaviour
+
+    def show_forms(self, request, pk, **kwargs):
+        """
+        Render the main form and subform for the given instance pk.
+
+        Override this method if you need to customize the context.
+        """
+        # Fetch objects (or use None for new one)
+        parent = self.parent_model.objects.get(pk=kwargs['parent_pk'])
+        obj = pk and self.get_object(request.user, pk) or None
+
+        # Initialize the main form and build context
+        main_form = self.main_form(parent=parent, instance=obj,
+                                   user=request.user, prefix='main')
+        context = {self.parent_attr: parent, 'views': self.views,
+                   self.model._meta.verbose_name.replace(' ', ''): obj,
+                   'main_form': main_form}
+
+        # Add subform to context if required
+        if pk and self.sub_form:
+            context['sub_form'] = self.sub_form(parent=parent, instance=obj,
+                                                user=request.user, prefix='sub')
+
+        # Render view
+        return render(request, self.edit_template, context)
+
+    def upsert_instance(self, request, pk, **kwargs):
+        """
+        Save the main form (and subform is the instance is not new) and redirect
+        to the collection view.
+
+        Override this method if you need to customize the processing of forms.
+        """
+        # Fetch the objects (or use None for new one)
+        parent = self.parent_model.objects.get(pk=kwargs['parent_pk'])
+        obj = pk and self.get_object(request.user, pk) or None
+
+        # Process the main form and build context
+        main_form = self.main_form(request.POST, parent=parent, instance=obj,
+                                   user=request.user, prefix='main')
+        context = {self.model._meta.verbose_name.replace(' ', ''): obj,
+                   'main_form': main_form, 'views': self.views,
+                   self.parent_attr: parent}
+
+        # Process subform if required and add to context
+        if pk and self.sub_form:
+            sub_form = self.sub_form(request.POST, parent=parent, instance=obj,
+                                     user=request.user, prefix='sub')
+            context['sub_form'] = sub_form
+        else:
+            sub_form = None
+
+        # Validate forms
+        if main_form.is_valid() and (not sub_form or sub_form.is_valid()):
+            # Everything's valid, save the form
+            main_form.save()
+            if sub_form:
+                sub_form.save()
+
+            # Now redirect to collection view, passing kwargs (subresources work too)
+            view_name = (self.collection_view_name or
+                         self.model._meta.verbose_name_plural.lower().replace(' ', ''))
+            return redirect(view_name, **kwargs)
+
+        else:
+            # Invalid, render forms again with errors
+            return render(request, self.edit_template, context, status=400)

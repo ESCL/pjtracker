@@ -14,7 +14,7 @@
 {% block breadcrumbs %}
 
 <li><a href="/">home</a></li>
-<li><span>equipment</span></li>
+<li><span>equipments</span></li>
 <li><a href="{% url 'equipment' action='add' %}" title="add">+</a></li>
 
 {% endblock %}
@@ -37,7 +37,6 @@
                 <th>Category</th>
                 <th>Company</th>
                 <th>Team</th>
-                <th>Project</th>
                 <th>Location</th>
                 <th class="actions">Actions</th>
             </tr>
@@ -52,7 +51,6 @@
                     <td title="{{ e.category.name }}">{{ e.category.code }}</td>
                     <td title="{{ e.company.name }}">{{ e.company.code }}</td>
                     <td title="{{ e.team.name }}">{{ e.team.code }}</td>
-                    <td title="{{ e.project.name }}">{{ e.project.code }}</td>
                     <td>{{ e.location }}</td>
                     <td class="actions">
                         <ul class="action-group">

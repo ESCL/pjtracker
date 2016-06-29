@@ -25,3 +25,4 @@ class EquipmentQuerySet(OwnedEntityQuerySet):
             args.append(Q(Q(type__name__icontains=type)|Q(type__parent__name__icontains=type)))
 
         return super(EquipmentQuerySet, self).filter(*args, **kwargs)
+

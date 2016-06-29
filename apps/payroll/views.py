@@ -19,7 +19,6 @@ class CalendarDayView(StandardResourceView):
     list_template = 'calendar.html'
     detail_template = 'calendar-day.html'
     edit_template = 'calendar-day-edit.html'
-    collection_view_name = 'calendar'
     permissions = {
         'add': ('payroll.add_calendarday',),
         'edit': ('payroll.change_calendarday',)
@@ -33,7 +32,6 @@ class HourTypeView(StandardResourceView):
     list_template = 'hour-types.html'
     detail_template = 'hour-type.html'
     edit_template = 'hour-type-edit.html'
-    collection_view_name = 'hour-types'
     permissions = {
         'add': ('payroll.add_hourtype',),
         'edit': ('payroll.change_hourtype',)
@@ -52,13 +50,12 @@ class PeriodView(StandardResourceView):
         'edit': ('payroll.change_period',)
     }
 
-    @classmethod
-    def get_instance_context(cls, request, obj):
+    def get_instance_context(self, request, obj, **kwargs):
         """
         Override to add worked hours subtotals.
         """
         # First get default context
-        ctx = super(PeriodView, cls).get_instance_context(request, obj)
+        ctx = super(PeriodView, self).get_instance_context(request, obj)
 
         # Add worked hours and return context
         ctx['worked_hours'] = WorkedHours.objects.for_payroll(obj)\
