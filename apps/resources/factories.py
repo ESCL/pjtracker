@@ -47,7 +47,6 @@ class EmployeeFactory(DjangoModelFactory):
     department = NullableSubFactory(DepartmentFactory, owner=SelfAttribute('..owner'))
     position = SubFactory(PositionFactory, owner=SelfAttribute('..owner'))
     category = NullableSubFactory(ResourceCategoryFactory, owner=SelfAttribute('..owner'))
-    project = NullableSubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
     location = NullableSubFactory(LocationFactory, owner=SelfAttribute('..owner'))
 
 
@@ -61,7 +60,6 @@ class EquipmentFactory(DjangoModelFactory):
     company = SubFactory(CompanyFactory, owner=SelfAttribute('..owner'))
     type = SubFactory(EquipmentTypeFactory, owner=SelfAttribute('..owner'))
     category = NullableSubFactory(ResourceCategoryFactory, owner=SelfAttribute('..owner'))
-    project = NullableSubFactory(ProjectFactory, owner=SelfAttribute('..owner'))
     location = NullableSubFactory(LocationFactory, owner=SelfAttribute('..owner'))
 
 

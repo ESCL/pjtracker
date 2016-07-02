@@ -124,23 +124,17 @@ class ImportDataTest(TestCase):
     def test_import_employees(self, open_mock):
         # Simulate somewhat heterogeneous file with a few errors
         i_file = StringIO(
-            'identifier,first_name,last_name,gender,company__code,company__name,position__code,position__name,project__code,project__name\n'
+            'identifier,first_name,last_name,gender,company__code,company__name,position__code,position__name\n'
             # OK: all complete
-            'gps930442,Mike,Litoris,M,GPS,Global Pundits Society,PLE,Planning Engineer,KOL,Kingdom of Loathing\n'
-            # OK: project matched by code
-            'gps930443,Michelle,Wazoo,F,NAP,Napoleon Brothers,PLE,,KOL,\n'
+            'gps930442,Mike,Litoris,M,GPS,Global Pundits Society,PLE,Planning Engineer\n'
             # OK: all matched by code, no names required
-            'gps930445,Peter,Griffin,M,GPS,,PLE,,KOL,\n'
-            # OK: project not required
-            'gps930444,Andres,Iniaquella,M,TRU,Toys R-Us,SAL,Salesman,,\n'
+            'gps930445,Peter,Griffin,M,GPS,,PLE,\n'
             # OK: position code determined automatically
-            'lol123,Peter,Capusotto,M,GPS,,,Lala,,\n'
+            'lol123,Peter,Capusotto,M,NAP,Napoleon Brothers,,Lala\n'
             # error: missing identifier
-            ',Mike,Litoris,M,GPS,Global Pundits Society,PLE,Planning Engineer,KOL,\n'
+            ',Mike,Litoris,M,GPS,Global Pundits Society,PLE,Planning Engineer\n'
             # error: invalid gender
-            'bon001,Jose,Bonaparte,Male,NAP,Napoleon Brothers,SAL,,,\n'
-            # error: project name required to create it (code does not match)
-            'lol124,Megatron,Griffin,F,GPS,,SAL,,TAT,\n'
+            'bon001,Jose,Bonaparte,Male,NAP,Napoleon Brothers,SAL,Salesman\n'
         )
         i_file.name = 'users.csv'
         open_mock.return_value = i_file
@@ -149,36 +143,27 @@ class ImportDataTest(TestCase):
                      stdout=stdout)
 
         # Four employees created, 4 errors found
-        self.assertEqual(Employee.objects.filter(owner=self.account).count(), 5)
-        self.assertIn('3 errors', stdout.getvalue())
+        self.assertEqual(Employee.objects.filter(owner=self.account).count(), 3)
+        self.assertIn('2 errors', stdout.getvalue())
 
         # Check errors
         errors = [c[1][0].get('error') for c in DictWriter.writerow.mock_calls]
         self.assertEqual(errors, ['identifier field cannot be blank',
-                                  'gender \'Male\' is not a valid choice',
-                                  'name field cannot be blank'])
+                                  'gender \'Male\' is not a valid choice'])
 
         # Check created companies: 3 (GPS, TRU, NAP)
-        self.assertEqual(Company.objects.filter(owner=self.account).count(), 3)
-        c1, c2, c3 = Company.objects.filter(owner=self.account).all()
+        self.assertEqual(Company.objects.filter(owner=self.account).count(), 2)
+        c1, c2 = Company.objects.filter(owner=self.account).all()
         self.assertEqual(c1.name, 'Global Pundits Society')
         self.assertEqual(c2.name, 'Napoleon Brothers')
-        self.assertEqual(c3.name, 'Toys R-Us')
 
         # Check created positions: 2 (PLE, SAL)
-        self.assertEqual(Position.objects.filter(owner=self.account).count(), 3)
-        p1, p2, p3 = Position.objects.filter(owner=self.account).all()
+        self.assertEqual(Position.objects.filter(owner=self.account).count(), 2)
+        p1, p2 = Position.objects.filter(owner=self.account).all()
         self.assertEqual(p1.name, 'Planning Engineer')
         self.assertEqual(p1.code, 'PLE')
-        self.assertEqual(p2.name, 'Salesman')
-        self.assertEqual(p2.code, 'SAL')
-        self.assertEqual(p3.name, 'Lala')
-        self.assertEqual(p3.code, 'LA')
-
-        # Check created projects: 1 (KOL)
-        self.assertEqual(Project.objects.filter(owner=self.account).count(), 1)
-        p1 = Project.objects.filter(owner=self.account).all()[0]
-        self.assertEqual(p1.name, 'Kingdom of Loathing')
+        self.assertEqual(p2.name, 'Lala')
+        self.assertEqual(p2.code, 'LA')
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())
@@ -186,19 +171,17 @@ class ImportDataTest(TestCase):
     def test_import_equipment(self, open_mock):
         # Simulate somewhat heterogeneous file with a few errors
         i_file = StringIO(
-            'identifier,model,year,company__code,company__name,type__code,type__name,project__code,project__name\n'
+            'identifier,model,year,company__code,company__name,type__code,type__name\n'
             # OK: all complete
-            'mach001,Komatsu D340,1998,GPS,Global Pundits Society,EAR,Earthworks,KOL,Kingdom of Loathing\n'
+            'mach001,Komatsu D340,1998,GPS,Global Pundits Society,EAR,Earthworks\n'
             # OK: project matched by code
-            'mach002,Caterpillar C1234,2006,NAP,Napoleon Brothers,LIF,Lifting,KOL,\n'
-            # OK: all matched by code, project not required
-            'mach003,American 4,2006,NAP,,LIF,,,\n'
+            'mach002,Caterpillar C1234,2006,NAP,Napoleon Brothers,LIF,Lifting\n'
             # error: missing identifier
-            ',American 4,2006,NAP,,LIF,,,\n'
+            ',American 4,2006,NAP,,LIF,\n'
             # error: missing year
-            'mach004,American 5,,NAP,,LIF,,,\n'
+            'mach004,American 5,,NAP,,LIF,\n'
             # error: missing type code
-            'mach003,American 6,2006,NAP,,,Sidebooms,,\n'
+            'mach003,American 6,2006,NAP,,,Sidebooms\n'
         )
         i_file.name = 'equipment.csv'
         open_mock.return_value = i_file
@@ -207,7 +190,7 @@ class ImportDataTest(TestCase):
                      stdout=stdout)
 
         # Three equipment created, 2 errors found
-        self.assertEqual(Equipment.objects.filter(owner=self.account).count(), 3)
+        self.assertEqual(Equipment.objects.filter(owner=self.account).count(), 2)
         self.assertIn('3 errors', stdout.getvalue())
 
         # Check errors
@@ -227,11 +210,6 @@ class ImportDataTest(TestCase):
         t1, t2 = EquipmentType.objects.filter(owner=self.account).all()
         self.assertEqual(t1.name, 'Earthworks')
         self.assertEqual(t2.name, 'Lifting')
-
-        # Check created projects: 1 (KOL)
-        self.assertEqual(Project.objects.filter(owner=self.account).count(), 1)
-        p1 = Project.objects.filter(owner=self.account).all()[0]
-        self.assertEqual(p1.name, 'Kingdom of Loathing')
 
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writerow', mock.MagicMock())
     @mock.patch('apps.common.management.commands.import_data.DictWriter.writeheader', mock.MagicMock())

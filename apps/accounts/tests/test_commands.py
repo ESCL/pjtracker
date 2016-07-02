@@ -8,21 +8,21 @@ from ..models import Account, User
 
 class CreteExampleAccountTest(TestCase):
 
-    def test_create_example_account(self):
-        n_accounts = Account.objects.count()
-        n_users = User.objects.count()
+    def tearDown(self):
+        # Delete account and its objects
+        self.account.delete()
 
+    def test_create_example_account(self):
         # Call command
         call_command('create_example_account')
 
         # Check number of accounts and users added
-        self.assertEqual(Account.objects.count(), n_accounts + 1)
-        self.assertEqual(User.objects.count(), n_users + 7)
+        self.account = Account.objects.last()
+        users = User.objects.filter(owner=self.account)
+        self.assertEqual(users.count(), 7)
 
-        # Check their data
-        acc = Account.objects.last()
-        self.assertEqual(User.objects.filter(owner=acc).count(), 7)
-        u1, u2, u3, u4, u5, u6, u7 = User.objects.all()[n_users:]
+        # Check the users' groups (one of each)
+        u1, u2, u3, u4, u5, u6, u7 = users
         self.assertEqual(u1.groups.all()[0].name, 'Administrators')
         self.assertEqual(u2.groups.all()[0].name, 'Human Resources')
         self.assertEqual(u3.groups.all()[0].name, 'Team Management')
