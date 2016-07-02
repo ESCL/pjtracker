@@ -132,16 +132,6 @@ class Resource(OwnedEntity):
     )
 
     @property
-    def project(self):
-        try:
-            return self.projects.get(
-                start_date__lte=timezone.now().date(),
-                end_date__gte=timezone.now().date(),
-            )
-        except self.project_assignments.model.DoesNotExist:
-            return None
-
-    @property
     def assigned_projects(self):
         return self.project_assignments.filter(
             status=self.project_assignments.model.STATUS_APPROVED,

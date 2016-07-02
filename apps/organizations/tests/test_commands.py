@@ -7,27 +7,28 @@ from ...accounts.factories import AccountFakeFactory, UserFakeFactory
 from ..models import Company, Team
 
 
-class CreteExampleCompanyTest(TestCase):
+class CreateExampleCompanyTest(TestCase):
 
     def setUp(self):
+        # Create account
         self.acc = AccountFakeFactory.create()
-        self.u1 = UserFakeFactory.create(username='supervisor')
-        self.u2 = UserFakeFactory.create(username='timekeeper')
+
+    def tearDown(self):
+        # Delete account (and all objects)
+        self.acc.delete()
 
     def test_create_example_company(self):
-        n_companies = Company.objects.count()
-        n_teams = Team.objects.count()
-
         # Call command
-        call_command('create_example_company')
+        call_command('create_example_company', self.acc.code)
 
         # Check number of companies and teams added
-        self.assertEqual(Company.objects.count(), n_companies + 1)
-        self.assertEqual(Team.objects.count(), n_teams + 2)
+        self.assertEqual(Company.objects.filter(owner=self.acc).count(), 1)
+        self.assertEqual(Team.objects.filter(owner=self.acc).count(), 2)
 
         # Check their data
-        cpy = Company.objects.last()
-        self.assertEqual(Team.objects.filter(company=cpy).count(), 2)
-        t1, t2 = Team.objects.all()[n_teams:]
+        cpy = Company.objects.get(owner=self.acc)
+        t1, t2 = Team.objects.filter(owner=self.acc)
         self.assertEqual(t1.name, 'Engineering')
-        self.assertEqual(t2.name, 'Civil Works')
+        self.assertEqual(t1.company, cpy)
+        self.assertEqual(t1.name, 'Engineering')
+        self.assertEqual(t2.company, cpy)

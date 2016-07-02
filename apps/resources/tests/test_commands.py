@@ -1,37 +1,42 @@
 __author__ = 'kako'
 
+from django.contrib.auth.models import Group
 from django.core.management import call_command
 from django.test import TestCase
 
 from ...accounts.factories import AccountFakeFactory, UserFakeFactory
 from ...organizations.factories import TeamFakeFactory
-from ...work.factories import ProjectFakeFactory
 from ..models import Employee, Equipment
 
 
-class CreteExampleResourcesTest(TestCase):
+class CreateExampleResourcesTest(TestCase):
 
     def setUp(self):
+        # Create account
         self.acc = AccountFakeFactory.create()
-        self.u1 = UserFakeFactory.create(username='hr', owner=self.acc)
-        self.u2 = UserFakeFactory.create(username='pcon', owner=self.acc)
-        self.pj = ProjectFakeFactory.create(owner=self.acc)
-        self.t1 = TeamFakeFactory.create(owner=self.acc)
-        self.t2 = TeamFakeFactory.create(owner=self.acc)
+
+        # Create teams and users required
+        self.t1 = TeamFakeFactory.create(owner=self.acc, name='Engineering')
+        self.t2 = TeamFakeFactory.create(owner=self.acc, name='Civil Works', company=self.t1.company)
+        self.u1 = UserFakeFactory.create(owner=self.acc, groups=[Group.objects.get(name='Human Resources')])
+        self.u2 = UserFakeFactory.create(owner=self.acc, groups=[Group.objects.get(name='Project Control')])
+
+    def tearDown(self):
+        # Remove account and its objects
+        self.acc.delete()
 
     def test_create_example_resources(self):
-        n_employees = Employee.objects.count()
-        n_equipment = Equipment.objects.count()
-
         # Call command
-        call_command('create_example_resources')
+        call_command('create_example_resources', self.acc.code)
 
         # Check number of companies and teams added
-        self.assertEqual(Employee.objects.count(), n_employees + 4)
-        self.assertEqual(Equipment.objects.count(), n_equipment + 1)
+        employees = Employee.objects.filter(owner=self.acc)
+        equipment = Equipment.objects.filter(owner=self.acc)
+        self.assertEqual(employees.count(), 4)
+        self.assertEqual(equipment.count(), 1)
 
         # Check their data
-        self.assertEqual(Employee.objects.filter(team=self.t1).count(), 2)
-        self.assertEqual(Equipment.objects.filter(team=self.t1).count(), 0)
-        self.assertEqual(Employee.objects.filter(team=self.t2).count(), 2)
-        self.assertEqual(Equipment.objects.filter(team=self.t2).count(), 1)
+        self.assertEqual(employees.filter(team=self.t1).count(), 2)
+        self.assertEqual(equipment.filter(team=self.t1).count(), 0)
+        self.assertEqual(employees.filter(team=self.t2).count(), 2)
+        self.assertEqual(equipment.filter(team=self.t2).count(), 1)

@@ -1,12 +1,20 @@
 __author__ = 'kako'
 
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand
+from django.core.management import call_command, BaseCommand
 
 from ...factories import UserFakeFactory, AccountFakeFactory
 
 
 class Command(BaseCommand):
+
+    def add_arguments(self, parser):
+        parser.add_argument('--name', '-n', dest='name', action='store',
+                            help='Name of the account to create.')
+        parser.add_argument('--code', '-c', dest='code', action='store',
+                            help='Code of the account to create.')
+        parser.add_argument('--data', '-d', dest='data', action='store_true',
+                            help='Include example data (project with resources).')
 
     def handle(self, *args, **options):
         self.stdout.write("Creating example account with users...")
@@ -15,23 +23,28 @@ class Command(BaseCommand):
         # Fetch required groups
         admin = Group.objects.get(name='Administrators')
         hr = Group.objects.get(name='Human Resources')
-        tmgt = Group.objects.get(name='Team Management')
-        pcon = Group.objects.get(name='Project Control')
-        pmgt = Group.objects.get(name='Project Management')
+        tm = Group.objects.get(name='Team Management')
+        pc = Group.objects.get(name='Project Control')
+        pm = Group.objects.get(name='Project Management')
         tk = Group.objects.get(name='Time-Keeping')
-        sup = Group.objects.get(name='Supervision')
+        su = Group.objects.get(name='Supervision')
 
         # Create an account
-        account = AccountFakeFactory.create()
+        data = {f: options[f] for f in ('name', 'code',) if options.get(f)}
+        account = AccountFakeFactory.create(**data)
 
         # Create one user per group for account
         users.append(UserFakeFactory.create(username='admin', password='123', owner=account, groups=[admin]))
         users.append(UserFakeFactory.create(username='hr', password='123', owner=account, groups=[hr]))
-        users.append(UserFakeFactory.create(username='tmgt', password='123', owner=account, groups=[tmgt]))
-        users.append(UserFakeFactory.create(username='pcon', password='123', owner=account, groups=[pcon]))
-        users.append(UserFakeFactory.create(username='pmgt', password='123', owner=account, groups=[pmgt]))
-        users.append(UserFakeFactory.create(username='timekeeper', password='123', owner=account, groups=[tk]))
-        users.append(UserFakeFactory.create(username='supervisor', password='123', owner=account, groups=[sup]))
+        users.append(UserFakeFactory.create(username='tm', password='123', owner=account, groups=[tm]))
+        users.append(UserFakeFactory.create(username='pc', password='123', owner=account, groups=[pc]))
+        users.append(UserFakeFactory.create(username='pm', password='123', owner=account, groups=[pm]))
+        users.append(UserFakeFactory.create(username='tk', password='123', owner=account, groups=[tk]))
+        users.append(UserFakeFactory.create(username='su', password='123', owner=account, groups=[su]))
 
         # Done, print results
         self.stdout.write('Created account "{}" with users {}.'.format(account, users))
+
+        # Add data if required
+        if options['data']:
+            call_command('create_example_data', account.code)

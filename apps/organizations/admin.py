@@ -4,23 +4,23 @@ from .models import Company, Department, Team, Position, PositionLabourType
 
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name',)
+    list_display = ('code', 'name', 'owner',)
 
 
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name',)
+    list_display = ('code', 'name', 'owner',)
 
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name',)
+    list_display = ('code', 'name', 'owner',)
 
 
 class PositionLabourTypeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'position', 'labour_type',)
+    list_display = ('position', 'labour_type', 'owner',)
 
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name', 'company',)
+    list_display = ('code', 'name', 'company', 'owner',)
     filter_horizontal = ('activities',)
 
 
