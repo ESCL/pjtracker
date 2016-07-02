@@ -10,7 +10,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(UserAdminBase):
-    list_display = ('owner', 'username', 'email', 'first_name', 'last_name', 'is_staff',)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'owner',)
     add_form = AdminUserCreationForm
     add_fieldsets = (
         (None, {

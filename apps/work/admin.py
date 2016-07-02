@@ -4,23 +4,23 @@ from .models import Project, Activity, ActivityGroup, ActivityGroupType, LabourT
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name',)
+    list_display = ('code', 'name', 'owner',)
 
 
 class ActivityAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'wbs_code', 'name', 'project',)
+    list_display = ('wbs_code', 'name', 'project', 'owner',)
 
 
 class ActivityGroupAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'type', 'code', 'name',)
+    list_display = ('type', 'code', 'name', 'owner',)
 
 
 class ActivityGroupTypeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'name',)
+    list_display = ('name', 'owner',)
 
 
 class LabourTypeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name')
+    list_display = ('code', 'name', 'owner',)
 
 
 admin.site.register(Project, ProjectAdmin)

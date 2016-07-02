@@ -9,12 +9,12 @@ class WorkLogInline(admin.TabularInline):
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'team', 'date', 'status',)
+    list_display = ('team', 'date', 'status', 'owner',)
     inlines = (WorkLogInline,)
 
 
 class TimeSheetActionAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'timesheet', 'actor', 'action', 'timestamp',)
+    list_display = ('timesheet', 'actor', 'action', 'timestamp', 'owner',)
 
 
 class TimeSheetSettingsAdmin(admin.ModelAdmin):

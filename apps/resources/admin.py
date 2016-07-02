@@ -5,24 +5,24 @@ from .models import (Employee, Equipment, EquipmentType,
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'identifier', 'full_name', 'company',
-                    'position', 'project',)
+    list_display = ('identifier', 'full_name', 'company',
+                    'position', 'owner',)
 
 
 class EquipmentAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'identifier', 'company', 'type', 'project',)
+    list_display = ('identifier', 'company', 'type', 'owner',)
 
 
 class EquipmentTypeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name', 'parent',)
+    list_display = ('code', 'name', 'parent', 'owner',)
 
 
 class EquipmentTypeLabourTypeAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'equipment_type', 'labour_type',)
+    list_display = ('equipment_type', 'labour_type', 'owner',)
 
 
 class ResourceCategoryAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'code', 'name', 'resource_type')
+    list_display = ('code', 'name', 'resource_type', 'owner',)
 
 
 admin.site.register(Employee, EmployeeAdmin)

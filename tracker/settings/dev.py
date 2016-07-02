@@ -27,7 +27,6 @@ NOSE_ARGS = ['--verbosity=2']
 # Database bootstrapping
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = True
-BOOTSTRAP_EXAMPLE_DATA = True
 
 
 # Logging handlers

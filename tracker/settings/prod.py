@@ -40,7 +40,6 @@ DATABASES = {
 # Database bootstrapping options
 
 BOOTSTRAP_EXAMPLE_ACCOUNT = False
-BOOTSTRAP_EXAMPLE_DATA = False
 
 
 # Static media

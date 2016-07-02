@@ -24,7 +24,7 @@ class CreteExampleResourcesTest(TestCase):
         n_equipment = Equipment.objects.count()
 
         # Call command
-        call_command('create_example_resources')
+        call_command('create_example_resources', self.acc.code)
 
         # Check number of companies and teams added
         self.assertEqual(Employee.objects.count(), n_employees + 4)
