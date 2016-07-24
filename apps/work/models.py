@@ -6,6 +6,18 @@ from ..common.db.models import OwnedEntity
 from .query import ActivityQuerySet
 
 
+class ActivityBase(OwnedEntity):
+    """
+    Base model for activity and inactivity.
+    """
+    name = models.CharField(
+        max_length=128
+    )
+    code = models.CharField(
+        max_length=6
+    )
+
+
 class Project(OwnedEntity):
     """
     Main entity used to separate the work for an account.
@@ -43,6 +55,25 @@ class Project(OwnedEntity):
         ).count()
 
 
+class Inactivity(ActivityBase):
+    """
+    Specific non-work entity into which hours are charged.
+    """
+    # Types of inactivity
+    TYPE_PERSONAL = 'P'
+    TYPE_EXTERNAL = 'E'
+
+    base = models.OneToOneField(
+        'ActivityBase',
+        parent_link=True
+    )
+    type = models.CharField(
+        max_length=1,
+        choices=((TYPE_PERSONAL, 'Personal'),
+                 (TYPE_EXTERNAL, 'External'))
+    )
+
+
 class Activity(OwnedEntity):
     """
     Specific work entity into which hours are charged.
@@ -52,9 +83,15 @@ class Activity(OwnedEntity):
 
     objects = ActivityQuerySet.as_manager()
 
+    base = models.OneToOneField(
+        'ActivityBase',
+        null=True
+    )
+    # TODO: remove after setting base
     name = models.CharField(
         max_length=128
     )
+    # TODO: remove after setting base
     code = models.CharField(
         max_length=6
     )
