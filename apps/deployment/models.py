@@ -296,25 +296,9 @@ class WorkLog(OwnedEntity):
     presence = models.ForeignKey(
         'Presence',
         related_name='work_logs',
-        null=True
     )
     activity_base = models.ForeignKey(
         'work.ActivityBase',
-        null=True
-    )
-    # TODO: remove after setting presence
-    timesheet = models.ForeignKey(
-        'TimeSheet',
-        related_name='work_logs'
-    )
-    # TODO: remove after setting presence
-    resource = models.ForeignKey(
-        'resources.Resource'
-    )
-    # TODO: remove after setting activity_base
-    activity = models.ForeignKey(
-        'work.Activity',
-        null=True
     )
     labour_type = models.ForeignKey(
         'work.LabourType',
@@ -322,42 +306,6 @@ class WorkLog(OwnedEntity):
     hours = models.DecimalField(
         decimal_places=2,
         max_digits=4
-    )
-
-    # De-normalization, keep attrs that can change in a resource
-    # TODO: remove after setting presence
-    company = models.ForeignKey(
-        'organizations.Company'
-    )
-    # TODO: remove after setting presence
-    location = models.ForeignKey(
-        'geo.Location',
-        null=True,
-        blank=True
-    )
-    # TODO: remove after setting presence
-    department = models.ForeignKey(
-        'organizations.Department',
-        null=True,
-        blank=True
-    )
-    # TODO: remove after setting presence
-    position = models.ForeignKey(
-        'organizations.Position',
-        null=True,
-        blank=True
-    )
-    # TODO: remove after setting presence
-    category = models.ForeignKey(
-        'resources.ResourceCategory',
-        null=True,
-        blank=True
-    )
-    # TODO: remove after setting presence
-    equipment_type = models.ForeignKey(
-        'resources.EquipmentType',
-        null=True,
-        blank=True
     )
 
     def save(self, *args, **kwargs):

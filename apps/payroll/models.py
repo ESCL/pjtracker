@@ -131,6 +131,7 @@ class StandardHours(DayTypeBase):
     """
     class Meta:
         unique_together = ('owner', 'day_type',)
+        verbose_name_plural = 'standard hours'
 
     hours = models.DecimalField(
         decimal_places=2,
@@ -206,6 +207,9 @@ class WorkedHours(OwnedEntity):
     """
     Unique group of period:phase:employee:hour_type.
     """
+    class Meta:
+        verbose_name_plural = 'worked hours'
+
     PHASE_ADJUSTMENT = 'D'
     PHASE_ACTUAL = 'A'
     PHASE_FORECAST = 'F'

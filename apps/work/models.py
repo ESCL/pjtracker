@@ -59,6 +59,9 @@ class Inactivity(ActivityBase):
     """
     Specific non-work entity into which hours are charged.
     """
+    class Meta:
+        verbose_name_plural = 'inactivities'
+
     # Types of inactivity
     TYPE_PERSONAL = 'P'
     TYPE_EXTERNAL = 'E'
@@ -74,7 +77,7 @@ class Inactivity(ActivityBase):
     )
 
 
-class Activity(OwnedEntity):
+class Activity(ActivityBase):
     """
     Specific work entity into which hours are charged.
     """
@@ -85,15 +88,7 @@ class Activity(OwnedEntity):
 
     base = models.OneToOneField(
         'ActivityBase',
-        null=True
-    )
-    # TODO: remove after setting base
-    name = models.CharField(
-        max_length=128
-    )
-    # TODO: remove after setting base
-    code = models.CharField(
-        max_length=6
+        parent_link=True
     )
     project = models.ForeignKey(
         'Project'
