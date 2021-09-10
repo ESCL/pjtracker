@@ -1,5 +1,5 @@
 # Django web framework
-django==1.9.7
+django==2.2.24
 
 # Django CORS extensions
 django-cors-headers==1.1.0
